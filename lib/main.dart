@@ -53,35 +53,37 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    return Scaffold(
-      body: Flex(
-        direction: Axis.horizontal,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: DecoratedBox(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color.fromRGBO(255, 250, 227, 1.0),
-                    Color.fromRGBO(247, 202, 201, 1.0),
-                  ],
+    return SafeArea(
+      child: Scaffold(
+        body: Flex(
+          direction: Axis.horizontal,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: DecoratedBox(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color.fromRGBO(255, 250, 227, 1.0),
+                      Color.fromRGBO(247, 202, 201, 1.0),
+                    ],
+                  ),
                 ),
-              ),
-              child: MouseSingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    HomeTitle(theme: theme),
-                    NearingExpiry(theme: theme),
-                  ],
+                child: MouseSingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      HomeTitle(theme: theme),
+                      NearingExpiry(theme: theme),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
