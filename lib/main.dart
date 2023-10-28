@@ -168,7 +168,7 @@ class _NearingExpiryState extends State<NearingExpiry> {
             onNotification: (scrollNotification) {
               return false;
             },
-            child: SingleChildScrollView(
+            child: MouseSingleChildScrollView(
               controller: scrollController,
               scrollDirection: Axis.horizontal,
               child: UnconstrainedBox(
