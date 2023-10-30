@@ -6,17 +6,41 @@ void main() {
   runApp(const MyApp());
 }
 
-// ignore: always_specify_types
 const colors = (
   textDark: Color(0xFF2D2020),
   whiteAccent: Color(0xFFFFFDF6),
   pinkAccent: Color(0xFFB18887),
 );
 
-enum Pages {
-  home,
-  recipes,
+/// INHERITED WIDGETS
+
+class RouteState extends InheritedWidget {
+  const RouteState({
+    required this.activePage,
+    required this.moveTo,
+    required super.child,
+    super.key,
+  });
+
+  final Pages activePage;
+  final void Function(Pages) moveTo;
+
+  static RouteState? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<RouteState>();
+  }
+
+  static RouteState of(BuildContext context) {
+    var state = maybeOf(context);
+    assert(state != null, "No RouteState found in context");
+
+    return state!;
+  }
+
+  @override
+  bool updateShouldNotify(covariant RouteState oldWidget) => oldWidget.activePage != activePage;
 }
+
+enum Pages { recipes, inventory, home, toBuy }
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -26,6 +50,36 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  static final ThemeData themeData = ThemeData(
+    colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+    textTheme: TextTheme(
+      titleLarge: TextStyle(
+        fontFamily: "Nunito",
+        fontSize: 45.0,
+        fontWeight: FontWeight.w900,
+        color: colors.textDark,
+      ),
+      titleMedium: TextStyle(
+        fontFamily: "Nunito",
+        fontSize: 30.0,
+        fontWeight: FontWeight.w800,
+        color: colors.textDark,
+      ),
+      displayLarge: TextStyle(
+        fontFamily: "Nunito",
+        fontSize: 20.0,
+        fontWeight: FontWeight.normal,
+        color: colors.textDark,
+      ),
+    ),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+      },
+    ),
+    useMaterial3: true,
+  );
+
   Pages activePage = Pages.home;
 
   void Function() changePage(Pages page) {
@@ -36,119 +90,95 @@ class _MyAppState extends State<MyApp> {
     };
   }
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "Flutter Demo",
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        textTheme: TextTheme(
-          titleLarge: TextStyle(
-            fontFamily: "Nunito",
-            fontSize: 45.0,
-            fontWeight: FontWeight.w900,
-            color: colors.textDark,
-          ),
-          titleMedium: TextStyle(
-            fontFamily: "Nunito",
-            fontSize: 30.0,
-            fontWeight: FontWeight.w800,
-            color: colors.textDark,
-          ),
-          displayLarge: TextStyle(
-            fontFamily: "Nunito",
-            fontSize: 20.0,
-            fontWeight: FontWeight.normal,
-            color: colors.textDark,
-          ),
-        ),
-        useMaterial3: true,
-      ),
-      home: Navigator(
-        pages: [
-          switch (activePage) {
-            Pages.home => const MaterialPage(child: HomeScreen()),
-            Pages.recipes => const MaterialPage(child: HomeScreen()),
+    return RouteState(
+      activePage: activePage,
+      moveTo: changePage,
+      child: MaterialApp(
+        theme: themeData,
+        home: Navigator(
+          pages: const [
+            MaterialPage(
+              child: MainScreen(
+                children: [
+                  HomeTab(),
+                  OnePotPestoTab(),
+                ],
+              ),
+            ),
+          ],
+          onPopPage: (route, result) {
+            return route.didPop(result);
           },
-        ],
-        onPopPage: (route, result) {
-          return route.didPop(result);
-        },
+        ),
       ),
     );
   }
 }
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class MainScreen extends StatefulWidget {
+  const MainScreen({required this.children, super.key});
+
+  final List<Widget> children;
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<MainScreen> createState() => _MainScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  final ValueNotifier<double> latestScrollOffset = ValueNotifier(0.0);
-  final ScrollController scrollController = ScrollController();
+class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
+  late final TabController tabController;
+  late final ValueNotifier<double> latestScrollOffset;
+
+  bool handleNotification(Notification notification) {
+    switch (notification) {
+      case ShrinkingNavigationUpdateNotification(:var index):
+        tabController.animateTo(index);
+
+        return true;
+      case ScrollUpdateNotification(:var scrollDelta?) when !tabController.indexIsChanging:
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          latestScrollOffset.value = scrollDelta;
+        });
+
+        return false;
+      default:
+        return false;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    tabController = TabController(length: widget.children.length, vsync: this);
+    latestScrollOffset = ValueNotifier<double>(0.0);
+  }
 
   @override
   void dispose() {
+    tabController.dispose();
     latestScrollOffset.dispose();
-    scrollController.dispose();
 
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
-
-    return NotificationListener<ScrollNotification>(
-      onNotification: (notification) {
-        switch (notification) {
-          case ScrollUpdateNotification(:double scrollDelta):
-            latestScrollOffset.value = scrollDelta;
-        }
-        return false;
-      },
+    return NotificationListener<Notification>(
+      onNotification: handleNotification,
       child: Scaffold(
-        body: Flex(
-          direction: Axis.horizontal,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        body: Stack(
           children: [
-            Expanded(
-              child: DecoratedBox(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color.fromRGBO(255, 250, 227, 1.0),
-                      Color.fromRGBO(247, 202, 201, 1.0),
-                    ],
-                  ),
-                ),
-                child: SafeArea(
-                  child: Stack(
-                    children: [
-                      MouseSingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            HomeTitle(theme: theme),
-                            for (void _ in 20.times) NearingExpiry(theme: theme),
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0.0,
-                        right: 0.0,
-                        child: ShrinkingNavigation(latestScrollOffset: latestScrollOffset),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            TabBarView(
+              controller: tabController,
+              physics: const NeverScrollableScrollPhysics(),
+              children: widget.children,
+            ),
+            Positioned(
+              bottom: 0.0,
+              right: 0.0,
+              child: ShrinkingNavigation(latestScrollOffset: latestScrollOffset),
             ),
           ],
         ),
@@ -157,11 +187,83 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+class HomeTab extends StatelessWidget {
+  const HomeTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BasicScreenWidget(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const HomeTitle(),
+          for (void _ in 20.times) const NearingExpiry(),
+        ],
+      ),
+    );
+  }
+}
+
+class OnePotPestoTab extends StatelessWidget {
+  const OnePotPestoTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+
+    return BasicScreenWidget(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("One-pot Pesto".toUpperCase(), style: theme.textTheme.titleLarge),
+                const SizedBox(height: 8.0),
+                Text("Let's see what's in store for you!", style: theme.textTheme.displayLarge),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class BasicScreenWidget extends StatelessWidget {
+  const BasicScreenWidget({required this.child, super.key});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color.fromRGBO(255, 250, 227, 1.0),
+            Color.fromRGBO(247, 202, 201, 1.0),
+          ],
+        ),
+      ),
+      child: SafeArea(
+        child: MouseSingleChildScrollView(
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+/// MISC WIDGETS
+
 class ShrinkingNavigation extends StatefulWidget {
-  const ShrinkingNavigation({
-    required this.latestScrollOffset,
-    super.key,
-  });
+  const ShrinkingNavigation({required this.latestScrollOffset, super.key});
 
   final ValueNotifier<double> latestScrollOffset;
 
@@ -174,6 +276,10 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> {
 
   void updateRetracted() {
     setState(() => isRetracted = widget.latestScrollOffset.value > 0.0);
+  }
+
+  void toggleRetracted() {
+    setState(() => isRetracted = !isRetracted);
   }
 
   @override
@@ -192,49 +298,60 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.sizeOf(context).width - 20.0 * 2 - 8.0 * 2;
-    var arbitraryRetracted = 32.0 + 8.0 * 2;
+    const margin = 20.0;
+    const padding = 8.0;
 
-    return Hero(
-      tag: "navigation",
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: MouseRegion(
-          cursor: isRetracted ? SystemMouseCursors.click : MouseCursor.uncontrolled,
-          child: GestureDetector(
-            onTap: isRetracted ? () => setState(() => isRetracted = false) : null,
-            child: AnimatedContainer(
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color: colors.whiteAccent,
-                borderRadius: BorderRadius.circular(256.0),
-              ),
-              duration: const Duration(milliseconds: 125),
-              width: isRetracted ? arbitraryRetracted : width,
-              child: UnconstrainedBox(
-                constrainedAxis: Axis.vertical,
-                clipBehavior: Clip.hardEdge,
-                child: SizedBox(
-                  width: width,
-                  child: Row(
-                    textDirection: TextDirection.rtl,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      if (isRetracted)
-                        MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() => isRetracted = !isRetracted);
-                            },
-                            child: Icon(Icons.menu, size: 32.0, color: colors.pinkAccent),
-                          ),
-                        ),
-                      for (void _ in 4.times) Icon(Icons.menu, size: 32.0, color: colors.pinkAccent),
-                    ],
+    var width = MediaQuery.sizeOf(context).width - margin * 2 - padding * 2;
+    var arbitraryRetracted = 32.0 + padding * 2;
+
+    return Padding(
+      padding: const EdgeInsets.all(margin),
+      child: AnimatedContainer(
+        padding: const EdgeInsets.all(padding),
+        decoration: BoxDecoration(
+          color: colors.whiteAccent,
+          borderRadius: BorderRadius.circular(256.0),
+        ),
+        duration: const Duration(milliseconds: 125),
+        width: isRetracted ? arbitraryRetracted : width,
+        curve: Curves.fastOutSlowIn,
+        child: UnconstrainedBox(
+          constrainedAxis: Axis.vertical,
+          clipBehavior: Clip.hardEdge,
+          child: SizedBox(
+            width: width,
+            child: Row(
+              textDirection: TextDirection.rtl,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                if (isRetracted)
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: toggleRetracted,
+                      child: Icon(Icons.menu, size: 32.0, color: colors.pinkAccent),
+                    ),
+                  )
+                else ...[
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: toggleRetracted,
+                      child: Icon(Icons.menu, size: 32.0, color: colors.pinkAccent),
+                    ),
                   ),
-                ),
-              ),
+                  for (int i in 4.times.map((v) => 3 - v))
+                    MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: GestureDetector(
+                        onTap: () {
+                          ShrinkingNavigationUpdateNotification(i).dispatch(context);
+                        },
+                        child: SizedBox(height: 32.0, child: Center(child: Text("$i"))),
+                      ),
+                    ),
+                ],
+              ],
             ),
           ),
         ),
@@ -245,14 +362,13 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> {
 
 class HomeTitle extends StatelessWidget {
   const HomeTitle({
-    required this.theme,
     super.key,
   });
 
-  final ThemeData theme;
-
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.all(32.0),
       child: Column(
@@ -270,11 +386,8 @@ class HomeTitle extends StatelessWidget {
 
 class NearingExpiry extends StatefulWidget {
   const NearingExpiry({
-    required this.theme,
     super.key,
   });
-
-  final ThemeData theme;
 
   @override
   State<NearingExpiry> createState() => _NearingExpiryState();
@@ -299,6 +412,8 @@ class _NearingExpiryState extends State<NearingExpiry> {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+
     return Column(
       children: [
         Padding(
@@ -307,10 +422,13 @@ class _NearingExpiryState extends State<NearingExpiry> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text("nearing expiry", style: widget.theme.textTheme.titleMedium),
+                Text("nearing expiry", style: theme.textTheme.titleMedium),
                 const SizedBox(width: 8.0),
                 SideButton(
                   onTap: () {
+                    var state = RouteState.of(context);
+
+                    state.moveTo(Pages.recipes);
                     print("You pressed me my brother");
                   },
                 ),
@@ -371,4 +489,14 @@ class SideButton extends StatelessWidget {
       ),
     );
   }
+}
+
+/// NOTIFICATIONS
+
+sealed class ShrinkingNavigationNotification extends Notification {}
+
+class ShrinkingNavigationUpdateNotification extends ShrinkingNavigationNotification {
+  ShrinkingNavigationUpdateNotification(this.index);
+
+  final int index;
 }
