@@ -168,6 +168,11 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
         });
 
         return true;
+
+      /// Why only when !tabController.indexIsChanging? It's because the tabController
+      ///   moving to another "tab" will actually trigger a ScrollUpdateNotification.
+      ///
+      /// We only want this if the user is scrolling.
       case ScrollUpdateNotification(:var scrollDelta?) when !tabController.indexIsChanging:
         WidgetsBinding.instance.addPostFrameCallback((_) {
           latestScrollOffset.value = scrollDelta;
@@ -684,6 +689,7 @@ class SideButton extends StatelessWidget {
 /// HELPER WIDGETS
 
 class AnimatedTransform extends ImplicitlyAnimatedWidget {
+  // ignore: unreachable_from_main
   const AnimatedTransform({
     required this.transform,
     required this.child,
