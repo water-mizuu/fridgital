@@ -35,7 +35,6 @@ dependencies:
     sdk: flutter
   mouse_scroll:
     path: ../../Library/mouse_scroll
-  provider: ^6.0.5
 
 dev_dependencies:
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -88,6 +87,9 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
   fonts:
+    - family: FigmaIconFont
+      fonts:
+        - asset: assets/fonts/FigmaIconFont/FigmaIconFont.ttf
     - family: Nunito
       fonts:
         - asset: assets/fonts/Nunito/Nunito-Black.ttf

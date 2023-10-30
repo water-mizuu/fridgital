@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:fridgital/extensions/times.dart";
+import "package:fridgital/icons/figma_icon_font.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
 
 void main() {
@@ -39,6 +40,35 @@ class RouteState extends InheritedWidget {
   @override
   bool updateShouldNotify(covariant RouteState oldWidget) => oldWidget.activePage != activePage;
 }
+
+class TabInformation extends InheritedWidget {
+  const TabInformation({
+    required this.index,
+    required this.controller,
+    required super.child,
+    super.key,
+  });
+
+  final TabController controller;
+  final int index;
+
+  static TabInformation? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<TabInformation>();
+  }
+
+  static TabInformation of(BuildContext context) {
+    var state = maybeOf(context);
+    assert(state != null, "No TabInformation found in context");
+
+    return state!;
+  }
+
+  @override
+  bool updateShouldNotify(covariant TabInformation oldWidget) =>
+      oldWidget.index != index || oldWidget.controller != controller;
+}
+
+/// MAIN WIDGETS
 
 enum Pages { recipes, inventory, home, toBuy }
 
@@ -98,12 +128,12 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         theme: themeData,
         home: Navigator(
-          pages: const [
+          pages: [
             MaterialPage(
               child: MainScreen(
                 children: [
-                  HomeTab(),
-                  OnePotPestoTab(),
+                  const HomeTab(),
+                  for (int i in 1.to(4)) OnePotPestoTab(index: i),
                 ],
               ),
             ),
@@ -133,7 +163,9 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   bool handleNotification(Notification notification) {
     switch (notification) {
       case ShrinkingNavigationUpdateNotification(:var index):
-        tabController.animateTo(index);
+        setState(() {
+          tabController.animateTo(index);
+        });
 
         return true;
       case ScrollUpdateNotification(:var scrollDelta?) when !tabController.indexIsChanging:
@@ -165,27 +197,33 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return NotificationListener<Notification>(
-      onNotification: handleNotification,
-      child: Scaffold(
-        body: Stack(
-          children: [
-            TabBarView(
-              controller: tabController,
-              physics: const NeverScrollableScrollPhysics(),
-              children: widget.children,
-            ),
-            Positioned(
-              bottom: 0.0,
-              right: 0.0,
-              child: ShrinkingNavigation(latestScrollOffset: latestScrollOffset),
-            ),
-          ],
+    return TabInformation(
+      controller: tabController,
+      index: tabController.index,
+      child: NotificationListener<Notification>(
+        onNotification: handleNotification,
+        child: Scaffold(
+          body: Stack(
+            children: [
+              TabBarView(
+                controller: tabController,
+                physics: const NeverScrollableScrollPhysics(),
+                children: widget.children,
+              ),
+              Positioned(
+                bottom: 0.0,
+                right: 0.0,
+                child: ShrinkingNavigation(latestScrollOffset: latestScrollOffset),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
+/// TAB WIDGETS
 
 class HomeTab extends StatelessWidget {
   const HomeTab({super.key});
@@ -205,7 +243,9 @@ class HomeTab extends StatelessWidget {
 }
 
 class OnePotPestoTab extends StatelessWidget {
-  const OnePotPestoTab({super.key});
+  const OnePotPestoTab({required this.index, super.key});
+
+  final int index;
 
   @override
   Widget build(BuildContext context) {
@@ -221,7 +261,7 @@ class OnePotPestoTab extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("One-pot Pesto".toUpperCase(), style: theme.textTheme.titleLarge),
+                Text("One-pot Pesto ($index)".toUpperCase(), style: theme.textTheme.titleLarge),
                 const SizedBox(height: 8.0),
                 Text("Let's see what's in store for you!", style: theme.textTheme.displayLarge),
               ],
@@ -232,6 +272,8 @@ class OnePotPestoTab extends StatelessWidget {
     );
   }
 }
+
+/// MISC WIDGETS
 
 class BasicScreenWidget extends StatelessWidget {
   const BasicScreenWidget({required this.child, super.key});
@@ -260,8 +302,6 @@ class BasicScreenWidget extends StatelessWidget {
   }
 }
 
-/// MISC WIDGETS
-
 class ShrinkingNavigation extends StatefulWidget {
   const ShrinkingNavigation({required this.latestScrollOffset, super.key});
 
@@ -271,15 +311,45 @@ class ShrinkingNavigation extends StatefulWidget {
   State<ShrinkingNavigation> createState() => _ShrinkingNavigationState();
 }
 
+/// I need help. I do not know of a better way to do this.
+/// It works, but I have to render three layers of the same widget
+/// to compute their offsets and then animate them.
+///
+/// I need tips.
 class _ShrinkingNavigationState extends State<ShrinkingNavigation> {
   bool isRetracted = false;
+  double? latestWidth;
 
   void updateRetracted() {
-    setState(() => isRetracted = widget.latestScrollOffset.value > 0.0);
+    setState(() {
+      isRetracted = widget.latestScrollOffset.value > 0.0;
+    });
   }
 
   void toggleRetracted() {
     setState(() => isRetracted = !isRetracted);
+  }
+
+  void updateOffsets() {
+    if (parentKey.currentContext?.findRenderObject() case RenderBox parentBox) {
+      for (var (i, key) in navigationKeys.indexed) {
+        if (key.currentContext?.findRenderObject() case RenderBox box) {
+          navigationOffsets[i] = box.localToGlobal(Offset.zero, ancestor: parentBox) +
+              Offset(0.0, box.size.height * 1.0625) +
+              Offset(box.size.width / 2, 0.0) +
+              const Offset(-8.0, 0.0);
+        }
+      }
+
+      /// Compute the difference.
+      if (retractedKey.currentContext?.findRenderObject() case RenderBox retractedBox) {
+        if (expandedKey.currentContext?.findRenderObject() case RenderBox expandedBox) {
+          retractedOffset = expandedBox.localToGlobal(Offset.zero) - retractedBox.localToGlobal(Offset.zero);
+        }
+      }
+
+      setState(() => hasComputedOffsets = true);
+    }
   }
 
   @override
@@ -287,6 +357,16 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> {
     super.initState();
 
     widget.latestScrollOffset.addListener(updateRetracted);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      updateOffsets();
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    updateOffsets();
   }
 
   @override
@@ -296,65 +376,175 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> {
     super.dispose();
   }
 
+  bool hasComputedOffsets = false;
+  GlobalKey parentKey = GlobalKey();
+
+  GlobalKey retractedKey = GlobalKey();
+  GlobalKey expandedKey = GlobalKey();
+
+  Offset retractedOffset = Offset.zero;
+
+  List<Offset> navigationOffsets = List.generate(4, (_) => Offset.zero);
+  List<GlobalKey> navigationKeys = List.generate(4, (_) => GlobalKey());
+
   @override
   Widget build(BuildContext context) {
+    const ghostOpacity = 0.00;
+    const retractDuration = Duration(milliseconds: 125);
+
+    const iconSize = 32.0;
     const margin = 20.0;
     const padding = 8.0;
+    const indicator = (width: 16.0, height: 4.0);
 
+    var activeIndex = TabInformation.of(context).index;
     var width = MediaQuery.sizeOf(context).width - margin * 2 - padding * 2;
-    var arbitraryRetracted = 32.0 + padding * 2;
+    var arbitraryRetracted = iconSize + padding * 2;
 
     return Padding(
       padding: const EdgeInsets.all(margin),
-      child: AnimatedContainer(
-        padding: const EdgeInsets.all(padding),
-        decoration: BoxDecoration(
-          color: colors.whiteAccent,
-          borderRadius: BorderRadius.circular(256.0),
-        ),
-        duration: const Duration(milliseconds: 125),
-        width: isRetracted ? arbitraryRetracted : width,
-        curve: Curves.fastOutSlowIn,
-        child: UnconstrainedBox(
-          constrainedAxis: Axis.vertical,
-          clipBehavior: Clip.hardEdge,
-          child: SizedBox(
-            width: width,
-            child: Row(
-              textDirection: TextDirection.rtl,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                if (isRetracted)
-                  MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      onTap: toggleRetracted,
-                      child: Icon(Icons.menu, size: 32.0, color: colors.pinkAccent),
-                    ),
-                  )
-                else ...[
-                  MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      onTap: toggleRetracted,
-                      child: Icon(Icons.menu, size: 32.0, color: colors.pinkAccent),
+      child: Stack(
+        alignment: Alignment.centerRight,
+        children: [
+          /// Evaluated if the navigation is retracted
+          IgnorePointer(
+            child: Opacity(
+              opacity: ghostOpacity,
+              child: Container(
+                padding: const EdgeInsets.all(padding),
+                width: arbitraryRetracted,
+                child: UnconstrainedBox(
+                  constrainedAxis: Axis.vertical,
+                  alignment: Alignment.centerRight,
+                  clipBehavior: Clip.hardEdge,
+                  child: SizedBox(
+                    width: width,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        for (void _ in 4.times) const SizedBox(height: iconSize, width: iconSize),
+                        Icon(Icons.menu, size: iconSize, color: colors.pinkAccent, key: retractedKey),
+                      ],
                     ),
                   ),
-                  for (int i in 4.times.map((v) => 3 - v))
-                    MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: GestureDetector(
-                        onTap: () {
-                          ShrinkingNavigationUpdateNotification(i).dispatch(context);
-                        },
-                        child: SizedBox(height: 32.0, child: Center(child: Text("$i"))),
+                ),
+              ),
+            ),
+          ),
+
+          /// Evaluated if the navigation is not retracted
+          IgnorePointer(
+            child: Opacity(
+              opacity: ghostOpacity,
+              child: Container(
+                padding: const EdgeInsets.all(padding),
+                width: width,
+                child: UnconstrainedBox(
+                  key: parentKey,
+                  constrainedAxis: Axis.vertical,
+                  alignment: Alignment.centerRight,
+                  clipBehavior: Clip.hardEdge,
+                  child: SizedBox(
+                    width: width,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        for (var i = 0; i < 4; ++i)
+                          SizedBox(
+                            height: iconSize,
+                            width: iconSize,
+                            key: navigationKeys[i],
+                          ),
+                        Icon(null, size: iconSize, key: expandedKey),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          /// Actual displayed.
+          AnimatedContainer(
+            padding: const EdgeInsets.all(padding),
+            decoration: BoxDecoration(
+              color: colors.whiteAccent,
+              borderRadius: BorderRadius.circular(256.0),
+            ),
+            duration: retractDuration,
+            width: isRetracted ? arbitraryRetracted : width,
+            curve: Curves.fastOutSlowIn,
+            child: Stack(
+              children: [
+                UnconstrainedBox(
+                  constrainedAxis: Axis.vertical,
+                  alignment: Alignment.centerRight,
+                  clipBehavior: Clip.hardEdge,
+                  child: SizedBox(
+                    width: width,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        for (int i in 4.times)
+                          MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: GestureDetector(
+                              onTap: () {
+                                ShrinkingNavigationUpdateNotification(i).dispatch(context);
+                              },
+                              child: Container(
+                                height: iconSize,
+                                width: iconSize,
+                                color: Colors.transparent,
+                                child: Center(
+                                  child: Icon(
+                                    const [
+                                      FigmaIconFont.book,
+                                      FigmaIconFont.fridge,
+                                      Icons.home_outlined,
+                                      Icons.list_alt_outlined,
+                                    ][i],
+                                    size: iconSize,
+                                    color: colors.pinkAccent,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        AnimatedTransform.translate(
+                          duration: retractDuration,
+                          offset: isRetracted ? -retractedOffset : Offset.zero,
+                          curve: Curves.fastOutSlowIn,
+                          child: MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: GestureDetector(
+                              onTap: toggleRetracted,
+                              child: Icon(Icons.menu, size: iconSize, color: colors.pinkAccent),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                if (!isRetracted && hasComputedOffsets)
+                  AnimatedTransform.translate(
+                    offset: navigationOffsets[activeIndex],
+                    duration: retractDuration,
+                    curve: Curves.fastOutSlowIn,
+                    child: Container(
+                      width: indicator.width,
+                      height: indicator.height,
+                      decoration: BoxDecoration(
+                        color: colors.pinkAccent,
+                        borderRadius: BorderRadius.circular(256.0),
                       ),
                     ),
-                ],
+                  ),
               ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -488,6 +678,76 @@ class SideButton extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// HELPER WIDGETS
+
+class AnimatedTransform extends ImplicitlyAnimatedWidget {
+  const AnimatedTransform({
+    required this.transform,
+    required this.child,
+    required super.duration,
+    super.curve,
+    super.key,
+    this.origin,
+    this.alignment,
+    this.transformHitTests = true,
+    this.filterQuality,
+  });
+
+  AnimatedTransform.translate({
+    required Offset offset,
+    required super.duration,
+    super.curve,
+    super.key,
+    this.transformHitTests = true,
+    this.filterQuality,
+    this.child,
+  })  : transform = Matrix4.translationValues(offset.dx, offset.dy, 0.0),
+        origin = null,
+        alignment = null;
+
+  final Matrix4 transform;
+  final Offset? origin;
+  final AlignmentGeometry? alignment;
+  final bool transformHitTests;
+  final FilterQuality? filterQuality;
+  final Widget? child;
+
+  @override
+  AnimatedTransformState createState() => AnimatedTransformState();
+}
+
+class AnimatedTransformState extends AnimatedWidgetBaseState<AnimatedTransform> {
+  Matrix4Tween? transform;
+  Tween<Offset>? origin;
+  AlignmentGeometryTween? alignment;
+
+  @override
+  Widget build(BuildContext context) {
+    var animation = this.animation;
+
+    return Transform(
+      transform: transform!.evaluate(animation),
+      origin: origin?.evaluate(animation),
+      alignment: alignment?.evaluate(animation),
+      transformHitTests: widget.transformHitTests,
+      filterQuality: widget.filterQuality,
+      child: widget.child,
+    );
+  }
+
+  @override
+  void forEachTween(TweenVisitor<dynamic> visitor) {
+    transform =
+        visitor(transform, widget.transform, (dynamic value) => Matrix4Tween(begin: value as Matrix4)) as Matrix4Tween?;
+    origin = visitor(origin, widget.origin, (dynamic value) => Tween<Offset>(begin: value as Offset)) as Tween<Offset>?;
+    alignment = visitor(
+      alignment,
+      widget.alignment,
+      (dynamic value) => AlignmentGeometryTween(begin: value as AlignmentGeometry),
+    ) as AlignmentGeometryTween?;
   }
 }
 

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 9,
+            "activePatchIndex": 12,
             "patches": [
                 {
                     "date": 1698502106412,
@@ -44,6 +44,18 @@
                 {
                     "date": 1698589765787,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -98,15 +98,28 @@\n         - asset: assets/fonts/Nunito/Nunito-Bold.ttf\r\n           weight: 700\r\n         - asset: assets/fonts/Nunito/Nunito-BoldItalic.ttf\r\n           weight: 700\r\n-          style: italic\r\n         - asset: assets/fonts/Nunito/Nunito-ExtraBold.ttf\r\n           weight: 800\r\n         - asset: assets/fonts/Nunito/Nunito-ExtraBoldItalic.ttf\r\n           weight: 800\r\n           style: italic\r\n+          style: italic\r\n         - asset: assets/fonts/Nunito/Nunito-ExtraLight.ttf\r\n           weight: 200\r\n         - asset: assets/fonts/Nunito/Nunito-ExtraLightItalic.ttf\r\n-          \r\n+          weight: 200\r\n+          style: italic\r\n         - asset: assets/fonts/Nunito/Nunito-Italic.ttf\r\n+          style: italic\r\n+        - asset: assets/fonts/Nunito/Nunito-Light.ttf\r\n+          weight: 300\r\n+        - asset: assets/fonts/Nunito/Nunito-LightItalic.ttf\r\n+          weight: 300\r\n+          style: italic\r\n+        - asset: assets/fonts/Nunito/Nunito-Regular.ttf\r\n+        - asset: assets/fonts/Nunito/Nunito-SemiBold.ttf\r\n+          weight: 600\r\n+        - asset: assets/fonts/Nunito/Nunito-SemiBoldItalic.ttf\r\n+          weight: 600\r\n+          style: italic\r\n"
+                },
+                {
+                    "date": 1698674596944,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -34,9 +34,8 @@\n   flutter:\r\n     sdk: flutter\r\n   mouse_scroll:\r\n     path: ../../Library/mouse_scroll\r\n-  provider: ^6.0.5\r\n \r\n dev_dependencies:\r\n   # The \"flutter_lints\" package below contains a set of recommended lints to\r\n   # encourage good coding practices. The lint set provided by the package is\r\n@@ -94,32 +93,32 @@\n           weight: 900\r\n         - asset: assets/fonts/Nunito/Nunito-BlackItalic.ttf\r\n           weight: 900\r\n           style: italic\r\n-        - asset: assets/fonts/Nunito/Nunito-Bold.ttf\r\n-          weight: 700\r\n-        - asset: assets/fonts/Nunito/Nunito-BoldItalic.ttf\r\n-          weight: 700\r\n         - asset: assets/fonts/Nunito/Nunito-ExtraBold.ttf\r\n           weight: 800\r\n         - asset: assets/fonts/Nunito/Nunito-ExtraBoldItalic.ttf\r\n           weight: 800\r\n           style: italic\r\n+        - asset: assets/fonts/Nunito/Nunito-Bold.ttf\r\n+          weight: 700\r\n+        - asset: assets/fonts/Nunito/Nunito-BoldItalic.ttf\r\n+          weight: 700\r\n           style: italic\r\n-        - asset: assets/fonts/Nunito/Nunito-ExtraLight.ttf\r\n-          weight: 200\r\n-        - asset: assets/fonts/Nunito/Nunito-ExtraLightItalic.ttf\r\n-          weight: 200\r\n+        - asset: assets/fonts/Nunito/Nunito-SemiBold.ttf\r\n+          weight: 600\r\n+        - asset: assets/fonts/Nunito/Nunito-SemiBoldItalic.ttf\r\n+          weight: 600\r\n           style: italic\r\n+        - asset: assets/fonts/Nunito/Nunito-Regular.ttf\r\n         - asset: assets/fonts/Nunito/Nunito-Italic.ttf\r\n           style: italic\r\n         - asset: assets/fonts/Nunito/Nunito-Light.ttf\r\n           weight: 300\r\n         - asset: assets/fonts/Nunito/Nunito-LightItalic.ttf\r\n           weight: 300\r\n           style: italic\r\n-        - asset: assets/fonts/Nunito/Nunito-Regular.ttf\r\n-        - asset: assets/fonts/Nunito/Nunito-SemiBold.ttf\r\n-          weight: 600\r\n-        - asset: assets/fonts/Nunito/Nunito-SemiBoldItalic.ttf\r\n-          weight: 600\r\n+        - asset: assets/fonts/Nunito/Nunito-ExtraLight.ttf\r\n+          weight: 200\r\n+        - asset: assets/fonts/Nunito/Nunito-ExtraLightItalic.ttf\r\n+          weight: 200\r\n           style: italic\r\n"
+                },
+                {
+                    "date": 1698685678329,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -59,8 +59,9 @@\n   # To add assets to your application, add an assets section, like this:\r\n   # assets:\r\n   #   - images/a_dot_burr.jpeg\r\n   #   - images/a_dot_ham.jpeg\r\n+  \r\n \r\n   # An image asset can refer to one or more resolution-specific \"variants\", see\r\n   # https://flutter.dev/assets-and-images/#resolution-aware\r\n \r\n"
+                },
+                {
+                    "date": 1698685911080,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -59,10 +59,10 @@\n   # To add assets to your application, add an assets section, like this:\r\n   # assets:\r\n   #   - images/a_dot_burr.jpeg\r\n   #   - images/a_dot_ham.jpeg\r\n-  \r\n \r\n+\r\n   # An image asset can refer to one or more resolution-specific \"variants\", see\r\n   # https://flutter.dev/assets-and-images/#resolution-aware\r\n \r\n   # For details regarding adding assets from package dependencies, see\r\n"
                 }
             ],
             "date": 1698502106412,
