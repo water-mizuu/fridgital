@@ -1,8 +1,8 @@
 import "dart:async";
 import "dart:io";
-import "dart:ui";
 
 import "package:flutter/cupertino.dart";
+import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/enums.dart";

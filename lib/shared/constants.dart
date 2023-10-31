@@ -1,4 +1,4 @@
-import "dart:ui";
+import "package:flutter/widgets.dart";
 
 abstract final class FigmaColors {
   static const Color textDark = Color(0xFF2D2020);
