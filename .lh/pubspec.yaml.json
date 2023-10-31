@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 13,
+            "activePatchIndex": 15,
             "patches": [
                 {
                     "date": 1698502106412,
@@ -60,6 +60,14 @@
                 {
                     "date": 1698747054648,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -34,8 +34,9 @@\n   flutter:\r\n     sdk: flutter\r\n   mouse_scroll:\r\n     path: ../../Library/mouse_scroll\r\n+    \r\n \r\n dev_dependencies:\r\n   # The \"flutter_lints\" package below contains a set of recommended lints to\r\n   # encourage good coding practices. The lint set provided by the package is\r\n@@ -60,9 +61,8 @@\n   # assets:\r\n   #   - images/a_dot_burr.jpeg\r\n   #   - images/a_dot_ham.jpeg\r\n \r\n-\r\n   # An image asset can refer to one or more resolution-specific \"variants\", see\r\n   # https://flutter.dev/assets-and-images/#resolution-aware\r\n \r\n   # For details regarding adding assets from package dependencies, see\r\n@@ -87,8 +87,11 @@\n   #\r\n   # For details regarding fonts from package dependencies,\r\n   # see https://flutter.dev/custom-fonts/#from-packages\r\n   fonts:\r\n+    - family: FigmaIconFont\r\n+      fonts:\r\n+        - asset: assets/fonts/FigmaIconFont/FigmaIconFont.ttf\r\n     - family: Nunito\r\n       fonts:\r\n         - asset: assets/fonts/Nunito/Nunito-Black.ttf\r\n           weight: 900\r\n"
+                },
+                {
+                    "date": 1698766642486,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -33,11 +33,13 @@\n   cupertino_icons: ^1.0.2\r\n   flutter:\r\n     sdk: flutter\r\n   mouse_scroll:\r\n+  \r\n     path: ../../Library/mouse_scroll\r\n-    \r\n \r\n+  window_manager:\r\n+\r\n dev_dependencies:\r\n   # The \"flutter_lints\" package below contains a set of recommended lints to\r\n   # encourage good coding practices. The lint set provided by the package is\r\n   # activated in the `analysis_options.yaml` file located at the root of your\r\n"
+                },
+                {
+                    "date": 1698766690997,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -33,9 +33,10 @@\n   cupertino_icons: ^1.0.2\r\n   flutter:\r\n     sdk: flutter\r\n   mouse_scroll:\r\n-  \r\n+    git:\r\n+      url: https://github.com/water-mizuu/mouse_scroll.git\r\n     path: ../../Library/mouse_scroll\r\n \r\n   window_manager:\r\n \r\n"
                 }
             ],
             "date": 1698502106412,

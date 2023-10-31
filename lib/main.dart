@@ -75,18 +75,27 @@ class _MyAppState extends State<MyApp> {
     useMaterial3: true,
   );
 
+  bool isSecondLayerEnabled = true;
   Pages activePage = Pages.home;
 
-  void Function() changePage(Pages page) => () {
-        setState(() {
-          activePage = page;
-        });
-      };
+  void changePage(Pages page) {
+    setState(() {
+      activePage = page;
+    });
+  }
+
+  void toggleSecondLayer() {
+    setState(() {
+      isSecondLayerEnabled = !isSecondLayerEnabled;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return RouteState(
       activePage: activePage,
+      isSecondLayerEnabled: isSecondLayerEnabled,
+      toggleSecondLayer: toggleSecondLayer,
       moveTo: changePage,
       child: MaterialApp(
         scrollBehavior: const MaterialScrollBehavior().copyWith(
@@ -94,11 +103,15 @@ class _MyAppState extends State<MyApp> {
         ),
         theme: themeData,
         home: Navigator(
-          pages: const [
-            CupertinoPage(child: MainScreen()),
-            CupertinoPage(child: OnePotPesto(index: 0)),
+          pages: [
+            const CupertinoPage(child: MainScreen()),
+            if (isSecondLayerEnabled) const CupertinoPage(child: OnePotPesto(index: 0)),
           ],
           onPopPage: (route, result) {
+            setState(() {
+              isSecondLayerEnabled = false;
+            });
+
             return route.didPop(result);
           },
         ),

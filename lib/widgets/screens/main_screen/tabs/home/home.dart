@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:fridgital/shared/extensions/times.dart";
+import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/side_button.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
@@ -100,6 +101,9 @@ class _NearingExpiryState extends State<NearingExpiry> {
                 SideButton(
                   onTap: () {
                     print("You pressed me my brother");
+                    var tabInformation = RouteState.of(context);
+
+                    tabInformation.toggleSecondLayer();
                   },
                 ),
               ],

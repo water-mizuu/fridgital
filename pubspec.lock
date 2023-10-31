@@ -150,9 +150,11 @@ packages:
   mouse_scroll:
     dependency: "direct main"
     description:
-      path: "../../Library/mouse_scroll"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "9d146b97983f90193de3093f95012cf6b7e00fdd"
+      url: "https://github.com/water-mizuu/mouse_scroll.git"
+    source: git
     version: "1.0.0+1"
   nested:
     dependency: transitive

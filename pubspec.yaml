@@ -34,7 +34,8 @@ dependencies:
   flutter:
     sdk: flutter
   mouse_scroll:
-    path: ../../Library/mouse_scroll
+    git:
+      url: https://github.com/water-mizuu/mouse_scroll.git
 
   window_manager:
 

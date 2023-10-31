@@ -16,8 +16,9 @@ class SideButton extends StatelessWidget {
       scaleY: 0.75,
       child: Transform.translate(
         offset: const Offset(0, -12.0),
-        child: const ClickableWidget(
-          child: Opacity(
+        child: ClickableWidget(
+          onTap: onTap,
+          child: const Opacity(
             opacity: 0.5,
             child: Icon(
               Icons.arrow_forward_ios,
