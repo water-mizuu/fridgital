@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 1,
+            "activePatchIndex": 4,
             "patches": [
                 {
                     "date": 1698744786516,
@@ -12,6 +12,18 @@
                 {
                     "date": 1698745461662,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,7 @@\n import \"package:flutter/material.dart\";\r\n-import \"package:fridgital/widgets/shared/shrinking_navigation.dart\";\r\n+import \"package:fridgital/widgets/inherited_widgets/tab_information.dart\";\r\n+import \"package:fridgital/widgets/shared/miscellaneous/shrinking_navigation.dart\";\r\n \r\n class MainScreen extends StatefulWidget {\r\n   const MainScreen({required this.children, super.key});\r\n \r\n"
+                },
+                {
+                    "date": 1698746817569,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,9 @@\n import \"package:fridgital/widgets/inherited_widgets/tab_information.dart\";\r\n import \"package:fridgital/widgets/shared/miscellaneous/shrinking_navigation.dart\";\r\n \r\n class MainScreen extends StatefulWidget {\r\n-  const MainScreen({required this.children, super.key});\r\n+  const MainScreen({ super.key});\r\n \r\n   final List<Widget> children;\r\n \r\n   @override\r\n"
+                },
+                {
+                    "date": 1698746933144,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,13 +1,14 @@\n import \"package:flutter/material.dart\";\r\n+import \"package:fridgital/shared/extensions/times.dart\";\r\n import \"package:fridgital/widgets/inherited_widgets/tab_information.dart\";\r\n+import \"package:fridgital/widgets/screens/main_screen/tabs/home/home.dart\";\r\n+import \"package:fridgital/widgets/screens/main_screen/tabs/one_pot_pesto.dart\";\r\n import \"package:fridgital/widgets/shared/miscellaneous/shrinking_navigation.dart\";\r\n \r\n class MainScreen extends StatefulWidget {\r\n-  const MainScreen({ super.key});\r\n+  const MainScreen({super.key});\r\n \r\n-  final List<Widget> children;\r\n-\r\n   @override\r\n   State<MainScreen> createState() => _MainScreenState();\r\n }\r\n \r\n@@ -40,9 +41,9 @@\n   @override\r\n   void initState() {\r\n     super.initState();\r\n \r\n-    tabController = TabController(length: widget.children.length, vsync: this);\r\n+    tabController = TabController(length: 5, vsync: this);\r\n     latestScrollOffset = ValueNotifier<double>(0.0);\r\n   }\r\n \r\n   @override\r\n@@ -65,9 +66,12 @@\n             children: [\r\n               TabBarView(\r\n                 controller: tabController,\r\n                 physics: const NeverScrollableScrollPhysics(),\r\n-                children: widget.children,\r\n+                children: [\r\n+                  const Home(),\r\n+                   OnePotPesto(index: i),\r\n+                ],\r\n               ),\r\n               Positioned(\r\n                 bottom: 0.0,\r\n                 right: 0.0,\r\n"
+                },
+                {
+                    "date": 1698746990851,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,5 @@\n import \"package:flutter/material.dart\";\r\n-import \"package:fridgital/shared/extensions/times.dart\";\r\n import \"package:fridgital/widgets/inherited_widgets/tab_information.dart\";\r\n import \"package:fridgital/widgets/screens/main_screen/tabs/home/home.dart\";\r\n import \"package:fridgital/widgets/screens/main_screen/tabs/one_pot_pesto.dart\";\r\n import \"package:fridgital/widgets/shared/miscellaneous/shrinking_navigation.dart\";\r\n@@ -41,9 +40,9 @@\n   @override\r\n   void initState() {\r\n     super.initState();\r\n \r\n-    tabController = TabController(length: 5, vsync: this);\r\n+    tabController = TabController(length: 5, vsync: this, initialIndex: 2);\r\n     latestScrollOffset = ValueNotifier<double>(0.0);\r\n   }\r\n \r\n   @override\r\n@@ -66,11 +65,14 @@\n             children: [\r\n               TabBarView(\r\n                 controller: tabController,\r\n                 physics: const NeverScrollableScrollPhysics(),\r\n-                children: [\r\n-                  const Home(),\r\n-                   OnePotPesto(index: i),\r\n+                children: const [\r\n+                  OnePotPesto(index: 1),\r\n+                  Home(),\r\n+                  OnePotPesto(index: 2),\r\n+                  OnePotPesto(index: 3),\r\n+                  OnePotPesto(index: 4),\r\n                 ],\r\n               ),\r\n               Positioned(\r\n                 bottom: 0.0,\r\n"
                 }
             ],
             "date": 1698744786516,

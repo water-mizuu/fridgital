@@ -4,17 +4,43 @@ import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/side_button.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
 
-class HomeTab extends StatelessWidget {
-  const HomeTab({super.key});
+class Home extends StatelessWidget {
+  const Home({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BasicScreenWidget(
+      child: MouseSingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const HomeTitle(),
+            for (void _ in 20.times) const NearingExpiry(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class HomeTitle extends StatelessWidget {
+  const HomeTitle({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.all(32.0),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const HomeTitle(),
-          for (void _ in 20.times) const NearingExpiry(),
+          Text("Hello,\n[User]!".toUpperCase(), style: theme.textTheme.titleLarge),
+          const SizedBox(height: 8.0),
+          Text("Let's see what's in store for you!", style: theme.textTheme.displayLarge),
         ],
       ),
     );
@@ -97,30 +123,6 @@ class _NearingExpiryState extends State<NearingExpiry> {
           ),
         ),
       ],
-    );
-  }
-}
-
-class HomeTitle extends StatelessWidget {
-  const HomeTitle({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    var theme = Theme.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.all(32.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("Hello,\n[User]!".toUpperCase(), style: theme.textTheme.titleLarge),
-          const SizedBox(height: 8.0),
-          Text("Let's see what's in store for you!", style: theme.textTheme.displayLarge),
-        ],
-      ),
     );
   }
 }

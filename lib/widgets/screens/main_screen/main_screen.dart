@@ -1,11 +1,12 @@
 import "package:flutter/material.dart";
 import "package:fridgital/widgets/inherited_widgets/tab_information.dart";
+import "package:fridgital/widgets/screens/main_screen/tabs/home/home.dart";
+import "package:fridgital/widgets/screens/main_screen/tabs/inventory/inventory.dart";
+import "package:fridgital/widgets/screens/main_screen/tabs/one_pot_pesto.dart";
 import "package:fridgital/widgets/shared/miscellaneous/shrinking_navigation.dart";
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({required this.children, super.key});
-
-  final List<Widget> children;
+  const MainScreen({super.key});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -41,7 +42,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    tabController = TabController(length: widget.children.length, vsync: this);
+    tabController = TabController(length: 5, vsync: this, initialIndex: 2);
     latestScrollOffset = ValueNotifier<double>(0.0);
   }
 
@@ -66,7 +67,13 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
               TabBarView(
                 controller: tabController,
                 physics: const NeverScrollableScrollPhysics(),
-                children: widget.children,
+                children: const [
+                  OnePotPesto(index: 0),
+                  Inventory(),
+                  Home(),
+                  OnePotPesto(index: 3),
+                  OnePotPesto(index: 4),
+                ],
               ),
               Positioned(
                 bottom: 0.0,

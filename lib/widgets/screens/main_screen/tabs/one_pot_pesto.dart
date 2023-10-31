@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 
-class OnePotPestoTab extends StatelessWidget {
-  const OnePotPestoTab({required this.index, super.key});
+class OnePotPesto extends StatelessWidget {
+  const OnePotPesto({required this.index, super.key});
 
   final int index;
 

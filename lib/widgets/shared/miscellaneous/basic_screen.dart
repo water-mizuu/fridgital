@@ -1,5 +1,4 @@
 import "package:flutter/widgets.dart";
-import "package:mouse_scroll/mouse_scroll.dart";
 
 class BasicScreenWidget extends StatelessWidget {
   const BasicScreenWidget({required this.child, super.key});
@@ -20,9 +19,7 @@ class BasicScreenWidget extends StatelessWidget {
         ),
       ),
       child: SafeArea(
-        child: MouseSingleChildScrollView(
-          child: child,
-        ),
+        child: child,
       ),
     );
   }

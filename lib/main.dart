@@ -1,15 +1,35 @@
+import "dart:io";
 import "dart:ui";
 
 import "package:flutter/material.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/enums.dart";
-import "package:fridgital/shared/extensions/times.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/screens/main_screen/main_screen.dart";
-import "package:fridgital/widgets/screens/main_screen/tabs/home_tab.dart";
-import "package:fridgital/widgets/screens/main_screen/tabs/one_pot_pesto_tab.dart";
+import "package:window_manager/window_manager.dart";
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    await windowManager.ensureInitialized();
+
+    const size = Size(430 , 768);
+    const windowOptions = WindowOptions(
+      size: size,
+      center: true,
+      backgroundColor: Colors.transparent,
+      skipTaskbar: false,
+      titleBarStyle: TitleBarStyle.normal,
+      minimumSize: size,
+      maximumSize: size,
+    );
+
+    await windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
+
   runApp(const MyApp());
 }
 
@@ -70,14 +90,9 @@ class _MyAppState extends State<MyApp> {
         ),
         theme: themeData,
         home: Navigator(
-          pages: [
+          pages: const [
             MaterialPage(
-              child: MainScreen(
-                children: [
-                  const HomeTab(),
-                  for (int i in 1.to(4)) OnePotPestoTab(index: i),
-                ],
-              ),
+              child: MainScreen(),
             ),
           ],
           onPopPage: (route, result) {
