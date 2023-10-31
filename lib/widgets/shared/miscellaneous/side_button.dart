@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:fridgital/shared/constants.dart";
+import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
 
 class SideButton extends StatelessWidget {
   const SideButton({
@@ -15,17 +16,13 @@ class SideButton extends StatelessWidget {
       scaleY: 0.75,
       child: Transform.translate(
         offset: const Offset(0, -12.0),
-        child: GestureDetector(
-          onTap: onTap,
-          child: const MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: Opacity(
-              opacity: 0.5,
-              child: Icon(
-                Icons.arrow_forward_ios,
-                size: 22.0,
-                color: FigmaColors.textDark,
-              ),
+        child: const ClickableWidget(
+          child: Opacity(
+            opacity: 0.5,
+            child: Icon(
+              Icons.arrow_forward_ios,
+              size: 22.0,
+              color: FigmaColors.textDark,
             ),
           ),
         ),

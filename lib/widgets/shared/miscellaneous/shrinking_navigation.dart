@@ -4,6 +4,7 @@ import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/extensions/times.dart";
 import "package:fridgital/widgets/inherited_widgets/tab_information.dart";
 import "package:fridgital/widgets/shared/helper/animated_transform.dart";
+import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
 
 class ShrinkingNavigation extends StatefulWidget {
   const ShrinkingNavigation({required this.latestScrollOffset, super.key});
@@ -93,7 +94,7 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
     const indicator = (width: 16.0, height: 4.0);
 
     var activeIndex = TabInformation.of(context).index;
-    var width = MediaQuery.sizeOf(context).width - margin * 2 - padding * 2;
+    var width = MediaQuery.sizeOf(context).width - margin * 2;
     var arbitraryRetracted = iconSize + padding * 2;
 
     return Padding(
@@ -132,7 +133,7 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
             child: Opacity(
               opacity: ghostOpacity,
               child: Container(
-                padding: const EdgeInsets.all(padding),
+                padding: const EdgeInsets.symmetric(vertical: padding),
                 width: width,
                 child: UnconstrainedBox(
                   constrainedAxis: Axis.vertical,
@@ -155,7 +156,7 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
 
           /// Actual displayed.
           AnimatedContainer(
-            padding: const EdgeInsets.all(padding),
+            padding: const EdgeInsets.symmetric(vertical: padding),
             decoration: BoxDecoration(
               color: FigmaColors.whiteAccent,
               borderRadius: BorderRadius.circular(256.0),
@@ -183,9 +184,11 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         for (int i in 4.times)
-                          MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            child: GestureDetector(
+                          AnimatedTransform.translate(
+                            duration: retractDuration,
+                            offset: isRetracted ? -retractedOffset : Offset.zero,
+                            curve: Curves.fastOutSlowIn,
+                            child: ClickableWidget(
                               onTap: () {
                                 ShrinkingNavigationUpdateNotification(i).dispatch(context);
                               },
@@ -213,11 +216,12 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
                           duration: retractDuration,
                           offset: isRetracted ? -retractedOffset : Offset.zero,
                           curve: Curves.fastOutSlowIn,
-                          child: MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            child: GestureDetector(
-                              onTap: toggleRetracted,
-                              child: const Icon(Icons.menu, size: iconSize, color: FigmaColors.pinkAccent),
+                          child: ClickableWidget(
+                            onTap: toggleRetracted,
+                            child: const SizedBox(
+                              width: iconSize,
+                              height: iconSize,
+                              child: Icon(Icons.menu, size: iconSize, color: FigmaColors.pinkAccent),
                             ),
                           ),
                         ),
@@ -226,18 +230,20 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
                   ),
                 ),
                 if (!isRetracted && hasComputedOffsets)
-                  AnimatedTransform.translate(
-                    offset: navigationOffsets[activeIndex],
-                    duration: retractDuration,
-                    curve: Curves.fastOutSlowIn,
-                    child: Opacity(
-                      opacity: isRetracted ? 0.0 : 1.0,
-                      child: Container(
-                        width: indicator.width,
-                        height: indicator.height,
-                        decoration: BoxDecoration(
-                          color: FigmaColors.pinkAccent,
-                          borderRadius: BorderRadius.circular(256.0),
+                  IgnorePointer(
+                    child: AnimatedTransform.translate(
+                      offset: navigationOffsets[activeIndex],
+                      duration: retractDuration,
+                      curve: Curves.fastOutSlowIn,
+                      child: Opacity(
+                        opacity: isRetracted ? 0.0 : 1.0,
+                        child: Container(
+                          width: indicator.width,
+                          height: indicator.height,
+                          decoration: BoxDecoration(
+                            color: FigmaColors.pinkAccent,
+                            borderRadius: BorderRadius.circular(256.0),
+                          ),
                         ),
                       ),
                     ),
