@@ -1,7 +1,6 @@
 import "dart:async";
 import "dart:io";
 
-import "package:flutter/cupertino.dart";
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
 import "package:fridgital/shared/constants.dart";
@@ -115,8 +114,8 @@ class _MyAppState extends State<MyApp> {
         theme: themeData,
         home: Navigator(
           pages: [
-            const CupertinoPage(child: MainScreen()),
-            if (isSecondLayerEnabled) const CupertinoPage(child: OnePotPesto(index: 0)),
+            const MaterialPage(child: MainScreen()),
+            if (isSecondLayerEnabled) const MaterialPage(child: OnePotPesto(index: 0)),
           ],
           onPopPage: (route, result) {
             setState(() {
