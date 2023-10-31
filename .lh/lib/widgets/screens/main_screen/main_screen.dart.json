@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 12,
+            "activePatchIndex": 16,
             "patches": [
                 {
                     "date": 1698744786516,
@@ -56,6 +56,22 @@
                 {
                     "date": 1698760627064,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,10 +1,10 @@\n import \"package:flutter/material.dart\";\r\n import \"package:fridgital/widgets/inherited_widgets/tab_information.dart\";\r\n-import \"package:fridgital/widgets/screens/main/tabs/home/home.dart\";\r\n-import \"package:fridgital/widgets/screens/main/tabs/inventory/inventory.dart\";\r\n-import \"package:fridgital/widgets/screens/main/tabs/recipes/recipes.dart\";\r\n-import \"package:fridgital/widgets/screens/main/tabs/to_buy/to_buy.dart\";\r\n+import \"package:fridgital/widgets/screens/main_screen/tabs/home/home.dart\";\r\n+import \"package:fridgital/widgets/screens/main_screen/tabs/inventory/inventory.dart\";\r\n+import \"package:fridgital/widgets/screens/main_screen/tabs/recipes/recipes.dart\";\r\n+import \"package:fridgital/widgets/screens/main_screen/tabs/to_buy/to_buy.dart\";\r\n import \"package:fridgital/widgets/shared/miscellaneous/shrinking_navigation.dart\";\r\n \r\n class MainScreen extends StatefulWidget {\r\n   const MainScreen({super.key});\r\n"
+                },
+                {
+                    "date": 1698773282054,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -62,26 +62,28 @@\n       index: tabController.index,\r\n       child: NotificationListener<Notification>(\r\n         onNotification: handleNotification,\r\n         child: Scaffold(\r\n-          body: Stack(\r\n-            children: [\r\n-              TabBarView(\r\n-                controller: tabController,\r\n-                physics: const NeverScrollableScrollPhysics(),\r\n-                children: const [\r\n-                  Recipes(),\r\n-                  Inventory(),\r\n-                  Home(),\r\n-                  ToBuy(),\r\n-                ],\r\n-              ),\r\n-              Positioned(\r\n-                bottom: 0.0,\r\n-                right: 0.0,\r\n-                child: ShrinkingNavigation(latestScrollOffset: latestScrollOffset),\r\n-              ),\r\n-            ],\r\n+          body: widget(\r\n+            child: Stack(\r\n+              children: [\r\n+                TabBarView(\r\n+                  controller: tabController,\r\n+                  physics: const NeverScrollableScrollPhysics(),\r\n+                  children: const [\r\n+                    Recipes(),\r\n+                    Inventory(),\r\n+                    Home(),\r\n+                    ToBuy(),\r\n+                  ],\r\n+                ),\r\n+                Positioned(\r\n+                  bottom: 0.0,\r\n+                  right: 0.0,\r\n+                  child: ShrinkingNavigation(latestScrollOffset: latestScrollOffset),\r\n+                ),\r\n+              ],\r\n+            ),\r\n           ),\r\n         ),\r\n       ),\r\n     );\r\n"
+                },
+                {
+                    "date": 1698773319439,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -62,9 +62,10 @@\n       index: tabController.index,\r\n       child: NotificationListener<Notification>(\r\n         onNotification: handleNotification,\r\n         child: Scaffold(\r\n-          body: widget(\r\n+          body: FractionallySizedBox(\r\n+        widthFactor: 1.0,\r\n             child: Stack(\r\n               children: [\r\n                 TabBarView(\r\n                   controller: tabController,\r\n"
+                },
+                {
+                    "date": 1698773319470,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -63,9 +63,9 @@\n       child: NotificationListener<Notification>(\r\n         onNotification: handleNotification,\r\n         child: Scaffold(\r\n           body: FractionallySizedBox(\r\n-        widthFactor: 1.0,\r\n+            widthFactor: 1.0,\r\n             child: Stack(\r\n               children: [\r\n                 TabBarView(\r\n                   controller: tabController,\r\n"
+                },
+                {
+                    "date": 1698773350260,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -56,16 +56,16 @@\n   }\r\n \r\n   @override\r\n   Widget build(BuildContext context) {\r\n-    return TabInformation(\r\n-      controller: tabController,\r\n-      index: tabController.index,\r\n-      child: NotificationListener<Notification>(\r\n-        onNotification: handleNotification,\r\n-        child: Scaffold(\r\n-          body: FractionallySizedBox(\r\n-            widthFactor: 1.0,\r\n+    return Scaffold(\r\n+      body: FractionallySizedBox(\r\n+        widthFactor: 1.0,\r\n+        child: NotificationListener<Notification>(\r\n+          onNotification: handleNotification,\r\n+          child: TabInformation(\r\n+            controller: tabController,\r\n+            index: tabController.index,\r\n             child: Stack(\r\n               children: [\r\n                 TabBarView(\r\n                   controller: tabController,\r\n"
                 }
             ],
             "date": 1698744786516,

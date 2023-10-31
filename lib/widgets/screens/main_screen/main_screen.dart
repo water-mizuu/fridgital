@@ -57,30 +57,33 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return TabInformation(
-      controller: tabController,
-      index: tabController.index,
-      child: NotificationListener<Notification>(
-        onNotification: handleNotification,
-        child: Scaffold(
-          body: Stack(
-            children: [
-              TabBarView(
-                controller: tabController,
-                physics: const NeverScrollableScrollPhysics(),
-                children: const [
-                  Recipes(),
-                  Inventory(),
-                  Home(),
-                  ToBuy(),
-                ],
-              ),
-              Positioned(
-                bottom: 0.0,
-                right: 0.0,
-                child: ShrinkingNavigation(latestScrollOffset: latestScrollOffset),
-              ),
-            ],
+    return Scaffold(
+      body: FractionallySizedBox(
+        widthFactor: 1.0,
+        child: NotificationListener<Notification>(
+          onNotification: handleNotification,
+          child: TabInformation(
+            controller: tabController,
+            index: tabController.index,
+            child: Stack(
+              children: [
+                TabBarView(
+                  controller: tabController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: const [
+                    Recipes(),
+                    Inventory(),
+                    Home(),
+                    ToBuy(),
+                  ],
+                ),
+                Positioned(
+                  bottom: 0.0,
+                  right: 0.0,
+                  child: ShrinkingNavigation(latestScrollOffset: latestScrollOffset),
+                ),
+              ],
+            ),
           ),
         ),
       ),

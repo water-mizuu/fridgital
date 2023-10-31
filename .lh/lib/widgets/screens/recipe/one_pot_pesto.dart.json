@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/widgets/screens/recipe/one_pot_pesto.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1698773311943,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1698773311943,
+            "name": "Commit-0",
+            "content": "import \"package:flutter/material.dart\";\r\nimport \"package:fridgital/shared/extensions/times.dart\";\r\nimport \"package:fridgital/widgets/shared/miscellaneous/basic_screen.dart\";\r\nimport \"package:mouse_scroll/mouse_scroll.dart\";\r\n\r\nclass OnePotPesto extends StatefulWidget {\r\n  const OnePotPesto({required this.index, super.key});\r\n\r\n  final int index;\r\n\r\n  @override\r\n  State<OnePotPesto> createState() => _OnePotPestoState();\r\n}\r\n\r\nclass _OnePotPestoState extends State<OnePotPesto> {\r\n  static const double _threshold = 648.0;\r\n\r\n  late final ScrollController scrollController;\r\n\r\n  final parentKey = GlobalKey();\r\n  final imageRetractedKey = GlobalKey();\r\n  final imageExpandedKey = GlobalKey();\r\n\r\n  late double scrollPercentage = scrollController.hasClients ? scrollController.offset / _threshold : 0.0;\r\n\r\n  @override\r\n  void initState() {\r\n    super.initState();\r\n\r\n    scrollController = ScrollController()\r\n      ..addListener(() {\r\n        WidgetsBinding.instance.addPostFrameCallback((_) {\r\n          setState(() {\r\n            scrollPercentage = scrollController.offset / _threshold;\r\n          });\r\n        });\r\n      });\r\n  }\r\n\r\n  @override\r\n  void dispose() {\r\n    scrollController.dispose();\r\n\r\n    super.dispose();\r\n  }\r\n\r\n  @override\r\n  Widget build(BuildContext context) {\r\n    const picturePadding = 32.0;\r\n    const pictureSize = 96.0;\r\n\r\n    var theme = Theme.of(context);\r\n\r\n    return Scaffold(\r\n      body: FractionallySizedBox(\r\n        child: BasicScreenWidget(\r\n          child: Padding(\r\n            padding: const EdgeInsets.all(32.0),\r\n            child: LayoutBuilder(\r\n              key: parentKey,\r\n              builder: (context, constraints) {\r\n                return Stack(\r\n                  children: [\r\n                    Opacity(\r\n                      opacity: 1.0,\r\n                      child: MouseSingleChildScrollView(\r\n                        controller: scrollController,\r\n                        child: Column(\r\n                          crossAxisAlignment: CrossAxisAlignment.start,\r\n                          children: [\r\n                            SizedBox(\r\n                              height: constraints.constrainHeight() * 0.5 + picturePadding + pictureSize,\r\n                              child: ColoredBox(\r\n                                color: Colors.transparent,\r\n                                child: Text(\"Hi\", style: theme.textTheme.titleLarge),\r\n                              ),\r\n                            ),\r\n                            for (int _ in 36.times)\r\n                              Text(\"One-pot Pesto\", style: theme.textTheme.titleLarge?.copyWith(fontSize: 42.0)),\r\n                          ],\r\n                        ),\r\n                      ),\r\n                    ),\r\n                  ],\r\n                );\r\n              },\r\n            ),\r\n          ),\r\n        ),\r\n      ),\r\n    );\r\n  }\r\n}\r\n"
+        }
+    ]
+}
