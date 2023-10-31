@@ -1,11 +1,13 @@
 import "dart:io";
 import "dart:ui";
 
+import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/enums.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/screens/main_screen/main_screen.dart";
+import "package:fridgital/widgets/screens/main_screen/tabs/one_pot_pesto.dart";
 import "package:window_manager/window_manager.dart";
 
 Future<void> main() async {
@@ -66,6 +68,8 @@ class _MyAppState extends State<MyApp> {
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {
         TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
       },
     ),
     useMaterial3: true,
@@ -91,7 +95,8 @@ class _MyAppState extends State<MyApp> {
         theme: themeData,
         home: Navigator(
           pages: const [
-            MaterialPage(child: MainScreen()),
+            CupertinoPage(child: MainScreen()),
+            CupertinoPage(child: OnePotPesto(index: 0)),
           ],
           onPopPage: (route, result) {
             return route.didPop(result);
