@@ -4,11 +4,18 @@ import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/side_button.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
 
   @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin {
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return BasicScreenWidget(
       child: MouseSingleChildScrollView(
         child: Column(
@@ -21,6 +28,9 @@ class Home extends StatelessWidget {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class HomeTitle extends StatelessWidget {

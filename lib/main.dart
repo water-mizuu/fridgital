@@ -13,7 +13,7 @@ Future<void> main() async {
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     await windowManager.ensureInitialized();
 
-    const size = Size(430 , 768);
+    const size = Size(430, 768);
     const windowOptions = WindowOptions(
       size: size,
       center: true,
@@ -58,7 +58,7 @@ class _MyAppState extends State<MyApp> {
         color: FigmaColors.textDark,
       ),
       displayLarge: TextStyle(
-        fontSize: 20.0,
+        fontSize: 16.0,
         fontWeight: FontWeight.normal,
         color: FigmaColors.textDark,
       ),
@@ -91,9 +91,7 @@ class _MyAppState extends State<MyApp> {
         theme: themeData,
         home: Navigator(
           pages: const [
-            MaterialPage(
-              child: MainScreen(),
-            ),
+            MaterialPage(child: MainScreen()),
           ],
           onPopPage: (route, result) {
             return route.didPop(result);

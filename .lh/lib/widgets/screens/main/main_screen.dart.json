@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/widgets/screens/main/main_screen.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1698760611455,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1698760611455,
+            "name": "Commit-0",
+            "content": "import \"package:flutter/material.dart\";\r\nimport \"package:fridgital/widgets/inherited_widgets/tab_information.dart\";\r\nimport \"package:fridgital/widgets/screens/main/tabs/home/home.dart\";\r\nimport \"package:fridgital/widgets/screens/main/tabs/inventory/inventory.dart\";\r\nimport \"package:fridgital/widgets/screens/main/tabs/recipes/recipes.dart\";\r\nimport \"package:fridgital/widgets/screens/main/tabs/to_buy/to_buy.dart\";\r\nimport \"package:fridgital/widgets/shared/miscellaneous/shrinking_navigation.dart\";\r\n\r\nclass MainScreen extends StatefulWidget {\r\n  const MainScreen({super.key});\r\n\r\n  @override\r\n  State<MainScreen> createState() => _MainScreenState();\r\n}\r\n\r\nclass _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {\r\n  late final TabController tabController;\r\n  late final ValueNotifier<double> latestScrollOffset;\r\n\r\n  bool handleNotification(Notification notification) {\r\n    if (notification case ShrinkingNavigationUpdateNotification(:var index)) {\r\n      setState(() {\r\n        tabController.animateTo(index);\r\n      });\r\n\r\n      return true;\r\n    }\r\n\r\n    if (!tabController.indexIsChanging) {\r\n      if (notification case ScrollUpdateNotification(:var scrollDelta?)) {\r\n        WidgetsBinding.instance.addPostFrameCallback((_) {\r\n          latestScrollOffset.value = scrollDelta;\r\n        });\r\n\r\n        return false;\r\n      }\r\n    }\r\n\r\n    return false;\r\n  }\r\n\r\n  @override\r\n  void initState() {\r\n    super.initState();\r\n\r\n    tabController = TabController(length: 4, vsync: this, initialIndex: 2);\r\n    latestScrollOffset = ValueNotifier<double>(0.0);\r\n  }\r\n\r\n  @override\r\n  void dispose() {\r\n    tabController.dispose();\r\n    latestScrollOffset.dispose();\r\n\r\n    super.dispose();\r\n  }\r\n\r\n  @override\r\n  Widget build(BuildContext context) {\r\n    return TabInformation(\r\n      controller: tabController,\r\n      index: tabController.index,\r\n      child: NotificationListener<Notification>(\r\n        onNotification: handleNotification,\r\n        child: Scaffold(\r\n          body: Stack(\r\n            children: [\r\n              TabBarView(\r\n                controller: tabController,\r\n                physics: const NeverScrollableScrollPhysics(),\r\n                children: const [\r\n                  Recipes(),\r\n                  Inventory(),\r\n                  Home(),\r\n                  ToBuy(),\r\n                ],\r\n              ),\r\n              Positioned(\r\n                bottom: 0.0,\r\n                right: 0.0,\r\n                child: ShrinkingNavigation(latestScrollOffset: latestScrollOffset),\r\n              ),\r\n            ],\r\n          ),\r\n        ),\r\n      ),\r\n    );\r\n  }\r\n}\r\n"
+        }
+    ]
+}

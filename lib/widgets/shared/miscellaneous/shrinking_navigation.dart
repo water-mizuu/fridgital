@@ -38,15 +38,15 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
       for (var (i, key) in navigationKeys.indexed) {
         if (key.currentContext?.findRenderObject() case RenderBox box) {
           navigationOffsets[i] = box.localToGlobal(Offset.zero, ancestor: parentBox) +
-              Offset(0.0, box.size.height * 1.0625) +
-              Offset(box.size.width / 2, 0.0) +
+              Offset(0.0, box.hasSize ? box.size.height * 1.0625 : 0.0) +
+              Offset(box.hasSize ? box.size.width / 2 : 0.0, 0.0) +
               const Offset(-8.0, 0.0);
         }
       }
 
       /// Compute the difference.
-      if (retractedKey.currentContext?.findRenderObject() case RenderBox retractedBox) {
-        if (expandedKey.currentContext?.findRenderObject() case RenderBox expandedBox) {
+      if (retractedKey.currentContext?.findRenderObject() case RenderBox retractedBox when retractedBox.hasSize) {
+        if (expandedKey.currentContext?.findRenderObject() case RenderBox expandedBox when expandedBox.hasSize) {
           retractedOffset = expandedBox.localToGlobal(Offset.zero) - retractedBox.localToGlobal(Offset.zero);
         }
       }
