@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/widgets/shared/miscellaneous/basic_home.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1698744878361,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1698744878361,
+            "name": "Commit-0",
+            "content": "\r\nclass BasicScreenWidget extends StatelessWidget {\r\n  const BasicScreenWidget({required this.child, super.key});\r\n\r\n  final Widget child;\r\n\r\n  @override\r\n  Widget build(BuildContext context) {\r\n    return DecoratedBox(\r\n      decoration: const BoxDecoration(\r\n        gradient: LinearGradient(\r\n          begin: Alignment.topCenter,\r\n          end: Alignment.bottomCenter,\r\n          colors: [\r\n            Color.fromRGBO(255, 250, 227, 1.0),\r\n            Color.fromRGBO(247, 202, 201, 1.0),\r\n          ],\r\n        ),\r\n      ),\r\n      child: SafeArea(\r\n        child: MouseSingleChildScrollView(\r\n          child: child,\r\n        ),\r\n      ),\r\n    );\r\n  }\r\n}\r\n"
+        }
+    ]
+}

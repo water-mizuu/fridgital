@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/widgets/shared/miscellaneous/side_button.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1698744931238,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1698744931238,
+            "name": "Commit-0",
+            "content": "\r\nclass SideButton extends StatelessWidget {\r\n  const SideButton({\r\n    required this.onTap,\r\n    super.key,\r\n  });\r\n\r\n  final void Function() onTap;\r\n\r\n  @override\r\n  Widget build(BuildContext context) {\r\n    return Transform.scale(\r\n      scaleY: 0.75,\r\n      child: Transform.translate(\r\n        offset: const Offset(0, -12.0),\r\n        child: GestureDetector(\r\n          onTap: onTap,\r\n          child: MouseRegion(\r\n            cursor: SystemMouseCursors.click,\r\n            child: Icon(\r\n              Icons.arrow_forward_ios,\r\n              size: 22.0,\r\n              color: FigmaColors.textDark.withAlpha(127),\r\n            ),\r\n          ),\r\n        ),\r\n      ),\r\n    );\r\n  }\r\n}\r\n"
+        }
+    ]
+}
