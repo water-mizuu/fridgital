@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:fridgital/icons/figma_icon_font.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/extensions/times.dart";
+import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/inherited_widgets/tab_information.dart";
 import "package:fridgital/widgets/shared/helper/animated_transform.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
@@ -21,6 +22,7 @@ class ShrinkingNavigation extends StatefulWidget {
 ///
 /// I need tips.
 class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerProviderStateMixin {
+  ValueNotifier<void>? notifier;
   bool isRetracted = false;
 
   void updateRetracted() {
@@ -34,9 +36,9 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
   }
 
   void updateOffsets() {
-    if (parentKey.currentContext?.findRenderObject() case RenderBox parentBox) {
+    if (parentKey.currentContext?.findRenderObject() case RenderBox parentBox when parentBox.hasSize) {
       for (var (i, key) in navigationKeys.indexed) {
-        if (key.currentContext?.findRenderObject() case RenderBox box) {
+        if (key.currentContext?.findRenderObject() case RenderBox box when box.hasSize) {
           navigationOffsets[i] = box.localToGlobal(Offset.zero, ancestor: parentBox) +
               Offset(0.0, box.hasSize ? box.size.height * 1.0625 : 0.0) +
               Offset(box.hasSize ? box.size.width / 2 : 0.0, 0.0) +
@@ -53,6 +55,13 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
 
       setState(() => hasComputedOffsets = true);
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    notifier ??= RouteState.of(context).popNotifier..addListener(updateOffsets);
   }
 
   @override

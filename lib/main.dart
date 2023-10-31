@@ -1,3 +1,4 @@
+import "dart:async";
 import "dart:io";
 import "dart:ui";
 
@@ -75,6 +76,7 @@ class _MyAppState extends State<MyApp> {
     useMaterial3: true,
   );
 
+  final ValueNotifier<int> popNotifier = ValueNotifier<int>(0);
   bool isSecondLayerEnabled = true;
   Pages activePage = Pages.home;
 
@@ -85,9 +87,17 @@ class _MyAppState extends State<MyApp> {
   }
 
   void toggleSecondLayer() {
+    ++popNotifier.value;
     setState(() {
       isSecondLayerEnabled = !isSecondLayerEnabled;
     });
+  }
+
+  @override
+  void dispose() {
+    popNotifier.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -97,6 +107,7 @@ class _MyAppState extends State<MyApp> {
       isSecondLayerEnabled: isSecondLayerEnabled,
       toggleSecondLayer: toggleSecondLayer,
       moveTo: changePage,
+      popNotifier: popNotifier,
       child: MaterialApp(
         scrollBehavior: const MaterialScrollBehavior().copyWith(
           dragDevices: PointerDeviceKind.values.toSet(),
@@ -111,6 +122,8 @@ class _MyAppState extends State<MyApp> {
             setState(() {
               isSecondLayerEnabled = false;
             });
+
+            --popNotifier.value;
 
             return route.didPop(result);
           },

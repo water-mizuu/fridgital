@@ -7,6 +7,7 @@ class RouteState extends InheritedWidget {
     required this.isSecondLayerEnabled,
     required this.moveTo,
     required this.toggleSecondLayer,
+    required this.popNotifier,
     required super.child,
     super.key,
   });
@@ -15,6 +16,7 @@ class RouteState extends InheritedWidget {
   final Pages activePage;
   final void Function(Pages) moveTo;
   final void Function() toggleSecondLayer;
+  final ValueNotifier<int> popNotifier;
 
   static RouteState? maybeOf(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<RouteState>();
