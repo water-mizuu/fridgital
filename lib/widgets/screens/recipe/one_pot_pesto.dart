@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "package:fridgital/shared/extensions/times.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
 
@@ -46,45 +45,30 @@ class _OnePotPestoState extends State<OnePotPesto> {
 
   @override
   Widget build(BuildContext context) {
-    const picturePadding = 32.0;
-    const pictureSize = 96.0;
-
     var theme = Theme.of(context);
 
     return Scaffold(
       body: FractionallySizedBox(
         widthFactor: 1.0,
         child: BasicScreenWidget(
-          child: Padding(
-            padding: const EdgeInsets.all(32.0),
-            child: LayoutBuilder(
-              key: parentKey,
-              builder: (context, constraints) {
-                return Stack(
+          child: Scrollbar(
+            controller: scrollController,
+            child: MouseSingleChildScrollView(
+              padding: const EdgeInsets.all(64.0),
+              controller: scrollController,
+              child: Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Opacity(
-                      opacity: 1.0,
-                      child: MouseSingleChildScrollView(
-                        controller: scrollController,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: constraints.constrainHeight() * 0.5 + picturePadding + pictureSize,
-                              child: ColoredBox(
-                                color: Colors.transparent,
-                                child: Text("Hi", style: theme.textTheme.titleLarge),
-                              ),
-                            ),
-                            for (int _ in 36.times)
-                              Text("One-pot Pesto", style: theme.textTheme.titleLarge?.copyWith(fontSize: 42.0)),
-                          ],
-                        ),
+                    for (int i = 0; i < 36; ++i)
+                      Text(
+                        "One-pot Pesto",
+                        style: theme.textTheme.titleLarge?.copyWith(fontSize: 42.0),
                       ),
-                    ),
                   ],
-                );
-              },
+                ),
+              ),
             ),
           ),
         ),

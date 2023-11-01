@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 import "package:fridgital/icons/figma_icon_font.dart";
 import "package:fridgital/shared/constants.dart";
-import "package:fridgital/shared/extensions/times.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/inherited_widgets/tab_information.dart";
 import "package:fridgital/widgets/shared/helper/animated_transform.dart";
@@ -127,7 +126,7 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        for (void _ in 4.times) const SizedBox(height: iconSize, width: iconSize),
+                        for (int i = 0; i < 4; ++i) const SizedBox(height: iconSize, width: iconSize),
                         Icon(Icons.menu, size: iconSize, color: FigmaColors.pinkAccent, key: retractedKey),
                       ],
                     ),
@@ -153,7 +152,7 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        for (var i = 0; i < 4; ++i) const SizedBox(height: iconSize, width: iconSize),
+                        for (int i = 0; i < 4; ++i) const SizedBox(height: iconSize, width: iconSize),
                         Icon(null, size: iconSize, key: expandedKey),
                       ],
                     ),
@@ -192,7 +191,7 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        for (int i in 4.times)
+                        for (int i = 0; i < 4; ++i)
                           AnimatedTransform.translate(
                             duration: retractDuration,
                             offset: isRetracted ? -retractedOffset : Offset.zero,

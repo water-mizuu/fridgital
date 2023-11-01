@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "package:fridgital/shared/extensions/times.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/side_button.dart";
@@ -16,7 +15,7 @@ class Home extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const HomeTitle(),
-            for (void _ in 20.times) const NearingExpiry(),
+            for (int i = 0; i < 20; ++i) const NearingExpiry(),
           ],
         ),
       ),

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 16,
+            "activePatchIndex": 17,
             "patches": [
                 {
                     "date": 1698744786516,
@@ -72,6 +72,10 @@
                 {
                     "date": 1698773350260,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -56,16 +56,16 @@\n   }\r\n \r\n   @override\r\n   Widget build(BuildContext context) {\r\n-    return TabInformation(\r\n-      controller: tabController,\r\n-      index: tabController.index,\r\n-      child: NotificationListener<Notification>(\r\n-        onNotification: handleNotification,\r\n-        child: Scaffold(\r\n-          body: FractionallySizedBox(\r\n-            widthFactor: 1.0,\r\n+    return Scaffold(\r\n+      body: FractionallySizedBox(\r\n+        widthFactor: 1.0,\r\n+        child: NotificationListener<Notification>(\r\n+          onNotification: handleNotification,\r\n+          child: TabInformation(\r\n+            controller: tabController,\r\n+            index: tabController.index,\r\n             child: Stack(\r\n               children: [\r\n                 TabBarView(\r\n                   controller: tabController,\r\n"
+                },
+                {
+                    "date": 1698773458790,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -56,9 +56,9 @@\n   }\r\n \r\n   @override\r\n   Widget build(BuildContext context) {\r\n-    return Scaffold(\r\n+    return RScaffold(\r\n       body: FractionallySizedBox(\r\n         widthFactor: 1.0,\r\n         child: NotificationListener<Notification>(\r\n           onNotification: handleNotification,\r\n"
                 }
             ],
             "date": 1698744786516,
