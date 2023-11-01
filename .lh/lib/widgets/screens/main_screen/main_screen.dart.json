@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 17,
+            "activePatchIndex": 20,
             "patches": [
                 {
                     "date": 1698744786516,
@@ -76,6 +76,18 @@
                 {
                     "date": 1698773458790,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -56,9 +56,9 @@\n   }\r\n \r\n   @override\r\n   Widget build(BuildContext context) {\r\n-    return Scaffold(\r\n+    return RScaffold(\r\n       body: FractionallySizedBox(\r\n         widthFactor: 1.0,\r\n         child: NotificationListener<Notification>(\r\n           onNotification: handleNotification,\r\n"
+                },
+                {
+                    "date": 1698837498557,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -56,9 +56,9 @@\n   }\r\n \r\n   @override\r\n   Widget build(BuildContext context) {\r\n-    return RScaffold(\r\n+    return Scaffold(\r\n       body: FractionallySizedBox(\r\n         widthFactor: 1.0,\r\n         child: NotificationListener<Notification>(\r\n           onNotification: handleNotification,\r\n@@ -74,9 +74,9 @@\n                     Recipes(),\r\n                     Inventory(),\r\n                     Home(),\r\n                     ToBuy(),\r\n-                  ],\r\n+],\r\n                 ),\r\n                 Positioned(\r\n                   bottom: 0.0,\r\n                   right: 0.0,\r\n"
+                },
+                {
+                    "date": 1698838979604,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -66,17 +66,13 @@\n             controller: tabController,\r\n             index: tabController.index,\r\n             child: Stack(\r\n               children: [\r\n+                \r\n                 TabBarView(\r\n                   controller: tabController,\r\n                   physics: const NeverScrollableScrollPhysics(),\r\n-                  children: const [\r\n-                    Recipes(),\r\n-                    Inventory(),\r\n-                    Home(),\r\n-                    ToBuy(),\r\n-],\r\n+                  children: const [Recipes(), Inventory(), Home(), ToBuy()],\r\n                 ),\r\n                 Positioned(\r\n                   bottom: 0.0,\r\n                   right: 0.0,\r\n"
+                },
+                {
+                    "date": 1698839015920,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -66,9 +66,8 @@\n             controller: tabController,\r\n             index: tabController.index,\r\n             child: Stack(\r\n               children: [\r\n-                \r\n                 TabBarView(\r\n                   controller: tabController,\r\n                   physics: const NeverScrollableScrollPhysics(),\r\n                   children: const [Recipes(), Inventory(), Home(), ToBuy()],\r\n"
                 }
             ],
             "date": 1698744786516,
