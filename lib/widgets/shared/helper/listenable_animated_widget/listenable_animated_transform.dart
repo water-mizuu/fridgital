@@ -1,24 +1,33 @@
 import "package:flutter/material.dart";
+import "package:fridgital/widgets/shared/helper/listenable_animated_widget/listenable_animated_widget.dart";
 
-class AnimatedTransform extends ImplicitlyAnimatedWidget {
+class ListenableAnimatedTransform extends ListenableImplicitlyAnimatedWidget {
   // ignore: unreachable_from_main
-  const AnimatedTransform({
+  const ListenableAnimatedTransform({
     required this.transform,
     required this.child,
     required super.duration,
     super.curve,
     super.key,
+    super.onForward,
+    super.onReverse,
+    super.onDismiss,
+    super.onEnd,
     this.origin,
     this.alignment,
     this.transformHitTests = true,
     this.filterQuality,
   });
 
-  AnimatedTransform.translate({
+  ListenableAnimatedTransform.translate({
     required Offset offset,
     required super.duration,
     super.curve,
     super.key,
+    super.onForward,
+    super.onReverse,
+    super.onDismiss,
+    super.onEnd,
     this.transformHitTests = true,
     this.filterQuality,
     this.child,
@@ -37,7 +46,7 @@ class AnimatedTransform extends ImplicitlyAnimatedWidget {
   AnimatedTransformState createState() => AnimatedTransformState();
 }
 
-class AnimatedTransformState extends AnimatedWidgetBaseState<AnimatedTransform> {
+final class AnimatedTransformState extends ListenableAnimatedWidgetBaseState<ListenableAnimatedTransform> {
   Matrix4Tween? transform;
   Tween<Offset>? origin;
   AlignmentGeometryTween? alignment;

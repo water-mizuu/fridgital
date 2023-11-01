@@ -21,8 +21,8 @@ Future<void> main() async {
       backgroundColor: Colors.transparent,
       skipTaskbar: false,
       titleBarStyle: TitleBarStyle.normal,
-      minimumSize: size,
-      maximumSize: size,
+      // minimumSize: size,
+      // maximumSize: size,
     );
 
     await windowManager.waitUntilReadyToShow(windowOptions, () async {
@@ -75,7 +75,7 @@ class _MyAppState extends State<MyApp> {
   );
 
   final ValueNotifier<int> popNotifier = ValueNotifier<int>(0);
-  bool isSecondLayerEnabled = true;
+  bool isSecondLayerEnabled = false;
   Pages activePage = Pages.home;
 
   void changePage(Pages page) {

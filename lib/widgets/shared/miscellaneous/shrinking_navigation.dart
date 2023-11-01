@@ -3,7 +3,8 @@ import "package:fridgital/icons/figma_icon_font.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/inherited_widgets/tab_information.dart";
-import "package:fridgital/widgets/shared/helper/animated_transform.dart";
+import "package:fridgital/widgets/shared/helper/listenable_animated_widget/listenable_animated_container.dart";
+import "package:fridgital/widgets/shared/helper/listenable_animated_widget/listenable_animated_transform.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
 
 class ShrinkingNavigation extends StatefulWidget {
@@ -31,7 +32,9 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
   }
 
   void toggleRetracted() {
-    setState(() => isRetracted = !isRetracted);
+    setState(() {
+      isRetracted = !isRetracted;
+    });
   }
 
   void updateOffsets() {
@@ -80,6 +83,7 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
     super.dispose();
   }
 
+  bool isAnimating = false;
   bool hasComputedOffsets = false;
   GlobalKey parentKey = GlobalKey();
 
@@ -111,24 +115,26 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
         alignment: Alignment.centerRight,
         children: [
           /// Evaluated if the navigation is retracted
-          IgnorePointer(
-            child: Opacity(
-              opacity: ghostOpacity,
-              child: Container(
-                padding: const EdgeInsets.all(padding),
-                width: arbitraryRetracted,
-                child: UnconstrainedBox(
-                  constrainedAxis: Axis.vertical,
-                  alignment: Alignment.centerRight,
-                  clipBehavior: Clip.hardEdge,
-                  child: SizedBox(
-                    width: width,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        for (int i = 0; i < 4; ++i) const SizedBox(height: iconSize, width: iconSize),
-                        Icon(Icons.menu, size: iconSize, color: FigmaColors.pinkAccent, key: retractedKey),
-                      ],
+          RepaintBoundary(
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: ghostOpacity,
+                child: Container(
+                  padding: const EdgeInsets.all(padding),
+                  width: arbitraryRetracted,
+                  child: UnconstrainedBox(
+                    constrainedAxis: Axis.vertical,
+                    alignment: Alignment.centerRight,
+                    clipBehavior: Clip.hardEdge,
+                    child: SizedBox(
+                      width: width,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          for (int i = 0; i < 4; ++i) const SizedBox(height: iconSize, width: iconSize),
+                          Icon(Icons.menu, size: iconSize, color: FigmaColors.pinkAccent, key: retractedKey),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -137,24 +143,26 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
           ),
 
           /// Evaluated if the navigation is not retracted
-          IgnorePointer(
-            child: Opacity(
-              opacity: ghostOpacity,
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: padding),
-                width: width,
-                child: UnconstrainedBox(
-                  constrainedAxis: Axis.vertical,
-                  alignment: Alignment.centerRight,
-                  clipBehavior: Clip.hardEdge,
-                  child: SizedBox(
-                    width: width,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        for (int i = 0; i < 4; ++i) const SizedBox(height: iconSize, width: iconSize),
-                        Icon(null, size: iconSize, key: expandedKey),
-                      ],
+          RepaintBoundary(
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: ghostOpacity,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: padding),
+                  width: width,
+                  child: UnconstrainedBox(
+                    constrainedAxis: Axis.vertical,
+                    alignment: Alignment.centerRight,
+                    clipBehavior: Clip.hardEdge,
+                    child: SizedBox(
+                      width: width,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          for (int i = 0; i < 4; ++i) const SizedBox(height: iconSize, width: iconSize),
+                          Icon(null, size: iconSize, key: expandedKey),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -163,13 +171,17 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
           ),
 
           /// Actual displayed.
-          AnimatedContainer(
+          ListenableAnimatedContainer(
             padding: const EdgeInsets.symmetric(vertical: padding),
             decoration: BoxDecoration(
               color: FigmaColors.whiteAccent,
               borderRadius: BorderRadius.circular(256.0),
             ),
+            onForward: () {
+              isAnimating = true;
+            },
             onEnd: () {
+              isAnimating = false;
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (!isRetracted) {
                   updateOffsets();
@@ -192,7 +204,7 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         for (int i = 0; i < 4; ++i)
-                          AnimatedTransform.translate(
+                          ListenableAnimatedTransform.translate(
                             duration: retractDuration,
                             offset: isRetracted ? -retractedOffset : Offset.zero,
                             curve: Curves.fastOutSlowIn,
@@ -220,7 +232,7 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
                               ),
                             ),
                           ),
-                        AnimatedTransform.translate(
+                        ListenableAnimatedTransform.translate(
                           duration: retractDuration,
                           offset: isRetracted ? -retractedOffset : Offset.zero,
                           curve: Curves.fastOutSlowIn,
@@ -237,9 +249,9 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
                     ),
                   ),
                 ),
-                if (!isRetracted && hasComputedOffsets)
+                if (!isAnimating && !isRetracted && hasComputedOffsets)
                   IgnorePointer(
-                    child: AnimatedTransform.translate(
+                    child: ListenableAnimatedTransform.translate(
                       offset: navigationOffsets[activeIndex],
                       duration: retractDuration,
                       curve: Curves.fastOutSlowIn,

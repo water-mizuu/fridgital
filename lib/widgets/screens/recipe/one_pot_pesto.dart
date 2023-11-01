@@ -16,10 +16,6 @@ class _OnePotPestoState extends State<OnePotPesto> {
 
   late final ScrollController scrollController;
 
-  final parentKey = GlobalKey();
-  final imageRetractedKey = GlobalKey();
-  final imageExpandedKey = GlobalKey();
-
   late double scrollPercentage = scrollController.hasClients ? scrollController.offset / _threshold : 0.0;
 
   @override
