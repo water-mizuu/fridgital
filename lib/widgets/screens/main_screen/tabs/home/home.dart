@@ -9,13 +9,13 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BasicScreenWidget(
+    return const BasicScreenWidget(
       child: MouseSingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const HomeTitle(),
-            for (int i = 0; i < 20; ++i) const NearingExpiry(),
+            HomeTitle(),
+            NearingExpiry(),
           ],
         ),
       ),

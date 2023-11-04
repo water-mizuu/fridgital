@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "package:fridgital/widgets/inherited_widgets/tab_information.dart";
 import "package:fridgital/widgets/screens/main_screen/tabs/home/home.dart";
 import "package:fridgital/widgets/screens/main_screen/tabs/inventory/inventory.dart";
 import "package:fridgital/widgets/screens/main_screen/tabs/recipes/recipes.dart";
@@ -19,9 +18,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
   bool handleNotification(Notification notification) {
     if (notification case ShrinkingNavigationUpdateNotification(:var index)) {
-      setState(() {
-        tabController.animateTo(index);
-      });
+      tabController.animateTo(index);
 
       return true;
     }
@@ -62,23 +59,22 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
         widthFactor: 1.0,
         child: NotificationListener<Notification>(
           onNotification: handleNotification,
-          child: TabInformation(
-            controller: tabController,
-            index: tabController.index,
-            child: Stack(
-              children: [
-                TabBarView(
+          child: Stack(
+            children: [
+              TabBarView(
+                controller: tabController,
+                physics: const NeverScrollableScrollPhysics(),
+                children: const [Recipes(), Inventory(), Home(), ToBuy()],
+              ),
+              Positioned(
+                bottom: 0.0,
+                right: 0.0,
+                child: ShrinkingNavigation(
                   controller: tabController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: const [Recipes(), Inventory(), Home(), ToBuy()],
+                  latestScrollOffset: latestScrollOffset,
                 ),
-                Positioned(
-                  bottom: 0.0,
-                  right: 0.0,
-                  child: ShrinkingNavigation(latestScrollOffset: latestScrollOffset),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

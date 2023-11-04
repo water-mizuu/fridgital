@@ -2,14 +2,18 @@ import "package:flutter/material.dart";
 import "package:fridgital/icons/figma_icon_font.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
-import "package:fridgital/widgets/inherited_widgets/tab_information.dart";
 import "package:fridgital/widgets/shared/helper/listenable_animated_widget/listenable_animated_container.dart";
 import "package:fridgital/widgets/shared/helper/listenable_animated_widget/listenable_animated_transform.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
 
 class ShrinkingNavigation extends StatefulWidget {
-  const ShrinkingNavigation({required this.latestScrollOffset, super.key});
+  const ShrinkingNavigation({
+    required this.controller,
+    required this.latestScrollOffset,
+    super.key,
+  });
 
+  final TabController controller;
   final ValueNotifier<double> latestScrollOffset;
 
   @override
@@ -22,7 +26,7 @@ class ShrinkingNavigation extends StatefulWidget {
 ///
 /// I need tips.
 class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerProviderStateMixin {
-  ValueNotifier<void>? notifier;
+  ValueNotifier<void>? routePopNotifier;
   bool isRetracted = false;
 
   void updateRetracted() {
@@ -60,10 +64,20 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
   }
 
   @override
+  void didUpdateWidget(covariant ShrinkingNavigation oldWidget) {
+    if (oldWidget.latestScrollOffset != widget.latestScrollOffset) {
+      oldWidget.latestScrollOffset.removeListener(updateRetracted);
+      widget.latestScrollOffset.addListener(updateRetracted);
+    }
+
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    notifier ??= RouteState.of(context).popNotifier..addListener(updateOffsets);
+    routePopNotifier ??= RouteState.of(context).popNotifier..addListener(updateOffsets);
   }
 
   @override
@@ -105,14 +119,127 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
     const padding = 8.0;
     const indicator = (width: 16.0, height: 4.0);
 
-    var activeIndex = TabInformation.of(context).index;
     var width = MediaQuery.sizeOf(context).width - margin * 2;
     var arbitraryRetracted = iconSize + padding * 2;
 
-    return Padding(
-      padding: const EdgeInsets.all(margin),
+    return ListenableBuilder(
+      listenable: widget.controller,
+      builder: (context, child) {
+        var activeIndex = widget.controller.index;
+
+        return Padding(
+          padding: const EdgeInsets.all(margin),
+          child: Stack(
+            alignment: Alignment.centerRight,
+            children: [
+              child!,
+
+              /// Actual displayed.
+              ListenableAnimatedContainer(
+                padding: const EdgeInsets.symmetric(vertical: padding),
+                decoration: BoxDecoration(
+                  color: FigmaColors.whiteAccent,
+                  borderRadius: BorderRadius.circular(256.0),
+                ),
+                onForward: () {
+                  isAnimating = true;
+                },
+                onEnd: () {
+                  isAnimating = false;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (!isRetracted) {
+                      updateOffsets();
+                    }
+                  });
+                },
+                duration: retractDuration,
+                width: isRetracted ? arbitraryRetracted : width,
+                curve: Curves.fastOutSlowIn,
+                child: Stack(
+                  children: [
+                    UnconstrainedBox(
+                      key: parentKey,
+                      constrainedAxis: Axis.vertical,
+                      alignment: Alignment.centerRight,
+                      clipBehavior: Clip.hardEdge,
+                      child: SizedBox(
+                        width: width,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            for (int i = 0; i < 4; ++i)
+                              ListenableAnimatedTransform.translate(
+                                duration: retractDuration,
+                                offset: isRetracted ? -retractedOffset : Offset.zero,
+                                curve: Curves.fastOutSlowIn,
+                                child: ClickableWidget(
+                                  onTap: () {
+                                    ShrinkingNavigationUpdateNotification(i).dispatch(context);
+                                  },
+                                  child: Container(
+                                    height: iconSize,
+                                    width: iconSize,
+                                    color: Colors.transparent,
+                                    key: navigationKeys[i],
+                                    child: Center(
+                                      child: Icon(
+                                        const [
+                                          FigmaIconFont.book,
+                                          FigmaIconFont.fridge,
+                                          Icons.home_outlined,
+                                          Icons.list_alt_outlined,
+                                        ][i],
+                                        size: iconSize,
+                                        color: FigmaColors.pinkAccent,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ListenableAnimatedTransform.translate(
+                              duration: retractDuration,
+                              offset: isRetracted ? -retractedOffset : Offset.zero,
+                              curve: Curves.fastOutSlowIn,
+                              child: ClickableWidget(
+                                onTap: toggleRetracted,
+                                child: const SizedBox(
+                                  width: iconSize,
+                                  height: iconSize,
+                                  child: Icon(Icons.menu, size: iconSize, color: FigmaColors.pinkAccent),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    if (!isAnimating && !isRetracted && hasComputedOffsets)
+                      IgnorePointer(
+                        child: ListenableAnimatedTransform.translate(
+                          offset: navigationOffsets[activeIndex],
+                          duration: retractDuration,
+                          curve: Curves.fastOutSlowIn,
+                          child: Opacity(
+                            opacity: isRetracted ? 0.0 : 1.0,
+                            child: Container(
+                              width: indicator.width,
+                              height: indicator.height,
+                              decoration: BoxDecoration(
+                                color: FigmaColors.pinkAccent,
+                                borderRadius: BorderRadius.circular(256.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
       child: Stack(
-        alignment: Alignment.centerRight,
         children: [
           /// Evaluated if the navigation is retracted
           RepaintBoundary(
@@ -167,108 +294,6 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
                   ),
                 ),
               ),
-            ),
-          ),
-
-          /// Actual displayed.
-          ListenableAnimatedContainer(
-            padding: const EdgeInsets.symmetric(vertical: padding),
-            decoration: BoxDecoration(
-              color: FigmaColors.whiteAccent,
-              borderRadius: BorderRadius.circular(256.0),
-            ),
-            onForward: () {
-              isAnimating = true;
-            },
-            onEnd: () {
-              isAnimating = false;
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (!isRetracted) {
-                  updateOffsets();
-                }
-              });
-            },
-            duration: retractDuration,
-            width: isRetracted ? arbitraryRetracted : width,
-            curve: Curves.fastOutSlowIn,
-            child: Stack(
-              children: [
-                UnconstrainedBox(
-                  key: parentKey,
-                  constrainedAxis: Axis.vertical,
-                  alignment: Alignment.centerRight,
-                  clipBehavior: Clip.hardEdge,
-                  child: SizedBox(
-                    width: width,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        for (int i = 0; i < 4; ++i)
-                          ListenableAnimatedTransform.translate(
-                            duration: retractDuration,
-                            offset: isRetracted ? -retractedOffset : Offset.zero,
-                            curve: Curves.fastOutSlowIn,
-                            child: ClickableWidget(
-                              onTap: () {
-                                ShrinkingNavigationUpdateNotification(i).dispatch(context);
-                              },
-                              child: Container(
-                                height: iconSize,
-                                width: iconSize,
-                                color: Colors.transparent,
-                                key: navigationKeys[i],
-                                child: Center(
-                                  child: Icon(
-                                    const [
-                                      FigmaIconFont.book,
-                                      FigmaIconFont.fridge,
-                                      Icons.home_outlined,
-                                      Icons.list_alt_outlined,
-                                    ][i],
-                                    size: iconSize,
-                                    color: FigmaColors.pinkAccent,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ListenableAnimatedTransform.translate(
-                          duration: retractDuration,
-                          offset: isRetracted ? -retractedOffset : Offset.zero,
-                          curve: Curves.fastOutSlowIn,
-                          child: ClickableWidget(
-                            onTap: toggleRetracted,
-                            child: const SizedBox(
-                              width: iconSize,
-                              height: iconSize,
-                              child: Icon(Icons.menu, size: iconSize, color: FigmaColors.pinkAccent),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                if (!isAnimating && !isRetracted && hasComputedOffsets)
-                  IgnorePointer(
-                    child: ListenableAnimatedTransform.translate(
-                      offset: navigationOffsets[activeIndex],
-                      duration: retractDuration,
-                      curve: Curves.fastOutSlowIn,
-                      child: Opacity(
-                        opacity: isRetracted ? 0.0 : 1.0,
-                        child: Container(
-                          width: indicator.width,
-                          height: indicator.height,
-                          decoration: BoxDecoration(
-                            color: FigmaColors.pinkAccent,
-                            borderRadius: BorderRadius.circular(256.0),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
             ),
           ),
         ],
