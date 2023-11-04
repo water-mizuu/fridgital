@@ -63,7 +63,7 @@ class _NearingExpiryState extends State<NearingExpiry> {
   void initState() {
     super.initState();
 
-    pageController = PageController(initialPage: 5, viewportFraction: 0.75);
+    pageController = PageController(initialPage: 1e9.toInt(), viewportFraction: 0.75);
   }
 
   @override
@@ -104,7 +104,7 @@ class _NearingExpiryState extends State<NearingExpiry> {
           child: NotificationListener<ScrollNotification>(
             onNotification: (notification) {
               /// Let's not bubble this up any further.
-              return true;
+              return notification.depth <= 0;
             },
             child: SizedBox(
               height: 150,
@@ -112,14 +112,13 @@ class _NearingExpiryState extends State<NearingExpiry> {
                 controller: pageController,
                 builder: (context, controller, physics) {
                   return PageView.builder(
-                    allowImplicitScrolling: true,
                     controller: controller,
                     physics: physics,
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 64.0, vertical: 32.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                           color: const Color(0xff92a8d1),
                           child: Text("${index % 5}"),
                         ),
