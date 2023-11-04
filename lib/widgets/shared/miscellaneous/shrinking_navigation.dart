@@ -125,14 +125,66 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
     return ListenableBuilder(
       listenable: widget.controller,
       builder: (context, child) {
-        var activeIndex = widget.controller.index;
-
         return Padding(
           padding: const EdgeInsets.all(margin),
           child: Stack(
             alignment: Alignment.centerRight,
             children: [
-              child!,
+              /// Evaluated if the navigation is retracted
+              RepaintBoundary(
+                child: IgnorePointer(
+                  child: Opacity(
+                    opacity: ghostOpacity,
+                    child: Container(
+                      padding: const EdgeInsets.all(padding),
+                      width: arbitraryRetracted,
+                      child: UnconstrainedBox(
+                        constrainedAxis: Axis.vertical,
+                        alignment: Alignment.centerRight,
+                        clipBehavior: Clip.hardEdge,
+                        child: SizedBox(
+                          width: width,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              for (int i = 0; i < 4; ++i) const SizedBox(height: iconSize, width: iconSize),
+                              Icon(Icons.menu, size: iconSize, color: FigmaColors.pinkAccent, key: retractedKey),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              /// Evaluated if the navigation is not retracted
+              RepaintBoundary(
+                child: IgnorePointer(
+                  child: Opacity(
+                    opacity: ghostOpacity,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: padding),
+                      width: width,
+                      child: UnconstrainedBox(
+                        constrainedAxis: Axis.vertical,
+                        alignment: Alignment.centerRight,
+                        clipBehavior: Clip.hardEdge,
+                        child: SizedBox(
+                          width: width,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              for (int i = 0; i < 4; ++i) const SizedBox(height: iconSize, width: iconSize),
+                              Icon(null, size: iconSize, key: expandedKey),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
 
               /// Actual displayed.
               ListenableAnimatedContainer(
@@ -215,10 +267,28 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
                     ),
                     if (!isAnimating && !isRetracted && hasComputedOffsets)
                       IgnorePointer(
-                        child: ListenableAnimatedTransform.translate(
-                          offset: navigationOffsets[activeIndex],
-                          duration: retractDuration,
-                          curve: Curves.fastOutSlowIn,
+                        child: AnimatedBuilder(
+                          animation: widget.controller.animation!,
+                          builder: (context, child) {
+                            var TabController(:int index, :int previousIndex) = widget.controller;
+                            var offset = switch (widget.controller.indexIsChanging) {
+                              false => navigationOffsets[index],
+                              true => Offset.lerp(
+                                  navigationOffsets[previousIndex],
+                                  navigationOffsets[index],
+                                  linearInterpolation(
+                                    widget.controller.animation!.value,
+                                    min: previousIndex.toDouble(),
+                                    max: index.toDouble(),
+                                  ),
+                                ),
+                            };
+
+                            return switch (offset) {
+                              Offset offset => Transform.translate(offset: offset, child: child),
+                              null => child!,
+                            };
+                          },
                           child: Opacity(
                             opacity: isRetracted ? 0.0 : 1.0,
                             child: Container(
@@ -239,66 +309,14 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
           ),
         );
       },
-      child: Stack(
-        children: [
-          /// Evaluated if the navigation is retracted
-          RepaintBoundary(
-            child: IgnorePointer(
-              child: Opacity(
-                opacity: ghostOpacity,
-                child: Container(
-                  padding: const EdgeInsets.all(padding),
-                  width: arbitraryRetracted,
-                  child: UnconstrainedBox(
-                    constrainedAxis: Axis.vertical,
-                    alignment: Alignment.centerRight,
-                    clipBehavior: Clip.hardEdge,
-                    child: SizedBox(
-                      width: width,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          for (int i = 0; i < 4; ++i) const SizedBox(height: iconSize, width: iconSize),
-                          Icon(Icons.menu, size: iconSize, color: FigmaColors.pinkAccent, key: retractedKey),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          /// Evaluated if the navigation is not retracted
-          RepaintBoundary(
-            child: IgnorePointer(
-              child: Opacity(
-                opacity: ghostOpacity,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: padding),
-                  width: width,
-                  child: UnconstrainedBox(
-                    constrainedAxis: Axis.vertical,
-                    alignment: Alignment.centerRight,
-                    clipBehavior: Clip.hardEdge,
-                    child: SizedBox(
-                      width: width,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          for (int i = 0; i < 4; ++i) const SizedBox(height: iconSize, width: iconSize),
-                          Icon(null, size: iconSize, key: expandedKey),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
+  }
+
+  double linearInterpolation(double value, {required double min, required double max}) {
+    var shiftedValue = value - min;
+    var shiftedBound = max - min;
+
+    return shiftedValue / shiftedBound;
   }
 }
 

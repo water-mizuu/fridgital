@@ -136,7 +136,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "9d146b97983f90193de3093f95012cf6b7e00fdd"
+      resolved-ref: "715b7cf49104d1f992bf22dface233eb33e918c5"
       url: "https://github.com/water-mizuu/mouse_scroll.git"
     source: git
     version: "1.0.0+1"
@@ -258,5 +258,5 @@ packages:
     source: hosted
     version: "0.3.7"
 sdks:
-  dart: ">=3.3.0-56.0.dev <4.0.0"
+  dart: ">=3.2.0-194.0.dev <4.0.0"
   flutter: ">=3.3.0"

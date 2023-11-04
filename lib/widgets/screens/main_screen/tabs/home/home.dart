@@ -57,18 +57,18 @@ class NearingExpiry extends StatefulWidget {
 }
 
 class _NearingExpiryState extends State<NearingExpiry> {
-  late final ScrollController scrollController;
+  late final PageController pageController;
 
   @override
   void initState() {
     super.initState();
 
-    scrollController = ScrollController();
+    pageController = PageController(initialPage: 5, viewportFraction: 0.75);
   }
 
   @override
   void dispose() {
-    scrollController.dispose();
+    pageController.dispose();
 
     super.dispose();
   }
@@ -106,21 +106,27 @@ class _NearingExpiryState extends State<NearingExpiry> {
               /// Let's not bubble this up any further.
               return true;
             },
-            child: MouseSingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  for (int i = -5; i < 5; ++i)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 64.0, vertical: 32.0),
-                        color: const Color(0xff92a8d1),
-                        child: Text("${i % 5}"),
-                      ),
-                    ),
-                ],
+            child: SizedBox(
+              height: 150,
+              child: MouseScroll(
+                controller: pageController,
+                builder: (context, controller, physics) {
+                  return PageView.builder(
+                    allowImplicitScrolling: true,
+                    controller: controller,
+                    physics: physics,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 64.0, vertical: 32.0),
+                          color: const Color(0xff92a8d1),
+                          child: Text("${index % 5}"),
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ),
