@@ -58,17 +58,24 @@ class NearingExpiry extends StatefulWidget {
 
 class _NearingExpiryState extends State<NearingExpiry> {
   late final PageController pageController;
+  late final ValueNotifier<int?> activePage;
 
   @override
   void initState() {
     super.initState();
 
-    pageController = PageController(initialPage: 1e9.toInt(), viewportFraction: 0.75);
+    pageController = new PageController(initialPage: 1e9.toInt(), viewportFraction: 0.75);
+    activePage = new ValueNotifier<int?>(null);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      activePage.value = pageController.page!.round();
+    });
   }
 
   @override
   void dispose() {
     pageController.dispose();
+    activePage.dispose();
 
     super.dispose();
   }
@@ -101,10 +108,14 @@ class _NearingExpiryState extends State<NearingExpiry> {
         ),
         Padding(
           padding: const EdgeInsets.all(2.0),
-          child: NotificationListener<ScrollNotification>(
+          child: NotificationListener<Notification>(
             onNotification: (notification) {
+              if (notification case ScrollNotification(depth: <= 0)) {
+                activePage.value = pageController.page!.round();
+              }
+
               /// Let's not bubble this up any further.
-              return notification.depth <= 0;
+              return notification is! ScrollNotification || notification.depth <= 0;
             },
             child: SizedBox(
               height: 150,
@@ -115,12 +126,32 @@ class _NearingExpiryState extends State<NearingExpiry> {
                     controller: controller,
                     physics: physics,
                     itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                          color: const Color(0xff92a8d1),
-                          child: Text("${index % 5}"),
+                      return ListenableBuilder(
+                        listenable: activePage,
+                        builder: (context, child) {
+                          if (activePage.value case int value when value != index) {
+                            return MouseRegion(cursor: SystemMouseCursors.click, child: child);
+                          }
+                          return child!;
+                        },
+                        child: GestureDetector(
+                          onTap: () async {
+                            if (controller.page?.round() case int page when page != index) {
+                              await controller.animateToPage(
+                                index,
+                                duration: const Duration(milliseconds: 380),
+                                curve: Curves.easeOutQuart,
+                              );
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                              color: const Color(0xff92a8d1),
+                              child: Text("${index % 5}"),
+                            ),
+                          ),
                         ),
                       );
                     },
