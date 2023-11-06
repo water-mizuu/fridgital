@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 24,
+            "activePatchIndex": 25,
             "patches": [
                 {
                     "date": 1698744786516,
@@ -104,6 +104,10 @@
                 {
                     "date": 1699093074335,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -62,22 +62,9 @@\n           onNotification: handleNotification,\r\n           child: TabInformation(\r\n             controller: tabController,\r\n             index: tabController.index,\r\n-            child: Stack(\r\n-              children: [\r\n-                TabBarView(\r\n-                  controller: tabController,\r\n-                  physics: const NeverScrollableScrollPhysics(),\r\n-                  children: const [Recipes(), Inventory(), Home(), ToBuy()],\r\n-                ),\r\n-                Positioned(\r\n-                  bottom: 0.0,\r\n-                  right: 0.0,\r\n-                  child: ShrinkingNavigation(latestScrollOffset: latestScrollOffset,),\r\n-                ),\r\n-              ],\r\n-            ),\r\n+            child: ,\r\n           ),\r\n         ),\r\n       ),\r\n     );\r\n"
+                },
+                {
+                    "date": 1699174180922,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -67,9 +67,8 @@\n                 children: const [Recipes(), Inventory(), Home(), ToBuy()],\r\n               ),\r\n               Positioned(\r\n                 bottom: 0.0,\r\n-                right: 0.0,\r\n                 child: ShrinkingNavigation(\r\n                   controller: tabController,\r\n                   latestScrollOffset: latestScrollOffset,\r\n                 ),\r\n"
                 }
             ],
             "date": 1698744786516,

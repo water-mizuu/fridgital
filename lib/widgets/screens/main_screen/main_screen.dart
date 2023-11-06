@@ -68,7 +68,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
               ),
               Positioned(
                 bottom: 0.0,
-                right: 0.0,
                 child: ShrinkingNavigation(
                   controller: tabController,
                   latestScrollOffset: latestScrollOffset,

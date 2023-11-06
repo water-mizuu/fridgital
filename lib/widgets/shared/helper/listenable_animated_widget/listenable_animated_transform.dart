@@ -53,8 +53,6 @@ final class AnimatedTransformState extends ListenableAnimatedWidgetBaseState<Lis
 
   @override
   Widget build(BuildContext context) {
-    var animation = this.animation;
-
     return Transform(
       transform: transform!.evaluate(animation),
       origin: origin?.evaluate(animation),
