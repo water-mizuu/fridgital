@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 15,
+            "activePatchIndex": 17,
             "patches": [
                 {
                     "date": 1698502106412,
@@ -68,6 +68,14 @@
                 {
                     "date": 1698766690997,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -33,9 +33,10 @@\n   cupertino_icons: ^1.0.2\r\n   flutter:\r\n     sdk: flutter\r\n   mouse_scroll:\r\n-  \r\n+    git:\r\n+      url: https://github.com/water-mizuu/mouse_scroll.git\r\n     path: ../../Library/mouse_scroll\r\n \r\n   window_manager:\r\n \r\n"
+                },
+                {
+                    "date": 1699356111978,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -35,9 +35,9 @@\n     sdk: flutter\r\n   mouse_scroll:\r\n     git:\r\n       url: https://github.com/water-mizuu/mouse_scroll.git\r\n-    path: ../../Library/mouse_scroll\r\n+      \r\n \r\n   window_manager:\r\n \r\n dev_dependencies:\r\n"
+                },
+                {
+                    "date": 1699372238651,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -35,9 +35,8 @@\n     sdk: flutter\r\n   mouse_scroll:\r\n     git:\r\n       url: https://github.com/water-mizuu/mouse_scroll.git\r\n-      \r\n \r\n   window_manager:\r\n \r\n dev_dependencies:\r\n"
                 }
             ],
             "date": 1698502106412,

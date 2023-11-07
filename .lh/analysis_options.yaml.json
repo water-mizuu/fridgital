@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 4,
+            "activePatchIndex": 5,
             "patches": [
                 {
                     "date": 1698505331517,
@@ -24,6 +24,10 @@
                 {
                     "date": 1699292637199,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -147,9 +147,9 @@\n     prefer_final_locals: false\r\n     prefer_final_parameters: false\r\n     prefer_for_elements_to_map_fromIterable: true\r\n     prefer_foreach: true\r\n-    prefer_function_declarations_over_variables: true\r\n+    prefer_function_declarations_over_variables: \r\n     prefer_generic_function_type_aliases: true\r\n     prefer_if_elements_to_conditional_expressions: true\r\n     prefer_if_null_operators: true\r\n     prefer_initializing_formals: true\r\n@@ -199,9 +199,9 @@\n     unnecessary_library_directive: true\r\n     unnecessary_new: false\r\n     unnecessary_null_aware_assignments: true\r\n     unnecessary_null_aware_operator_on_extension_on_nullable: true\r\n-    unnecessary_null_checks: \r\n+    unnecessary_null_checks: false\r\n     unnecessary_null_in_if_null_operators: true\r\n     unnecessary_nullable_for_final_variable_declarations: true\r\n     unnecessary_overrides: true\r\n     unnecessary_parenthesis: true\r\n"
+                },
+                {
+                    "date": 1699372441929,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -147,9 +147,9 @@\n     prefer_final_locals: false\r\n     prefer_final_parameters: false\r\n     prefer_for_elements_to_map_fromIterable: true\r\n     prefer_foreach: true\r\n-    prefer_function_declarations_over_variables: \r\n+    prefer_function_declarations_over_variables: false\r\n     prefer_generic_function_type_aliases: true\r\n     prefer_if_elements_to_conditional_expressions: true\r\n     prefer_if_null_operators: true\r\n     prefer_initializing_formals: true\r\n@@ -182,9 +182,9 @@\n     sort_unnamed_constructors_first: true\r\n     test_types_in_equals: true\r\n     throw_in_finally: true\r\n     tighten_type_of_initializing_formals: true\r\n-    type_annotate_public_apis: true\r\n+    type_annotate_public_apis: \r\n     type_init_formals: true\r\n     type_literal_in_constant_pattern: true\r\n     unawaited_futures: true\r\n     unnecessary_await_in_return: true\r\n"
                 }
             ],
             "date": 1698505331517,

@@ -1,11 +1,21 @@
+import "dart:ui";
+
 import "package:flutter/material.dart";
 import "package:fridgital/icons/figma_icon_font.dart";
 import "package:fridgital/shared/constants.dart";
+import "package:fridgital/shared/extensions/find_box.dart";
 import "package:fridgital/shared/extensions/normalize_number.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
-import "package:fridgital/widgets/shared/helper/listenable_animated_widget/listenable_animated_container.dart";
-import "package:fridgital/widgets/shared/helper/listenable_animated_widget/listenable_animated_transform.dart";
+import "package:fridgital/widgets/shared/helper/invisible.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
+
+const indicator = (width: 16.0, height: 4.0);
+const retractDuration = Duration(milliseconds: 125);
+const iconSize = 32.0;
+const margin = 20.0;
+const padding = 8.0;
+
+const retractedSize = iconSize + padding * 2;
 
 class ShrinkingNavigation extends StatefulWidget {
   const ShrinkingNavigation({
@@ -21,47 +31,21 @@ class ShrinkingNavigation extends StatefulWidget {
   State<ShrinkingNavigation> createState() => _ShrinkingNavigationState();
 }
 
-/// I need help. I do not know of a better way to do this.
-/// It works, but I have to render three layers of the same widget
-/// to compute their offsets and then animate them.
-///
-/// I need tips.
-class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerProviderStateMixin {
-  ValueNotifier<void>? routePopNotifier;
-  bool isRetracted = false;
+class _ShrinkingNavigationState extends State<ShrinkingNavigation> {
+  /// State declared before [initState]
+  var retractedOffset = Offset.zero;
+
+  final isRetracted = ValueNotifier<bool>(false);
+  final parentKey = GlobalKey();
+  final retractedKey = GlobalKey();
+  final expandedKey = GlobalKey();
+  final indicatorKeys = List.generate(4, (_) => GlobalKey());
+
+  /// State declared on demand.
+  late final routePopNotifier = RouteState.of(context).popNotifier;
 
   void updateRetracted() {
-    setState(() {
-      isRetracted = widget.latestScrollOffset.value > 0.0;
-    });
-  }
-
-  void toggleRetracted() {
-    setState(() {
-      isRetracted = !isRetracted;
-    });
-  }
-
-  void updateOffsets() {
-    if (parentKey.currentContext?.findRenderObject() case RenderBox parentBox when parentBox.hasSize) {
-      for (var (i, key) in navigationKeys.indexed) {
-        if (key.currentContext?.findRenderObject() case RenderBox box when box.hasSize) {
-          navigationOffsets[i] = box.localToGlobal(Offset.zero, ancestor: parentBox) +
-              Offset(0.0, box.hasSize ? box.size.height * 1.0625 : 0.0) +
-              Offset(box.hasSize ? box.size.width / 2 : 0.0, 0.0) +
-              const Offset(-8.0, 0.0);
-        }
-      }
-
-      /// Compute the difference.
-      if (retractedKey.currentContext?.findRenderObject() case RenderBox retractedBox when retractedBox.hasSize) {
-        if (expandedKey.currentContext?.findRenderObject() case RenderBox expandedBox when expandedBox.hasSize) {
-          retractedOffset = expandedBox.localToGlobal(Offset.zero) - retractedBox.localToGlobal(Offset.zero);
-        }
-      }
-
-      setState(() => hasComputedOffsets = true);
-    }
+    isRetracted.value = widget.latestScrollOffset.value > 0.0;
   }
 
   @override
@@ -75,20 +59,10 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    routePopNotifier ??= RouteState.of(context).popNotifier..addListener(updateOffsets);
-  }
-
-  @override
   void initState() {
     super.initState();
 
     widget.latestScrollOffset.addListener(updateRetracted);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      updateOffsets();
-    });
   }
 
   @override
@@ -98,217 +72,330 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
     super.dispose();
   }
 
-  bool isAnimating = false;
-  bool hasComputedOffsets = false;
-  GlobalKey parentKey = GlobalKey();
-
-  GlobalKey retractedKey = GlobalKey();
-  GlobalKey expandedKey = GlobalKey();
-
-  Offset retractedOffset = Offset.zero;
-
-  List<Offset> navigationOffsets = List.generate(4, (_) => Offset.zero);
-  List<GlobalKey> navigationKeys = List.generate(4, (_) => GlobalKey());
-
   @override
   Widget build(BuildContext context) {
-    const retractDuration = Duration(milliseconds: 125);
-
-    const iconSize = 32.0;
-    const margin = 20.0;
-    const padding = 8.0;
-    const indicator = (width: 16.0, height: 4.0);
-
     var width = MediaQuery.sizeOf(context).width - margin * 2;
-    var arbitraryRetracted = iconSize + padding * 2;
 
     return ListenableBuilder(
       listenable: widget.controller,
-      builder: (context, child) {
-        return Padding(
-          padding: const EdgeInsets.all(margin),
-          child: Stack(
-            alignment: Alignment.centerRight,
-            children: [
-              /// Evaluated if the navigation is retracted
-              RepaintBoundary(
-                child: IgnorePointer(
-                  child: Opacity(
-                    opacity: 0.00,
-                    child: Container(
-                      padding: const EdgeInsets.all(padding),
-                      width: arbitraryRetracted,
-                      child: UnconstrainedBox(
-                        constrainedAxis: Axis.vertical,
-                        alignment: Alignment.centerRight,
-                        clipBehavior: Clip.hardEdge,
-                        child: SizedBox(
-                          width: width,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              for (int i = 0; i < 4; ++i) const SizedBox(height: iconSize, width: iconSize),
-                              Icon(Icons.menu, size: iconSize, color: FigmaColors.pinkAccent, key: retractedKey),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+      builder: (context, child) => Padding(
+        padding: const EdgeInsets.all(margin),
+        child: Stack(
+          alignment: Alignment.centerRight,
+          children: [
+            /// Actual displayed.
+            NotificationListener<_ToggleRetractionNotification>(
+              onNotification: (notification) {
+                isRetracted.value = !isRetracted.value;
+                return true;
+              },
+              child: _NavigationBarBody(
+                isRetracted: isRetracted,
+                width: width,
+                parentKey: parentKey,
+                expandedKey: expandedKey,
+                retractedKey: retractedKey,
+                indicatorKeys: indicatorKeys,
+                controller: widget.controller,
               ),
+            ),
 
-              /// Evaluated if the navigation is not retracted
-              RepaintBoundary(
-                child: IgnorePointer(
-                  child: Opacity(
-                    opacity: 0.00,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: padding),
-                      width: width,
-                      child: UnconstrainedBox(
-                        constrainedAxis: Axis.vertical,
-                        alignment: Alignment.centerRight,
-                        clipBehavior: Clip.hardEdge,
-                        child: SizedBox(
-                          width: width,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              for (int i = 0; i < 4; ++i) const SizedBox(height: iconSize, width: iconSize),
-                              Icon(null, size: iconSize, key: expandedKey),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+            /// Evaluated if the navigation is retracted
+            _RetractedBasis(width: width, retractedKey: retractedKey),
 
-              /// Actual displayed.
-              ListenableAnimatedContainer(
-                padding: const EdgeInsets.symmetric(vertical: padding),
-                decoration: BoxDecoration(
-                  color: FigmaColors.whiteAccent,
-                  borderRadius: BorderRadius.circular(256.0),
-                ),
-                onForward: () {
-                  isAnimating = true;
-                },
-                onEnd: () {
-                  isAnimating = false;
-
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (!isRetracted) {
-                      updateOffsets();
-                    }
-                  });
-                },
-                duration: retractDuration,
-                width: isRetracted ? arbitraryRetracted : width,
-                child: Stack(
-                  children: [
-                    UnconstrainedBox(
-                      key: parentKey,
-                      constrainedAxis: Axis.vertical,
-                      alignment: Alignment.centerRight,
-                      clipBehavior: Clip.hardEdge,
-                      child: SizedBox(
-                        width: width,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            for (int i = 0; i < 4; ++i)
-                              ListenableAnimatedTransform.translate(
-                                duration: retractDuration,
-                                offset: isRetracted ? -retractedOffset : Offset.zero,
-                                curve: Curves.fastOutSlowIn,
-                                child: ClickableWidget(
-                                  onTap: () {
-                                    ShrinkingNavigationUpdateNotification(i).dispatch(context);
-                                  },
-                                  child: Container(
-                                    height: iconSize,
-                                    width: iconSize,
-                                    color: Colors.transparent,
-                                    key: navigationKeys[i],
-                                    child: Center(
-                                      child: Icon(
-                                        const [
-                                          FigmaIconFont.book,
-                                          FigmaIconFont.fridge,
-                                          Icons.home_outlined,
-                                          Icons.list_alt_outlined,
-                                        ][i],
-                                        size: iconSize,
-                                        color: FigmaColors.pinkAccent,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ListenableAnimatedTransform.translate(
-                              duration: retractDuration,
-                              offset: isRetracted ? -retractedOffset : Offset.zero,
-                              curve: Curves.fastOutSlowIn,
-                              child: ClickableWidget(
-                                onTap: toggleRetracted,
-                                child: const SizedBox(
-                                  width: iconSize,
-                                  height: iconSize,
-                                  child: Icon(Icons.menu, size: iconSize, color: FigmaColors.pinkAccent),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    if (!isAnimating && !isRetracted && hasComputedOffsets)
-                      IgnorePointer(
-                        child: ListenableBuilder(
-                          listenable: widget.controller.animation!,
-                          builder: (context, child) {
-                            var TabController(:index, :previousIndex, :animation!) = widget.controller;
-                            var offset = Offset.lerp(
-                              navigationOffsets[previousIndex],
-                              navigationOffsets[index],
-                              animation.value.normalize(between: previousIndex, and: index),
-                            );
-
-                            return offset != null //
-                                ? Transform.translate(offset: offset, child: child)
-                                : child!;
-                          },
-                          child: Opacity(
-                            opacity: 1.0,
-                            child: Container(
-                              width: indicator.width,
-                              height: indicator.height,
-                              decoration: BoxDecoration(
-                                color: FigmaColors.pinkAccent,
-                                borderRadius: BorderRadius.circular(256.0),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+            /// Evaluated if the navigation is not retracted
+            _ExpandedBasis(width: width, expandedKey: expandedKey),
+          ],
+        ),
+      ),
     );
   }
 }
 
-sealed class ShrinkingNavigationNotification extends Notification {}
+class _NavigationBarBody extends StatefulWidget {
+  const _NavigationBarBody({
+    required this.isRetracted,
+    required this.width,
+    required this.parentKey,
+    required this.expandedKey,
+    required this.retractedKey,
+    required this.indicatorKeys,
+    required this.controller,
+  });
 
-class ShrinkingNavigationUpdateNotification extends ShrinkingNavigationNotification {
+  final ValueNotifier<bool> isRetracted;
+  final double width;
+
+  final GlobalKey parentKey;
+  final GlobalKey expandedKey;
+  final GlobalKey retractedKey;
+  final List<GlobalKey> indicatorKeys;
+
+  final TabController controller;
+
+  @override
+  State<_NavigationBarBody> createState() => _NavigationBarBodyState();
+}
+
+class _NavigationBarBodyState extends State<_NavigationBarBody> with TickerProviderStateMixin {
+  late final AnimationController retractionController;
+
+  void _valueChanged() {
+    if (widget.isRetracted.value) {
+      retractionController.forward(from: 0.0);
+    } else {
+      retractionController.reverse(from: 1.0);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    retractionController = AnimationController(vsync: this, duration: retractDuration);
+    widget.isRetracted.addListener(_valueChanged);
+  }
+
+  @override
+  void didUpdateWidget(_NavigationBarBody oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isRetracted != widget.isRetracted) {
+      oldWidget.isRetracted.removeListener(_valueChanged);
+      widget.isRetracted.addListener(_valueChanged);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.isRetracted.removeListener(_valueChanged);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: retractionController,
+      builder: (context, child) => Container(
+        width: lerpDouble(widget.width, retractedSize, retractionController.value),
+        decoration: BoxDecoration(
+          color: FigmaColors.whiteAccent,
+          borderRadius: BorderRadius.circular(256.0),
+        ),
+        child: child,
+      ),
+      child: Stack(
+        children: [
+          UnconstrainedBox(
+            key: widget.parentKey,
+            constrainedAxis: Axis.vertical,
+            alignment: Alignment.centerRight,
+            clipBehavior: Clip.hardEdge,
+            child: SizedBox(
+              width: widget.width,
+              child: AnimatedBuilder(
+                animation: retractionController,
+                builder: (context, child) {
+                  var expanded = widget.expandedKey.renderBoxNullable?.offset;
+                  var retracted = widget.retractedKey.renderBoxNullable?.offset;
+
+                  if (expanded != null && retracted != null) {
+                    child = Transform.translate(
+                      offset: Offset.lerp(Offset.zero, retracted - expanded, retractionController.value)!,
+                      child: child,
+                    );
+                  }
+
+                  return child!;
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    for (int i = 0; i < 4; ++i) _NavigationIcon(i: i, widget: widget),
+                    ClickableWidget(
+                      onTap: () {
+                        _ToggleRetractionNotification().dispatch(context);
+                      },
+                      child: const SizedBox(
+                        width: iconSize,
+                        height: iconSize,
+                        child: Icon(
+                          Icons.menu,
+                          size: iconSize,
+                          color: FigmaColors.pinkAccent,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          /// We only render this if we are moving.
+          if (widget.controller.indexIsChanging)
+            IgnorePointer(
+              child: ValueListenableBuilder(
+                valueListenable: widget.controller.animation!,
+                builder: (context, value, child) {
+                  var TabController(:index, :previousIndex) = widget.controller;
+                  var parentBox = widget.parentKey.renderBox;
+                  var offset = Offset.lerp(
+                    widget.indicatorKeys[previousIndex].renderBox.offsetFrom(parentBox),
+                    widget.indicatorKeys[index].renderBox.offsetFrom(parentBox),
+                    value.normalize(between: previousIndex, and: index),
+                  );
+
+                  return offset != null && offset != Offset.zero
+                      ? Transform.translate(offset: offset, child: child)
+                      : Opacity(opacity: 0.0, child: child!);
+                },
+                child: Container(
+                  width: indicator.width,
+                  height: indicator.height,
+                  decoration: BoxDecoration(
+                    color: FigmaColors.pinkAccent,
+                    borderRadius: BorderRadius.circular(256.0),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NavigationIcon extends StatelessWidget {
+  const _NavigationIcon({required this.i, required this.widget});
+
+  final int i;
+  final _NavigationBarBody widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: padding),
+          child: ClickableWidget(
+            onTap: () {
+              ShrinkingNavigationUpdateNotification(i).dispatch(context);
+            },
+            child: SizedBox(
+              height: iconSize,
+              width: iconSize,
+              child: Icon(
+                const [FigmaIconFont.book, FigmaIconFont.fridge, Icons.home_outlined, Icons.list_alt_outlined][i],
+                size: iconSize,
+                color: FigmaColors.pinkAccent,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 0,
+          child: _NavigationIndicator(
+            index: i,
+            indicatorKey: widget.indicatorKeys[i],
+            controller: widget.controller,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _NavigationIndicator extends StatelessWidget {
+  const _NavigationIndicator({required this.indicatorKey, required this.index, required this.controller});
+
+  final TabController controller;
+  final GlobalKey indicatorKey;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: controller.indexIsChanging || controller.index != index ? 0.0 : 1.0,
+      child: SizedBox(
+        width: iconSize,
+        height: iconSize,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Container(
+              key: indicatorKey,
+              width: indicator.width,
+              height: indicator.height,
+              decoration: BoxDecoration(
+                color: FigmaColors.pinkAccent,
+                borderRadius: BorderRadius.circular(256.0),
+              ),
+            ),
+            const SizedBox(height: 2.0),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ExpandedBasis extends StatelessWidget {
+  const _ExpandedBasis({required this.width, required this.expandedKey});
+
+  final double width;
+  final GlobalKey expandedKey;
+
+  @override
+  Widget build(BuildContext context) {
+    return Invisible(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: padding),
+        child: SizedBox(
+          width: width,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              for (int i = 0; i < 4; ++i) const SizedBox(height: iconSize, width: iconSize),
+              Icon(null, size: iconSize, key: expandedKey),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RetractedBasis extends StatelessWidget {
+  const _RetractedBasis({required this.width, required this.retractedKey});
+
+  final double width;
+  final GlobalKey retractedKey;
+
+  @override
+  Widget build(BuildContext context) {
+    return Invisible(
+      child: Container(
+        padding: const EdgeInsets.all(padding),
+        width: retractedSize,
+        child: SizedBox(
+          width: width,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Icon(Icons.menu, size: iconSize, color: FigmaColors.pinkAccent, key: retractedKey),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// NOTIFICATIONS USED WITHIN THIS FILE
+
+class ShrinkingNavigationUpdateNotification extends Notification {
   ShrinkingNavigationUpdateNotification(this.index);
-
   final int index;
 }
+
+class _ToggleRetractionNotification extends Notification {}
