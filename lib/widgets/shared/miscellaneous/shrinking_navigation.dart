@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:fridgital/icons/figma_icon_font.dart";
 import "package:fridgital/shared/constants.dart";
+import "package:fridgital/shared/extensions/normalize_number.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/shared/helper/listenable_animated_widget/listenable_animated_container.dart";
 import "package:fridgital/widgets/shared/helper/listenable_animated_widget/listenable_animated_transform.dart";
@@ -111,7 +112,6 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
 
   @override
   Widget build(BuildContext context) {
-    const ghostOpacity = 0.00;
     const retractDuration = Duration(milliseconds: 125);
 
     const iconSize = 32.0;
@@ -134,7 +134,7 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
               RepaintBoundary(
                 child: IgnorePointer(
                   child: Opacity(
-                    opacity: ghostOpacity,
+                    opacity: 0.00,
                     child: Container(
                       padding: const EdgeInsets.all(padding),
                       width: arbitraryRetracted,
@@ -162,7 +162,7 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
               RepaintBoundary(
                 child: IgnorePointer(
                   child: Opacity(
-                    opacity: ghostOpacity,
+                    opacity: 0.00,
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: padding),
                       width: width,
@@ -198,6 +198,7 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
                 },
                 onEnd: () {
                   isAnimating = false;
+
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     if (!isRetracted) {
                       updateOffsets();
@@ -206,7 +207,6 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
                 },
                 duration: retractDuration,
                 width: isRetracted ? arbitraryRetracted : width,
-                curve: Curves.fastOutSlowIn,
                 child: Stack(
                   children: [
                     UnconstrainedBox(
@@ -267,30 +267,22 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
                     ),
                     if (!isAnimating && !isRetracted && hasComputedOffsets)
                       IgnorePointer(
-                        child: AnimatedBuilder(
-                          animation: widget.controller.animation!,
+                        child: ListenableBuilder(
+                          listenable: widget.controller.animation!,
                           builder: (context, child) {
-                            var TabController(:int index, :int previousIndex) = widget.controller;
-                            var offset = switch (widget.controller.indexIsChanging) {
-                              false => navigationOffsets[index],
-                              true => Offset.lerp(
-                                  navigationOffsets[previousIndex],
-                                  navigationOffsets[index],
-                                  linearInterpolation(
-                                    widget.controller.animation!.value,
-                                    min: previousIndex.toDouble(),
-                                    max: index.toDouble(),
-                                  ),
-                                ),
-                            };
+                            var TabController(:index, :previousIndex, :animation!) = widget.controller;
+                            var offset = Offset.lerp(
+                              navigationOffsets[previousIndex],
+                              navigationOffsets[index],
+                              animation.value.normalize(between: previousIndex, and: index),
+                            );
 
-                            return switch (offset) {
-                              Offset offset => Transform.translate(offset: offset, child: child),
-                              null => child!,
-                            };
+                            return offset != null //
+                                ? Transform.translate(offset: offset, child: child)
+                                : child!;
                           },
                           child: Opacity(
-                            opacity: isRetracted ? 0.0 : 1.0,
+                            opacity: 1.0,
                             child: Container(
                               width: indicator.width,
                               height: indicator.height,
@@ -310,13 +302,6 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> with TickerPr
         );
       },
     );
-  }
-
-  double linearInterpolation(double value, {required double min, required double max}) {
-    var shiftedValue = value - min;
-    var shiftedBound = max - min;
-
-    return shiftedValue / shiftedBound;
   }
 }
 

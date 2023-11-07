@@ -148,7 +148,7 @@ linter:
     prefer_final_parameters: false
     prefer_for_elements_to_map_fromIterable: true
     prefer_foreach: true
-    prefer_function_declarations_over_variables: true
+    prefer_function_declarations_over_variables: false
     prefer_generic_function_type_aliases: true
     prefer_if_elements_to_conditional_expressions: true
     prefer_if_null_operators: true
@@ -200,7 +200,7 @@ linter:
     unnecessary_new: false
     unnecessary_null_aware_assignments: true
     unnecessary_null_aware_operator_on_extension_on_nullable: true
-    unnecessary_null_checks: true
+    unnecessary_null_checks: false
     unnecessary_null_in_if_null_operators: true
     unnecessary_nullable_for_final_variable_declarations: true
     unnecessary_overrides: true

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 4,
             "patches": [
                 {
                     "date": 1698505331517,
@@ -16,6 +16,14 @@
                 {
                     "date": 1698507706896,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n     always_declare_return_types: true\r\n     always_put_control_body_on_new_line: true\r\n     always_put_required_named_parameters_first: true\r\n     always_require_non_null_named_parameters: true\r\n-    always_specify_types: \r\n+    always_specify_types: false\r\n     always_use_package_imports: true\r\n     annotate_overrides: true\r\n     avoid_annotating_with_dynamic: false\r\n     avoid_bool_literals_in_conditional_expressions: true\r\n@@ -55,9 +55,9 @@\n     avoid_single_cascade_in_expression_statements: true\r\n     avoid_slow_async_io: true\r\n     avoid_type_to_string: true\r\n     avoid_types_as_parameter_names: true\r\n-    avoid_types_on_closure_parameters: false\r\n+    avoid_types_on_closure_parameters: true\r\n     avoid_unnecessary_containers: true\r\n     avoid_unused_constructor_parameters: true\r\n     avoid_void_async: false\r\n     avoid_web_libraries_in_flutter: true\r\n@@ -120,9 +120,9 @@\n     non_constant_identifier_names: true\r\n     noop_primitive_operations: true\r\n     null_check_on_nullable_type_parameter: true\r\n     null_closures: true\r\n-    omit_local_variable_types: false\r\n+    omit_local_variable_types: true\r\n     one_member_abstracts: false\r\n     only_throw_errors: true\r\n     overridden_fields: true\r\n     package_api_docs: true\r\n@@ -140,9 +140,8 @@\n     prefer_const_literals_to_create_immutables: true\r\n     prefer_constructors_over_static_methods: true\r\n     prefer_contains: true\r\n     prefer_double_quotes: true\r\n-    prefer_equal_for_default_values: true\r\n     prefer_expression_function_bodies: false\r\n     prefer_final_fields: true\r\n     prefer_final_in_for_each: false\r\n     prefer_final_locals: false\r\n"
+                },
+                {
+                    "date": 1699292600050,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -199,9 +199,9 @@\n     unnecessary_library_directive: true\r\n     unnecessary_new: false\r\n     unnecessary_null_aware_assignments: true\r\n     unnecessary_null_aware_operator_on_extension_on_nullable: true\r\n-    unnecessary_null_checks: true\r\n+    unnecessary_null_checks: \r\n     unnecessary_null_in_if_null_operators: true\r\n     unnecessary_nullable_for_final_variable_declarations: true\r\n     unnecessary_overrides: true\r\n     unnecessary_parenthesis: true\r\n"
+                },
+                {
+                    "date": 1699292637199,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -147,9 +147,9 @@\n     prefer_final_locals: false\r\n     prefer_final_parameters: false\r\n     prefer_for_elements_to_map_fromIterable: true\r\n     prefer_foreach: true\r\n-    prefer_function_declarations_over_variables: true\r\n+    prefer_function_declarations_over_variables: \r\n     prefer_generic_function_type_aliases: true\r\n     prefer_if_elements_to_conditional_expressions: true\r\n     prefer_if_null_operators: true\r\n     prefer_initializing_formals: true\r\n@@ -199,9 +199,9 @@\n     unnecessary_library_directive: true\r\n     unnecessary_new: false\r\n     unnecessary_null_aware_assignments: true\r\n     unnecessary_null_aware_operator_on_extension_on_nullable: true\r\n-    unnecessary_null_checks: \r\n+    unnecessary_null_checks: false\r\n     unnecessary_null_in_if_null_operators: true\r\n     unnecessary_nullable_for_final_variable_declarations: true\r\n     unnecessary_overrides: true\r\n     unnecessary_parenthesis: true\r\n"
                 }
             ],
             "date": 1698505331517,
