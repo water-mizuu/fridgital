@@ -1,4 +1,7 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
+import "package:fridgital/shared/classes/constant_gradient.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/side_button.dart";
@@ -9,13 +12,13 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const BasicScreenWidget(
+    return BasicScreenWidget(
       child: MouseSingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            HomeTitle(),
-            NearingExpiry(),
+            const HomeTitle(),
+            for (int i = 0; i < 10; ++i) const NearingExpiry(),
           ],
         ),
       ),
@@ -96,7 +99,6 @@ class _NearingExpiryState extends State<NearingExpiry> {
                 const SizedBox(width: 8.0),
                 SideButton(
                   onTap: () {
-                    print("You pressed me my brother");
                     var tabInformation = RouteState.of(context);
 
                     tabInformation.toggleSecondLayer();
@@ -112,10 +114,23 @@ class _NearingExpiryState extends State<NearingExpiry> {
             onNotification: (notification) {
               if (notification case ScrollNotification(depth: <= 0)) {
                 activePage.value = pageController.page!.round();
+
+                return true;
               }
 
-              /// Let's not bubble this up any further.
-              return notification is! ScrollNotification || notification.depth <= 0;
+              if (notification case ChangePageNotification(:var index)) {
+                unawaited(
+                  pageController.animateToPage(
+                    index,
+                    duration: const Duration(milliseconds: 380),
+                    curve: Curves.easeOutQuart,
+                  ),
+                );
+
+                return true;
+              }
+
+              return false;
             },
             child: SizedBox(
               height: 150,
@@ -126,32 +141,11 @@ class _NearingExpiryState extends State<NearingExpiry> {
                     controller: controller,
                     physics: physics,
                     itemBuilder: (context, index) {
-                      return ListenableBuilder(
-                        listenable: activePage,
-                        builder: (context, child) {
-                          if (activePage.value case int value when value != index) {
-                            return MouseRegion(cursor: SystemMouseCursors.click, child: child);
-                          }
-                          return child!;
-                        },
-                        child: GestureDetector(
-                          onTap: () async {
-                            if (controller.page?.round() case int page when page != index) {
-                              await controller.animateToPage(
-                                index,
-                                duration: const Duration(milliseconds: 380),
-                                curve: Curves.easeOutQuart,
-                              );
-                            }
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                              color: const Color(0xff92a8d1),
-                              child: Text("${index % 5}"),
-                            ),
-                          ),
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: NearingExpiryTile(
+                          index: index,
+                          activePage: activePage,
                         ),
                       );
                     },
@@ -164,4 +158,77 @@ class _NearingExpiryState extends State<NearingExpiry> {
       ],
     );
   }
+}
+
+class NearingExpiryTile extends StatelessWidget {
+  const NearingExpiryTile({
+    required this.index,
+    required this.activePage,
+    super.key,
+  });
+
+  final int index;
+  final ValueNotifier<int?> activePage;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: activePage,
+      builder: (context, child) {
+        if (activePage.value case int value when value != index) {
+          return MouseRegion(cursor: SystemMouseCursors.click, child: child);
+        }
+        return child!;
+      },
+      child: GestureDetector(
+        onTap: () async {
+          if (activePage.value case int page when page != index && context.mounted) {
+            ChangePageNotification(index).dispatch(context);
+          }
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: ColoredBox(
+            color: const Color(0xff92a8d1),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: Text("${index % 5}"),
+                ),
+                ShaderMask(
+                  shaderCallback: (rect) {
+                    return const LinearGradient(colors: [Colors.transparent, Colors.black])
+                        .createShader(Offset.zero & rect.size);
+                  },
+                  blendMode: BlendMode.dstIn,
+                  child: ShaderMask(
+                    shaderCallback: (rect) {
+                      return ConstantGradient(color: const Color(0xff92a8d1)).createShader(Offset.zero & rect.size);
+                    },
+                    blendMode: BlendMode.color,
+                    child: AspectRatio(
+                      aspectRatio: 1.0,
+                      child: Image.asset(
+                        "assets/images/pesto.jpg",
+                        width: 200,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ChangePageNotification extends Notification {
+  const ChangePageNotification(this.index);
+
+  final int index;
 }

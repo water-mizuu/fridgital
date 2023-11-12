@@ -1,0 +1,30 @@
+{
+    "sourceFile": "lib/shared/classes/constant_gradient.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1699831105087,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1699831142186,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,5 @@\n+import \"package:flutter/material.dart\";\r\n+\r\n+class ConstantGradient i LinearGradient {\r\n+  ConstantGradient({required Color color}) : super(colors: [color, color]);\r\n+}\r\n"
+                },
+                {
+                    "date": 1699831172404,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,19 @@\n import \"package:flutter/material.dart\";\r\n \r\n-class ConstantGradient i LinearGradient {\r\n+class ConstantGradient extends Gradient {\r\n   ConstantGradient({required Color color}) : super(colors: [color, color]);\r\n+\r\n\\ No newline at end of file\n+  final COl\r\n+\r\n+  @override\r\n+  Shader createShader(Rect rect, {TextDirection? textDirection}) {\r\n+    // TODO: implement createShader\r\n+    throw UnimplementedError();\r\n+  }\r\n+\r\n+  @override\r\n+  LinearGradient scale(double factor) {\r\n+    // TODO: implement scale\r\n+    throw UnimplementedError();\r\n+  }\r\n }\r\n-c\n"
+                },
+                {
+                    "date": 1699831204408,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,19 +1,18 @@\n import \"package:flutter/material.dart\";\r\n \r\n-class ConstantGradient extends Gradient {\r\n-  ConstantGradient({required Color color}) : super(colors: [color, color]);\r\n+class ConstantGradient extends LinearGradient {\r\n+  const ConstantGradient({required this.color}): super(colors: [color, color]);\r\n \r\n-  final COl\r\n+  final Color color;\r\n \r\n   @override\r\n   Shader createShader(Rect rect, {TextDirection? textDirection}) {\r\n-    // TODO: implement createShader\r\n     throw UnimplementedError();\r\n   }\r\n \r\n   @override\r\n   LinearGradient scale(double factor) {\r\n     // TODO: implement scale\r\n\\ No newline at end of file\n     throw UnimplementedError();\r\n   }\r\n-}\n+}\r\n"
+                }
+            ],
+            "date": 1699831105087,
+            "name": "Commit-0",
+            "content": "c"
+        }
+    ]
+}

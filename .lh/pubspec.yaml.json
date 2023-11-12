@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 17,
+            "activePatchIndex": 18,
             "patches": [
                 {
                     "date": 1698502106412,
@@ -76,6 +76,10 @@
                 {
                     "date": 1699372238651,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -35,9 +35,8 @@\n     sdk: flutter\r\n   mouse_scroll:\r\n     git:\r\n       url: https://github.com/water-mizuu/mouse_scroll.git\r\n-      \r\n \r\n   window_manager:\r\n \r\n dev_dependencies:\r\n"
+                },
+                {
+                    "date": 1699830246276,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -63,8 +63,9 @@\n   # assets:\r\n   #   - images/a_dot_burr.jpeg\r\n   #   - images/a_dot_ham.jpeg\r\n \r\n+\r\n   # An image asset can refer to one or more resolution-specific \"variants\", see\r\n   # https://flutter.dev/assets-and-images/#resolution-aware\r\n \r\n   # For details regarding adding assets from package dependencies, see\r\n"
                 }
             ],
             "date": 1698502106412,

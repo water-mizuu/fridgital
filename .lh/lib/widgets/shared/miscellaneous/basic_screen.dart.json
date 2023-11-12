@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 3,
+            "activePatchIndex": 4,
             "patches": [
                 {
                     "date": 1698744898889,
@@ -20,6 +20,10 @@
                 {
                     "date": 1698754936508,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,8 @@\n \r\n class BasicScreenWidget extends StatelessWidget {\r\n   const BasicScreenWidget({required this.child, this.hasNavigation = true, super.key});\r\n \r\n-  final bool hasNavigation;\r\n   final Widget child;\r\n \r\n   @override\r\n   Widget build(BuildContext context) {\r\n"
+                },
+                {
+                    "date": 1699791225578,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n         gradient: LinearGradient(\r\n           begin: Alignment.topCenter,\r\n           end: Alignment.bottomCenter,\r\n           colors: [\r\n-            Color.fromRGBO(255, 250, 227, 1.0),\r\n+            Color(0xFFFFFAE3),\r\n             Color.fromRGBO(247, 202, 201, 1.0),\r\n           ],\r\n         ),\r\n       ),\r\n"
                 }
             ],
             "date": 1698744898889,

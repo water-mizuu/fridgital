@@ -47,23 +47,20 @@ class _OnePotPestoState extends State<OnePotPesto> {
       body: FractionallySizedBox(
         widthFactor: 1.0,
         child: BasicScreenWidget(
-          child: Scrollbar(
-            controller: scrollController,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: MouseSingleChildScrollView(
-              padding: const EdgeInsets.all(64.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               controller: scrollController,
-              child: Padding(
-                padding: const EdgeInsets.all(32.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (int i = 0; i < 36; ++i)
-                      Text(
-                        "One-pot Pesto",
-                        style: theme.textTheme.titleLarge?.copyWith(fontSize: 42.0),
-                      ),
-                  ],
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (int i = 0; i < 36; ++i)
+                    Text(
+                      "One-pot Pesto",
+                      style: theme.textTheme.titleLarge?.copyWith(fontSize: 42.0),
+                    ),
+                ],
               ),
             ),
           ),
