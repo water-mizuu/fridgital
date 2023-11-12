@@ -45,7 +45,9 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> {
   late final routePopNotifier = RouteState.of(context).popNotifier;
 
   void updateRetracted() {
-    isRetracted.value = widget.latestScrollOffset.value > 0.0;
+    if (widget.latestScrollOffset.value case (<= -15.0) || (>= 15.0)) {
+      isRetracted.value = widget.latestScrollOffset.value >= 0.0;
+    }
   }
 
   @override
@@ -159,6 +161,12 @@ class _NavigationBarBodyState extends State<_NavigationBarBody> with TickerProvi
   @override
   void didUpdateWidget(_NavigationBarBody oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    assert(widget.parentKey == oldWidget.parentKey, "The parent key cannot change.");
+    assert(widget.expandedKey == oldWidget.expandedKey, "The expanded key cannot change.");
+    assert(widget.retractedKey == oldWidget.retractedKey, "The retracted key cannot change.");
+    assert(widget.indicatorKeys == oldWidget.indicatorKeys, "The indicator keys cannot change.");
+
     if (oldWidget.isRetracted != widget.isRetracted) {
       oldWidget.isRetracted.removeListener(_valueChanged);
       widget.isRetracted.addListener(_valueChanged);
@@ -232,10 +240,10 @@ class _NavigationBarBodyState extends State<_NavigationBarBody> with TickerProvi
           ),
 
           /// We only render this if we are moving.
-          if (widget.controller.indexIsChanging)
+          if (widget.controller.animation case Animation<double> animation when widget.controller.indexIsChanging)
             IgnorePointer(
               child: ValueListenableBuilder(
-                valueListenable: widget.controller.animation!,
+                valueListenable: animation,
                 builder: (context, value, child) {
                   var TabController(:index, :previousIndex) = widget.controller;
                   var parentBox = widget.parentKey.renderBox;
@@ -247,7 +255,7 @@ class _NavigationBarBodyState extends State<_NavigationBarBody> with TickerProvi
 
                   return offset != null && offset != Offset.zero
                       ? Transform.translate(offset: offset, child: child)
-                      : Opacity(opacity: 0.0, child: child!);
+                      : Opacity(opacity: 0.0, child: child);
                 },
                 child: Container(
                   width: indicator.width,
