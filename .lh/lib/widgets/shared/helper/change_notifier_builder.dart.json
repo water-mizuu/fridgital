@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/widgets/shared/helper/change_notifier_builder.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1699847046913,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1699847046913,
+            "name": "Commit-0",
+            "content": "import \"package:flutter/material.dart\";\r\n\r\n/// A widget that listens to a [ChangeNotifier] and rebuilds whenever the [ChangeNotifier] notifies its listeners.\r\n///  It is important that widgets that depend on [changeNotifier] are placed inside the [builder] function.\r\n/// If [selector] is provided, the [ChangeNotifierBuilder] will only rebuild\r\n///   when the value returned by [selector] changes.\r\n@optionalTypeArgs\r\nclass ChangeNotifierBuilder<T extends ChangeNotifier, S extends Object?> extends StatefulWidget {\r\n  const ChangeNotifierBuilder({\r\n    required this.builder,\r\n    required this.changeNotifier,\r\n    this.selector,\r\n    this.child,\r\n    super.key,\r\n  });\r\n\r\n  /// The builder for the [ChangeNotifierBuilder]. It is called whenever the [changeNotifier] notifies its listeners.\r\n  ///   It is important that widgets that depend on [changeNotifier] are placed inside this builder.\r\n  final Widget Function(BuildContext context, T changeNotifier, Widget? child) builder;\r\n\r\n  /// [Widget] that is passed to the [builder] function. Useful for widgets\r\n  /// that are constant and do not depend on [changeNotifier] directly.\r\n  final Widget? child;\r\n\r\n  /// A class that extends [ChangeNotifier] which the [ChangeNotifierBuilder] listens to.\r\n  final T changeNotifier;\r\n\r\n  /// An optional selector that allows the [ChangeNotifierBuilder] to listen to a specific property of [changeNotifier].\r\n  ///\r\n  /// Useful for rebuilding only when the specified property changes.\r\n  final S Function(T)? selector;\r\n\r\n  @override\r\n  State<ChangeNotifierBuilder<T, S>> createState() => _ChangeNotifierBuilderState<T, S>();\r\n}\r\n\r\nfinal class _ChangeNotifierBuilderState<T extends ChangeNotifier, S extends Object?>\r\n    extends State<ChangeNotifierBuilder<T, S>> {\r\n  S? latest;\r\n\r\n  void _listener() {\r\n    if (widget.selector == null) {\r\n      setState(() {});\r\n      return;\r\n    }\r\n\r\n    if (widget.selector!.call(widget.changeNotifier) case S value when value != latest) {\r\n      setState(() {\r\n        latest = value;\r\n      });\r\n    }\r\n  }\r\n\r\n  @override\r\n  void initState() {\r\n    super.initState();\r\n\r\n    widget.changeNotifier.addListener(_listener);\r\n  }\r\n\r\n  @override\r\n  void dispose() {\r\n    widget.changeNotifier.removeListener(_listener);\r\n\r\n    super.dispose();\r\n  }\r\n\r\n  @override\r\n  void didUpdateWidget(covariant ChangeNotifierBuilder<T, S> oldWidget) {\r\n    super.didUpdateWidget(oldWidget);\r\n\r\n    if (widget.changeNotifier != oldWidget.changeNotifier) {\r\n      oldWidget.changeNotifier.removeListener(_listener);\r\n      widget.changeNotifier.addListener(_listener);\r\n    }\r\n  }\r\n\r\n  @override\r\n  Widget build(BuildContext context) {\r\n    return widget.builder(context, widget.changeNotifier, widget.child);\r\n  }\r\n}\r\n"
+        }
+    ]
+}

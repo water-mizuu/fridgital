@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 6,
             "patches": [
                 {
                     "date": 1698744686403,
@@ -16,6 +16,22 @@
                 {
                     "date": 1698769939752,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,15 +1,6 @@\n-import \"dart:ui\";\r\n \r\n abstract final class FigmaColors {\r\n   static const Color textDark = Color(0xFF2D2020);\r\n   static const Color whiteAccent = Color(0xFFFFFDF6);\r\n   static const Color pinkAccent = Color(0xFFB18887);\r\n-  \r\n }\r\n-\r\n-\r\n-abstract final class FigmaColors {\r\n-  static const Color textDark = Color(0xFF2D2020);\r\n-  static const Color whiteAccent = Color(0xFFFFFDF6);\r\n-  static const Color pinkAccent = Color(0xFFB18887);\r\n-}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1699845121856,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,7 @@\n+import \"package:flutter/widgets.dart\";\r\n \r\n abstract final class FigmaColors {\r\n   static const Color textDark = Color(0xFF2D2020);\r\n   static const Color whiteAccent = Color(0xFFFFFDF6);\r\n   static const Color pinkAccent = Color(0xFFB18887);\r\n-}\r\n+}a\r\n"
+                },
+                {
+                    "date": 1699845152464,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,5 +3,9 @@\n abstract final class FigmaColors {\r\n   static const Color textDark = Color(0xFF2D2020);\r\n   static const Color whiteAccent = Color(0xFFFFFDF6);\r\n   static const Color pinkAccent = Color(0xFFB18887);\r\n-}a\r\n+}\r\n+\r\n+abstract final class TagColors {\r\n+  static const Color essential = Color(0xff5aa0a0);\r\n+}\r\n"
+                },
+                {
+                    "date": 1699845182483,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,7 +5,12 @@\n   static const Color whiteAccent = Color(0xFFFFFDF6);\r\n   static const Color pinkAccent = Color(0xFFB18887);\r\n }\r\n \r\n+\r\n+enum TagColors imple Color {\r\n+  essential()\r\n+}\r\n+\r\n abstract final class TagColors {\r\n   static const Color essential = Color(0xff5aa0a0);\r\n }\r\n"
+                },
+                {
+                    "date": 1699845458907,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,12 @@\n+import \"package:flutter/widgets.dart\";\r\n+\r\n+abstract final class FigmaColors {\r\n+  static const Color textDark = Color(0xFF2D2020);\r\n+  static const Color whiteAccent = Color(0xFFFFFDF6);\r\n+  static const Color pinkAccent = Color(0xFFB18887);\r\n+}\r\n+\r\n+abstract final class TagColors {\r\n+ \r\n+  static const Color essential = Color(0xff5aa0a0);\r\n+}\r\n"
                 }
             ],
             "date": 1698744686403,

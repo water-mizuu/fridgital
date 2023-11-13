@@ -1,9 +1,10 @@
 import "package:flutter/material.dart";
+import "package:fridgital/shared/constants.dart";
 import "package:fridgital/widgets/inherited_widgets/inherited_tag_data.dart";
 
 class TagData extends ChangeNotifier {
   TagData(this.tags);
-  TagData.empty() : tags = [];
+  TagData.empty() : tags = {};
 
   static TagData? maybeOf(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<InheritedTagData>()?.tagData;
@@ -13,25 +14,44 @@ class TagData extends ChangeNotifier {
     return maybeOf(context)!;
   }
 
-  final List<Tag> tags;
+  final Set<Tag> tags;
+
+  void addTag(Tag tag) {
+    if (tags.add(tag)) {
+      notifyListeners();
+    }
+  }
+
+  void removeTag(Tag tag) {
+    if (tags.remove(tag)) {
+      notifyListeners();
+    }
+  }
 }
 
 sealed class Tag {
   String get name;
+  Color get color;
 }
 
 final class BuiltInTag implements Tag {
-  const BuiltInTag._(this.name);
+  const BuiltInTag._(this.name, this.color);
 
-  static const BuiltInTag essential = BuiltInTag._("essentials");
+  static const BuiltInTag essential = BuiltInTag._("essentials", TagColors.essential);
 
   @override
   final String name;
+
+  @override
+  final Color color;
 }
 
 final class CustomTag implements Tag {
-  const CustomTag(this.name);
+  const CustomTag(this.name, this.color);
 
   @override
   final String name;
+
+  @override
+  final Color color;
 }

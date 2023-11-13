@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 9,
+            "activePatchIndex": 14,
             "patches": [
                 {
                     "date": 1699832802607,
@@ -44,6 +44,26 @@
                 {
                     "date": 1699833320979,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,29 +1,32 @@\n import \"package:flutter/material.dart\";\r\n import \"package:fridgital/widgets/inherited_widgets/inherited_tag_data.dart\";\r\n \r\n class TagData extends ChangeNotifier {\r\n+  TagData(this.tags);\r\n+  TagData.empty() : tags = [];\r\n+\r\n   static TagData? maybeOf(BuildContext context) {\r\n     return context.dependOnInheritedWidgetOfExactType<InheritedTagData>()?.tagData;\r\n   }\r\n \r\n   static TagData of(BuildContext context) {\r\n     return maybeOf(context)!;\r\n   }\r\n \r\n-  Ltags;\r\n-\r\n-  TagData(this.tags);\r\n+  final List<Tag> tags;\r\n }\r\n \r\n sealed class Tag {\r\n   String get name;\r\n }\r\n \r\n final class BuiltInTag implements Tag {\r\n-  \r\n   const BuiltInTag._(this.name);\r\n \r\n+  static const BuiltInTag essential = BuiltInTag._(\"Essential\");\r\n+  static const \r\n+\r\n   @override\r\n   final String name;\r\n }\r\n \r\n"
+                },
+                {
+                    "date": 1699845031835,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,8 +13,9 @@\n     return maybeOf(context)!;\r\n   }\r\n \r\n   final List<Tag> tags;\r\n+  \r\n }\r\n \r\n sealed class Tag {\r\n   String get name;\r\n@@ -22,10 +23,9 @@\n \r\n final class BuiltInTag implements Tag {\r\n   const BuiltInTag._(this.name);\r\n \r\n-  static const BuiltInTag essential = BuiltInTag._(\"Essential\");\r\n-  static const \r\n+  static const BuiltInTag essential = BuiltInTag._(\"essentials\");\r\n \r\n   @override\r\n   final String name;\r\n }\r\n"
+                },
+                {
+                    "date": 1699845061923,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,9 @@\n import \"package:fridgital/widgets/inherited_widgets/inherited_tag_data.dart\";\r\n \r\n class TagData extends ChangeNotifier {\r\n   TagData(this.tags);\r\n-  TagData.empty() : tags = [];\r\n+  TagData.empty() : tags = {};\r\n \r\n   static TagData? maybeOf(BuildContext context) {\r\n     return context.dependOnInheritedWidgetOfExactType<InheritedTagData>()?.tagData;\r\n   }\r\n@@ -12,10 +12,13 @@\n   static TagData of(BuildContext context) {\r\n     return maybeOf(context)!;\r\n   }\r\n \r\n-  final List<Tag> tags;\r\n-  \r\n+  final Set<Tag> tags;\r\n+\r\n+  void addTag(Tag tag) {\r\n+    if (tagd)\r\n+  }\r\n }\r\n \r\n sealed class Tag {\r\n   String get name;\r\n"
+                },
+                {
+                    "date": 1699845096668,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,10 +15,20 @@\n \r\n   final Set<Tag> tags;\r\n \r\n   void addTag(Tag tag) {\r\n-    if (tagd)\r\n+    if (tags.add(tag)) {\r\n+      notifyListeners();\r\n+    }\r\n   }\r\n+\r\n+  void removeTag(Tag tag) {\r\n+    if (tags.remove(tag)) {\r\n+      notifyListeners();\r\n+    }\r\n+  }\r\n+\r\n+\r\n }\r\n \r\n sealed class Tag {\r\n   String get name;\r\n"
+                },
+                {
+                    "date": 1699845156296,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -25,23 +25,25 @@\n     if (tags.remove(tag)) {\r\n       notifyListeners();\r\n     }\r\n   }\r\n-\r\n-\r\n }\r\n \r\n sealed class Tag {\r\n   String get name;\r\n+  Color get color;\r\n }\r\n \r\n final class BuiltInTag implements Tag {\r\n-  const BuiltInTag._(this.name);\r\n+  const BuiltInTag._(this.name, this.color);\r\n \r\n-  static const BuiltInTag essential = BuiltInTag._(\"essentials\");\r\n+  static const BuiltInTag essential = BuiltInTag._(\"essentials\",);\r\n \r\n   @override\r\n   final String name;\r\n+\r\n+  @override\r\n+  final Color color;\r\n }\r\n \r\n final class CustomTag implements Tag {\r\n   const CustomTag(this.name);\r\n"
+                },
+                {
+                    "date": 1699845198141,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,6 @@\n import \"package:flutter/material.dart\";\r\n+import \"package:fridgital/shared/constants.dart\";\r\n import \"package:fridgital/widgets/inherited_widgets/inherited_tag_data.dart\";\r\n \r\n class TagData extends ChangeNotifier {\r\n   TagData(this.tags);\r\n@@ -35,9 +36,9 @@\n \r\n final class BuiltInTag implements Tag {\r\n   const BuiltInTag._(this.name, this.color);\r\n \r\n-  static const BuiltInTag essential = BuiltInTag._(\"essentials\",);\r\n+  static const BuiltInTag essential = BuiltInTag._(\"essentials\", TagColors.essential);\r\n \r\n   @override\r\n   final String name;\r\n \r\n@@ -49,5 +50,6 @@\n   const CustomTag(this.name);\r\n \r\n   @override\r\n   final String name;\r\n+  \r\n }\r\n"
                 }
             ],
             "date": 1699832802607,

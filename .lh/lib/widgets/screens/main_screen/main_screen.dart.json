@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 25,
+            "activePatchIndex": 26,
             "patches": [
                 {
                     "date": 1698744786516,
@@ -108,6 +108,10 @@
                 {
                     "date": 1699174180922,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -67,9 +67,8 @@\n                 children: const [Recipes(), Inventory(), Home(), ToBuy()],\r\n               ),\r\n               Positioned(\r\n                 bottom: 0.0,\r\n-                right: 0.0,\r\n                 child: ShrinkingNavigation(\r\n                   controller: tabController,\r\n                   latestScrollOffset: latestScrollOffset,\r\n                 ),\r\n"
+                },
+                {
+                    "date": 1699844394770,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,84 @@\n+import \"package:flutter/material.dart\";\r\n+import \"package:fridgital/widgets/screens/main_screen/tabs/home/home.dart\";\r\n+import \"package:fridgital/widgets/screens/main_screen/tabs/inventory/inventory.dart\";\r\n+import \"package:fridgital/widgets/screens/main_screen/tabs/recipes/recipes.dart\";\r\n+import \"package:fridgital/widgets/screens/main_screen/tabs/to_buy/to_buy.dart\";\r\n+import \"package:fridgital/widgets/shared/miscellaneous/shrinking_navigation.dart\";\r\n+\r\n+class MainScreen extends StatefulWidget {\r\n+  const MainScreen({super.key});\r\n+\r\n+  @override\r\n+  State<MainScreen> createState() => _MainScreenState();\r\n+}\r\n+\r\n+class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {\r\n+  s\r\n+\r\n+  late final TabController tabController;\r\n+  late final ValueNotifier<double> latestScrollOffset;\r\n+\r\n+  bool handleNotification(Notification notification) {\r\n+    if (notification case ShrinkingNavigationUpdateNotification(:var index)) {\r\n+      tabController.animateTo(index);\r\n+\r\n+      return true;\r\n+    }\r\n+\r\n+    if (!tabController.indexIsChanging) {\r\n+      if (notification case ScrollUpdateNotification(:var scrollDelta?)) {\r\n+        WidgetsBinding.instance.addPostFrameCallback((_) {\r\n+          latestScrollOffset.value = scrollDelta;\r\n+        });\r\n+\r\n+        return false;\r\n+      }\r\n+    }\r\n+\r\n+    return false;\r\n+  }\r\n+\r\n+  @override\r\n+  void initState() {\r\n+    super.initState();\r\n+\r\n+    tabController = TabController(length: 4, vsync: this, initialIndex: 2);\r\n+    latestScrollOffset = ValueNotifier<double>(0.0);\r\n+  }\r\n+\r\n+  @override\r\n+  void dispose() {\r\n+    tabController.dispose();\r\n+    latestScrollOffset.dispose();\r\n+\r\n+    super.dispose();\r\n+  }\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    return Scaffold(\r\n+      body: FractionallySizedBox(\r\n+        widthFactor: 1.0,\r\n+        child: NotificationListener<Notification>(\r\n+          onNotification: handleNotification,\r\n+          child: Stack(\r\n+            children: [\r\n+              TabBarView(\r\n+                controller: tabController,\r\n+                physics: const NeverScrollableScrollPhysics(),\r\n+                children: const [Recipes(), Inventory(), Home(), ToBuy()],\r\n+              ),\r\n+              Positioned(\r\n+                bottom: 0.0,\r\n+                child: ShrinkingNavigation(\r\n+                  controller: tabController,\r\n+                  latestScrollOffset: latestScrollOffset,\r\n+                ),\r\n+              ),\r\n+            ],\r\n+          ),\r\n+        ),\r\n+      ),\r\n+    );\r\n+  }\r\n+}\r\n"
                 }
             ],
             "date": 1698744786516,

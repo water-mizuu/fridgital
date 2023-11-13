@@ -13,9 +13,10 @@ class Inventory extends StatefulWidget {
 }
 
 class _InventoryState extends State<Inventory> {
-  final TagData tagData = TagData([
+  final TagData tagData = TagData({
     BuiltInTag.essential,
-  ]);
+    CustomTag("meat", Colors.red)
+  });
 
   @override
   void dispose() {
@@ -30,10 +31,11 @@ class _InventoryState extends State<Inventory> {
       child: const BasicScreenWidget(
         child: MouseSingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               InventoryTitle(),
               SizedBox(height: 16.0),
-              TagsView(),
+              InventoryTags(),
             ],
           ),
         ),
@@ -50,7 +52,7 @@ class InventoryTitle extends StatelessWidget {
     var theme = Theme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.all(32.0),
+      padding: const EdgeInsets.only(top: 32.0) + const EdgeInsets.symmetric(horizontal: 32.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,6 +62,20 @@ class InventoryTitle extends StatelessWidget {
           Text("What's currently in your pantry.", style: theme.textTheme.displayLarge),
         ],
       ),
+    );
+  }
+}
+
+class InventoryTags extends StatelessWidget {
+  const InventoryTags({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 32.0),
+      child: TagsView(),
     );
   }
 }

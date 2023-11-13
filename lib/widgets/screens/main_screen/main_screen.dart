@@ -13,6 +13,8 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
+  static const int initialIndex = 1;
+
   late final TabController tabController;
   late final ValueNotifier<double> latestScrollOffset;
 
@@ -40,7 +42,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    tabController = TabController(length: 4, vsync: this, initialIndex: 2);
+    tabController = TabController(length: 4, vsync: this, initialIndex: initialIndex);
     latestScrollOffset = ValueNotifier<double>(0.0);
   }
 
