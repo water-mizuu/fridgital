@@ -13,8 +13,8 @@ class BasicScreenWidget extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Color.fromRGBO(255, 250, 227, 1.0),
-            Color.fromRGBO(247, 202, 201, 1.0),
+            Color(0xFFFFFAE3),
+            Color(0xFFF7CAC9),
           ],
         ),
       ),

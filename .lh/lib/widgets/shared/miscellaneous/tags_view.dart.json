@@ -1,0 +1,78 @@
+{
+    "sourceFile": "lib/widgets/shared/miscellaneous/tags_view.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 15,
+            "patches": [
+                {
+                    "date": 1699832575369,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1699832606414,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,10 @@\n+import \"package:flutter/material.dart\";\r\n \r\n+class TagsView extends StatelessWidget {\r\n+  const TagsView({super.key});\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    return Wrap(children: []);\r\n+  }\r\n+}\r\n"
+                },
+                {
+                    "date": 1699832636475,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,10 +1,19 @@\n import \"package:flutter/material.dart\";\r\n \r\n-class TagsView extends StatelessWidget {\r\n+class TagsView extends StatefulWidget {\r\n   const TagsView({super.key});\r\n \r\n   @override\r\n+  State<TagsView> createState() => _TagsViewState();\r\n+}\r\n+\r\n+class _TagsViewState extends State<TagsView> {\r\n+  late final TagsController tagsController;\r\n+\r\n+  didU\r\n+\r\n+  @override\r\n   Widget build(BuildContext context) {\r\n     return Wrap(children: []);\r\n   }\r\n }\r\n"
+                },
+                {
+                    "date": 1699832991135,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,12 +7,17 @@\n   State<TagsView> createState() => _TagsViewState();\r\n }\r\n \r\n class _TagsViewState extends State<TagsView> {\r\n-  late final TagsController tagsController;\r\n+  late final T tagsController;\r\n \r\n-  didU\r\n+  @override\r\n+  void didChangeDependencies() {\r\n+    super.didChangeDependencies();\r\n \r\n+    tagsController = T.of(context);\r\n+  }\r\n+\r\n   @override\r\n   Widget build(BuildContext context) {\r\n     return Wrap(children: []);\r\n   }\r\n"
+                },
+                {
+                    "date": 1699833096695,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,6 @@\n import \"package:flutter/material.dart\";\r\n+import \"package:fridgital/back_end/tag_data.dart\";\r\n \r\n class TagsView extends StatefulWidget {\r\n   const TagsView({super.key});\r\n \r\n@@ -7,18 +8,29 @@\n   State<TagsView> createState() => _TagsViewState();\r\n }\r\n \r\n class _TagsViewState extends State<TagsView> {\r\n-  late final T tagsController;\r\n+  late final TagData tagData;\r\n \r\n   @override\r\n   void didChangeDependencies() {\r\n     super.didChangeDependencies();\r\n \r\n-    tagsController = T.of(context);\r\n+    tagData = TagData.of(context);\r\n   }\r\n \r\n   @override\r\n   Widget build(BuildContext context) {\r\n-    return Wrap(children: []);\r\n+    \r\n+    return Wrap(\r\n+      children: [\r\n+        for (var tag in tagData.tags)\r\n+          Padding(\r\n+            padding: const EdgeInsets.symmetric(horizontal: 4.0),\r\n+            child: Chip(\r\n+              label: Text(tag.name),\r\n+            ),\r\n+          ),\r\n+      ],\r\n+    );\r\n   }\r\n }\r\n"
+                },
+                {
+                    "date": 1699833382638,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,11 +19,11 @@\n   }\r\n \r\n   @override\r\n   Widget build(BuildContext context) {\r\n-    \r\n     return Wrap(\r\n       children: [\r\n+        \r\n         for (var tag in tagData.tags)\r\n           Padding(\r\n             padding: const EdgeInsets.symmetric(horizontal: 4.0),\r\n             child: Chip(\r\n"
+                },
+                {
+                    "date": 1699833583606,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,9 +21,9 @@\n   @override\r\n   Widget build(BuildContext context) {\r\n     return Wrap(\r\n       children: [\r\n-        \r\n+        const TagSelector(),\r\n         for (var tag in tagData.tags)\r\n           Padding(\r\n             padding: const EdgeInsets.symmetric(horizontal: 4.0),\r\n             child: Chip(\r\n@@ -33,4 +33,18 @@\n       ],\r\n     );\r\n   }\r\n }\r\n+\r\n+class TagSelector extends StatefulWidget {\r\n+  const TagSelector({super.key});\r\n+\r\n+  @override\r\n+  State<TagSelector> createState() => _TagSelectorState();\r\n+}\r\n+\r\n+class _TagSelectorState extends State<TagSelector> {\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    return C;\r\n+  }\r\n+}\r\n"
+                },
+                {
+                    "date": 1699833645270,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,19 +19,23 @@\n   }\r\n \r\n   @override\r\n   Widget build(BuildContext context) {\r\n-    return Wrap(\r\n-      children: [\r\n-        const TagSelector(),\r\n-        for (var tag in tagData.tags)\r\n-          Padding(\r\n-            padding: const EdgeInsets.symmetric(horizontal: 4.0),\r\n-            child: Chip(\r\n-              label: Text(tag.name),\r\n-            ),\r\n-          ),\r\n-      ],\r\n+    return Builder(\r\n+      builder: (context) {\r\n+        return Wrap(\r\n+          children: [\r\n+            const TagSelector(),\r\n+            for (var tag in tagData.tags)\r\n+              Padding(\r\n+                padding: const EdgeInsets.symmetric(horizontal: 4.0),\r\n+                child: Chip(\r\n+                  label: Text(tag.name),\r\n+                ),\r\n+              ),\r\n+          ],\r\n+        );\r\n+      },\r\n     );\r\n   }\r\n }\r\n \r\n@@ -44,7 +48,7 @@\n \r\n class _TagSelectorState extends State<TagSelector> {\r\n   @override\r\n   Widget build(BuildContext context) {\r\n-    return C;\r\n+    return Chip(label: Text(\"+ Tag\"));\r\n   }\r\n }\r\n"
+                },
+                {
+                    "date": 1699833679758,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,13 +19,14 @@\n   }\r\n \r\n   @override\r\n   Widget build(BuildContext context) {\r\n-    return Builder(\r\n-      builder: (context) {\r\n+    return LayoutBuilder(\r\n+      builder: (context, constraints) {\r\n+        print(constraints.maxWidth);\r\n         return Wrap(\r\n           children: [\r\n-            const TagSelector(),\r\n+            SizedBox(cconst TagSelector()),\r\n             for (var tag in tagData.tags)\r\n               Padding(\r\n                 padding: const EdgeInsets.symmetric(horizontal: 4.0),\r\n                 child: Chip(\r\n@@ -48,7 +49,7 @@\n \r\n class _TagSelectorState extends State<TagSelector> {\r\n   @override\r\n   Widget build(BuildContext context) {\r\n-    return Chip(label: Text(\"+ Tag\"));\r\n+    return const Chip(label: Text(\"+ Tag\"));\r\n   }\r\n }\r\n"
+                },
+                {
+                    "date": 1699833679812,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -24,9 +24,9 @@\n       builder: (context, constraints) {\r\n         print(constraints.maxWidth);\r\n         return Wrap(\r\n           children: [\r\n-            SizedBox(cconst TagSelector()),\r\n+            SizedBox(chconst TagSelector()),\r\n             for (var tag in tagData.tags)\r\n               Padding(\r\n                 padding: const EdgeInsets.symmetric(horizontal: 4.0),\r\n                 child: Chip(\r\n"
+                },
+                {
+                    "date": 1699833710420,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -23,10 +23,14 @@\n     return LayoutBuilder(\r\n       builder: (context, constraints) {\r\n         print(constraints.maxWidth);\r\n         return Wrap(\r\n+          alignment: ,\r\n           children: [\r\n-            SizedBox(chconst TagSelector()),\r\n+            SizedBox(\r\n+              width: constraints.maxWidth / 2,\r\n+              child: const TagSelector(),\r\n+            ),\r\n             for (var tag in tagData.tags)\r\n               Padding(\r\n                 padding: const EdgeInsets.symmetric(horizontal: 4.0),\r\n                 child: Chip(\r\n"
+                },
+                {
+                    "date": 1699833740920,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -23,9 +23,9 @@\n     return LayoutBuilder(\r\n       builder: (context, constraints) {\r\n         print(constraints.maxWidth);\r\n         return Wrap(\r\n-          alignment: ,\r\n+          runAlignment: WrapAlignment.start,\r\n           children: [\r\n             SizedBox(\r\n               width: constraints.maxWidth / 2,\r\n               child: const TagSelector(),\r\n@@ -53,7 +53,7 @@\n \r\n class _TagSelectorState extends State<TagSelector> {\r\n   @override\r\n   Widget build(BuildContext context) {\r\n-    return const Chip(label: Text(\"+ Tag\"));\r\n+    return const ;\r\n   }\r\n }\r\n"
+                },
+                {
+                    "date": 1699833817197,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -23,9 +23,8 @@\n     return LayoutBuilder(\r\n       builder: (context, constraints) {\r\n         print(constraints.maxWidth);\r\n         return Wrap(\r\n-          runAlignment: WrapAlignment.start,\r\n           children: [\r\n             SizedBox(\r\n               width: constraints.maxWidth / 2,\r\n               child: const TagSelector(),\r\n@@ -53,7 +52,7 @@\n \r\n class _TagSelectorState extends State<TagSelector> {\r\n   @override\r\n   Widget build(BuildContext context) {\r\n-    return const ;\r\n+    return ;\r\n   }\r\n }\r\n"
+                },
+                {
+                    "date": 1699833878427,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -52,7 +52,10 @@\n \r\n class _TagSelectorState extends State<TagSelector> {\r\n   @override\r\n   Widget build(BuildContext context) {\r\n-    return ;\r\n+    return const ColoredBox(\r\n+      color: Colors.green,\r\n+      child: ,\r\n+    );\r\n   }\r\n }\r\n"
+                },
+                {
+                    "date": 1699833925826,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,67 @@\n+import \"package:flutter/material.dart\";\r\n+import \"package:fridgital/back_end/tag_data.dart\";\r\n+\r\n+class TagsView extends StatefulWidget {\r\n+  const TagsView({super.key});\r\n+\r\n+  @override\r\n+  State<TagsView> createState() => _TagsViewState();\r\n+}\r\n+\r\n+class _TagsViewState extends State<TagsView> {\r\n+  late final TagData tagData;\r\n+\r\n+  @override\r\n+  void didChangeDependencies() {\r\n+    super.didChangeDependencies();\r\n+\r\n+    tagData = TagData.of(context);\r\n+  }\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    return LayoutBuilder(\r\n+      builder: (context, constraints) {\r\n+        print(constraints.maxWidth);\r\n+        return Wrap(\r\n+          children: [\r\n+            SizedBox(\r\n+              width: constraints.maxWidth / 2,\r\n+              child: const TagSelector(),\r\n+            ),\r\n+            for (var tag in tagData.tags)\r\n+              Padding(\r\n+                padding: const EdgeInsets.symmetric(horizontal: 4.0),\r\n+                child: Chip(\r\n+                  label: Text(tag.name),\r\n+                ),\r\n+              ),\r\n+          ],\r\n+        );\r\n+      },\r\n+    );\r\n+  }\r\n+}\r\n+\r\n+class TagSelector extends StatefulWidget {\r\n+  const TagSelector({super.key});\r\n+\r\n+  @override\r\n+  State<TagSelector> createState() => _TagSelectorState();\r\n+}\r\n+\r\n+class _TagSelectorState extends State<TagSelector> {\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    return const ColoredBox(\r\n+      color: Colors.green,\r\n+      child: Row(\r\n+        children: [\r\n+          C(\r\n+            label: Text(\"+ Tag\"),\r\n+          ),\r\n+        ],\r\n+      ),\r\n+    );\r\n+  }\r\n+}\r\n"
+                },
+                {
+                    "date": 1699833959577,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -54,75 +54,11 @@\n   @override\r\n   Widget build(BuildContext context) {\r\n     return const ColoredBox(\r\n       color: Colors.green,\r\n-      child: Row(\r\n-        children: [\r\n-          C(\r\n-            label: Text(\"+ Tag\"),\r\n-          ),\r\n-        ],\r\n+      child: RawChip(\r\n+        label: Text(\"+ Tag\"),\r\n+        \r\n       ),\r\n     );\r\n   }\r\n }\r\n-import \"package:flutter/material.dart\";\r\n-import \"package:fridgital/back_end/tag_data.dart\";\r\n-\r\n-class TagsView extends StatefulWidget {\r\n-  const TagsView({super.key});\r\n-\r\n-  @override\r\n-  State<TagsView> createState() => _TagsViewState();\r\n-}\r\n-\r\n-class _TagsViewState extends State<TagsView> {\r\n-  late final TagData tagData;\r\n-\r\n-  @override\r\n-  void didChangeDependencies() {\r\n-    super.didChangeDependencies();\r\n-\r\n-    tagData = TagData.of(context);\r\n-  }\r\n-\r\n-  @override\r\n-  Widget build(BuildContext context) {\r\n-    return LayoutBuilder(\r\n-      builder: (context, constraints) {\r\n-        print(constraints.maxWidth);\r\n-        return Wrap(\r\n-          children: [\r\n-            SizedBox(\r\n-              width: constraints.maxWidth / 2,\r\n-              child: const TagSelector(),\r\n-            ),\r\n-            for (var tag in tagData.tags)\r\n-              Padding(\r\n-                padding: const EdgeInsets.symmetric(horizontal: 4.0),\r\n-                child: Chip(\r\n-                  label: Text(tag.name),\r\n-                ),\r\n-              ),\r\n-          ],\r\n-        );\r\n-      },\r\n-    );\r\n-  }\r\n-}\r\n-\r\n-class TagSelector extends StatefulWidget {\r\n-  const TagSelector({super.key});\r\n-\r\n-  @override\r\n-  State<TagSelector> createState() => _TagSelectorState();\r\n-}\r\n-\r\n-class _TagSelectorState extends State<TagSelector> {\r\n-  @override\r\n-  Widget build(BuildContext context) {\r\n-    return const ColoredBox(\r\n-      color: Colors.green,\r\n-      child: ,\r\n-    );\r\n-  }\r\n-}\r\n"
+                }
+            ],
+            "date": 1699832575369,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}
