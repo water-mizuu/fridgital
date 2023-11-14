@@ -1,3 +1,6 @@
+import "dart:ui";
+
+import "package:animations/animations.dart";
 import "package:flutter/material.dart";
 import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/shared/constants.dart";
@@ -17,222 +20,212 @@ class TagsView extends StatelessWidget {
     return ChangeNotifierBuilder(
       changeNotifier: TagData.of(context),
       builder: (context, tagData, child) {
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            return Wrap(
-              runSpacing: 8.0,
-              children: [
-                for (var tag in tagData.tags)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4.0),
-                    child: _TagWidget(tag: tag),
-                  ),
-                const Padding(
-                  padding: EdgeInsets.only(right: 4.0),
-                  child: TagSelector(),
+        return Wrap(
+          runSpacing: 8.0,
+          children: [
+            for (var tag in tagData.tags)
+              Padding(
+                padding: const EdgeInsets.only(right: 4.0),
+                child: _TagWidget(
+                  tag: tag,
+                  onTap: () {
+                    tagData.removeTag(tag);
+                  },
                 ),
-              ],
-            );
-          },
+              ),
+            const Padding(
+              padding: EdgeInsets.only(right: 4.0),
+              child: TagSelector(),
+            ),
+          ],
         );
       },
     );
   }
 }
 
-class TagSelector extends StatefulWidget {
+class TagSelector extends StatelessWidget {
   const TagSelector({super.key});
 
   @override
-  State<TagSelector> createState() => _TagSelectorState();
-}
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(16.0),
+          child: ClickableWidget(
+            onTap: () {
+              if (!context.mounted) {
+                return;
+              }
 
-class _TagSelectorState extends State<TagSelector> {
-  Widget selectionChip({void Function()? onTap}) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16.0),
-      child: ClickableWidget(
-        onTap: onTap,
-        child: const SizedBox(
-          height: _tagHeight,
-          child: Material(
-            color: TagColors.selector,
-            child: IgnorePointer(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text("filter", style: TextStyle(color: Colors.white)),
-                    SizedBox(width: _tagGapToIcon),
-                    Icon(Icons.add, size: _tagIconSize, color: Colors.white),
-                  ],
+              var tagData = TagData.of(context);
+              var allTags = tagData.availableTags;
+              var addedTags = tagData.tags;
+              var availableTags = allTags.difference(addedTags);
+
+              late OverlayEntry entry;
+              entry = OverlayEntry(
+                maintainState: true,
+                builder: (_) => OverlayWidget(
+                  width: constraints.maxWidth * 0.9,
+                  availableTags: availableTags,
+                  close: () {
+                    entry.remove();
+                  },
+                  submit: (tag) {
+                    tagData.addTag(tag);
+                    entry.remove();
+                  },
+                ),
+              );
+
+              Overlay.of(context).insert(entry);
+            },
+            child: const SizedBox(
+              height: _tagHeight,
+              child: Material(
+                color: TagColors.selector,
+                child: IgnorePointer(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text("filter", style: TextStyle(color: Colors.white)),
+                        SizedBox(width: _tagGapToIcon),
+                        Icon(Icons.add, size: _tagIconSize, color: Colors.white),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return selectionChip(
-      onTap: () {
-        if (!context.mounted) {
-          return;
-        }
-        late OverlayEntry entry;
-
-        entry = OverlayEntry(
-          maintainState: true,
-          builder: (context) => NotificationListener<_RemoveOverlayNotification>(
-            onNotification: (notification) {
-              entry.remove();
-              return true;
-            },
-            child: Positioned(
-              top: 0.0,
-              left: 0.0,
-              child: Container(
-                width: 32,
-                height: 32,
-                color: Colors.red,
-              ),
-            ),
-          ),
         );
-
-        Overlay.of(context).insert(entry);
-        Future.delayed(const Duration(seconds: 2), () {
-          entry.remove();
-        });
       },
     );
   }
 }
 
-class _TagSelectorOverlay extends StatefulWidget {
-  const _TagSelectorOverlay({
-    required this.parentSize,
-    required this.parentOffset,
-    required this.chipBuilder,
+class OverlayWidget extends StatefulWidget {
+  const OverlayWidget({
+    required this.width,
+    required this.availableTags,
+    required this.submit,
+    required this.close,
+    super.key,
   });
 
-  final Size parentSize;
-  final Offset parentOffset;
-  final Widget Function({void Function() onTap}) chipBuilder;
+  final double width;
+  final Set<Tag> availableTags;
+
+  final void Function(Tag tag) submit;
+  final void Function() close;
 
   @override
-  State<_TagSelectorOverlay> createState() => _TagSelectorOverlayState();
+  State<OverlayWidget> createState() => _OverlayWidgetState();
 }
 
-class _TagSelectorOverlayState extends State<_TagSelectorOverlay> with SingleTickerProviderStateMixin {
-  static const retractionDuration = Duration(milliseconds: 190);
-  static const maxSelectionHeight = 256.0;
-
-  late final AnimationController controller = AnimationController(vsync: this, duration: retractionDuration);
-  late Animation<double> retractAnimation = const AlwaysStoppedAnimation(0.0);
-
-  final ValueNotifier<bool> isAnimating = ValueNotifier(false);
-
-  final GlobalKey containerKey = GlobalKey();
-  double get width => widget.parentSize.width;
-
-  void open() async {
-    if (controller.isAnimating) {
-      return;
-    }
-
-    var renderBox = containerKey.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox?.size.height case double target) {
-      var tween = Tween(begin: 0.0, end: target);
-
-      retractAnimation = CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn).drive(tween);
-      isAnimating.value = true;
-    }
-
-    await controller.forward(from: 0.0);
-  }
-
-  void close() async {
-    if (controller.isAnimating) {
-      return;
-    }
-
-    await controller.reverse(from: 1.0);
-    if (context.mounted) {
-      const _RemoveOverlayNotification().dispatch(context);
-    }
-  }
+class _OverlayWidgetState extends State<OverlayWidget> with TickerProviderStateMixin {
+  late final AnimationController animationController;
 
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => open());
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+
     return GestureDetector(
-      onTap: close,
       behavior: HitTestBehavior.translucent,
+      onTap: () {
+        animationController.reverse();
+        widget.close();
+      },
       child: Scaffold(
-        backgroundColor: Colors.black.withOpacity(0.25),
-        body: Transform.translate(
-          offset: widget.parentOffset,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: width),
-            child: Stack(
-              children: [
-                ListenableBuilder(
-                  listenable: isAnimating,
-                  builder: (context, child) => Transform.translate(
-                    offset: const Offset(0, _tagHeight / 2),
-                    child: Opacity(
-                      opacity: isAnimating.value ? 1.0 : 0.0,
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(16.0),
-                          bottomRight: Radius.circular(16.0),
+        backgroundColor: Colors.transparent,
+        body: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
+          child: ColoredBox(
+            color: const Color(0xffCCAEBB).withOpacity(0.5),
+            child: Center(
+              child: FadeScaleTransition(
+                animation: animationController,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () {},
+                  child: Container(
+                    padding: const EdgeInsets.all(16.0),
+                    width: widget.width,
+                    decoration: const BoxDecoration(
+                      color: Color(0xffFFFDF6),
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: ClickableWidget(
+                            onTap: widget.close,
+                            child: const Icon(Icons.close),
+                          ),
                         ),
-                        child: ColoredBox(
-                          color: Colors.white,
-                          key: containerKey,
-                          child: ListenableBuilder(
-                            listenable: controller,
-                            builder: (context, child) => ConstrainedBox(
-                              constraints: const BoxConstraints(maxHeight: maxSelectionHeight),
-                              child: isAnimating.value
-                                  ? SizedBox(
-                                      height: retractAnimation.value,
-                                      child: OverflowBox(
-                                        maxHeight: maxSelectionHeight,
-                                        alignment: Alignment.bottomCenter,
-                                        child: child,
-                                      ),
-                                    )
-                                  : child,
-                            ),
-                            child: const Column(
-                              mainAxisSize: MainAxisSize.min,
+                        Text(
+                          "SELECT A TAG",
+                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                        ),
+                        const SizedBox(height: 8.0),
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxHeight: 312),
+                          child: MouseSingleChildScrollView(
+                            child: Wrap(
+                              runSpacing: 8.0,
                               children: [
-                                _TagSelectionView(),
-                                _TagCreationTile(),
+                                for (var tag in widget.availableTags)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 4.0),
+                                    child: _TagWidget(
+                                      tag: tag,
+                                      icon: null,
+                                      onTap: () async {
+                                        await animationController.reverse();
+                                        widget.submit(tag);
+                                      },
+                                    ),
+                                  ),
                               ],
                             ),
                           ),
                         ),
-                      ),
+                        const SizedBox(height: 16.0),
+                        _TagWidget(
+                          tag: CustomTag("Create a new tag", TagColors.selectable.$3),
+                          icon: Icons.add,
+                          onTap: () {
+                            print("Create a new tag");
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                SizedBox(
-                  child: widget.chipBuilder(onTap: close),
-                ),
-              ],
+              ),
             ),
           ),
         ),
@@ -241,92 +234,39 @@ class _TagSelectorOverlayState extends State<_TagSelectorOverlay> with SingleTic
   }
 }
 
-class _TagCreationTile extends StatelessWidget {
-  const _TagCreationTile();
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: const Row(
-        children: [
-          Text("Add"),
-        ],
-      ),
-      onTap: () {
-        print("Add here!");
-      },
-    );
-  }
-}
-
-class _TagSelectionView extends StatelessWidget {
-  const _TagSelectionView();
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: MouseSingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: _tagHeight / 2),
-              for (int i = 0; i < 20; ++i)
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
-                  ),
-                  child: ListTile(
-                    title: Text("$i"),
-                    onTap: () {
-                      print("$i");
-                    },
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _RemoveOverlayNotification extends Notification {
-  const _RemoveOverlayNotification();
-}
-
 /// Represents a simple removable tag.
 class _TagWidget extends StatelessWidget {
-  const _TagWidget({required this.tag});
+  const _TagWidget({required this.tag, this.icon = Icons.close, this.onTap});
 
   final Tag tag;
+  final IconData? icon;
+  final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(16.0),
       child: ClickableWidget(
-        onTap: () {
-          if (context.mounted) {
-            TagData.of(context).removeTag(tag);
-          }
-        },
+        onTap: onTap,
         child: SizedBox(
           height: _tagHeight,
           child: Material(
             color: tag.color,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(tag.name, style: const TextStyle(color: Colors.white)),
-                  const SizedBox(width: _tagGapToIcon),
-                  const Icon(Icons.close, size: _tagIconSize, color: Colors.white),
-                ],
-              ),
+              child: icon == null
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [Text(tag.name, style: const TextStyle(color: Colors.white))],
+                    )
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(tag.name, style: const TextStyle(color: Colors.white)),
+                        const SizedBox(width: _tagGapToIcon),
+                        Icon(icon, size: _tagIconSize, color: Colors.white),
+                      ],
+                    ),
             ),
           ),
         ),

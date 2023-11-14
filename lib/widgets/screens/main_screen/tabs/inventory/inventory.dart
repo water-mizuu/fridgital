@@ -19,6 +19,9 @@ class _InventoryState extends State<Inventory> {
     CustomTag("meat", TagColors.selectable.$1),
     for (var (index, color) in TagColors.selectable.iterable.indexed) //
       CustomTag("Tag #$index", color),
+  }, {
+    BuiltInTag.essential,
+    CustomTag("meat", TagColors.selectable.$1),
   });
 
   @override

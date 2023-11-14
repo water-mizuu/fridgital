@@ -4,8 +4,10 @@ import "package:fridgital/shared/constants.dart";
 import "package:fridgital/widgets/inherited_widgets/inherited_tag_data.dart";
 
 class TagData extends ChangeNotifier {
-  TagData(this.tags);
-  TagData.empty() : tags = {};
+  TagData(this.availableTags, this.tags);
+  TagData.empty()
+      : availableTags = {},
+        tags = {};
 
   static TagData? maybeOf(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<InheritedTagData>()?.tagData;
@@ -15,6 +17,7 @@ class TagData extends ChangeNotifier {
     return maybeOf(context)!;
   }
 
+  final Set<Tag> availableTags;
   final Set<Tag> tags;
 
   void addTag(Tag tag) {

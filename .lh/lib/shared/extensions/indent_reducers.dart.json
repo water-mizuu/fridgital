@@ -1,0 +1,46 @@
+{
+    "sourceFile": "lib/shared/extensions/indent_reducers.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 7,
+            "patches": [
+                {
+                    "date": 1699978297395,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1699978327538,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,5 @@\n-e\n\\ No newline at end of file\n+import \"package:flutter/material.dart\";\r\n+\r\n+extension CommonWidgetWrapperExtension on Widget {\r\n+  Widget wit\r\n+}\r\n"
+                },
+                {
+                    "date": 1699978371730,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,8 @@\n import \"package:flutter/material.dart\";\r\n \r\n extension CommonWidgetWrapperExtension on Widget {\r\n-  Widget wit\r\n+  Widget withClipRRect({}) => ClipRRect(\r\n+        borderRadius: BorderRadius.circular(16.0),\r\n+        child: this,\r\n+      );\r\n }\r\n"
+                },
+                {
+                    "date": 1699978402475,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,24 @@\n import \"package:flutter/material.dart\";\r\n \r\n extension CommonWidgetWrapperExtension on Widget {\r\n-  Widget withClipRRect({}) => ClipRRect(\r\n-        borderRadius: BorderRadius.circular(16.0),\r\n+  Widget withClipRRect({\r\n+    /// The border radius of the rounded corners.\r\n+    ///\r\n+    /// Values are clamped so that horizontal and vertical radii sums do not\r\n+    /// exceed width/height.\r\n+    ///\r\n+    /// This value is ignored if [clipper] is non-null.\r\n+    BorderRadiusGeometry borderRadius = BorderRadius.zero,\r\n+\r\n+    /// If non-null, determines which clip to use.\r\n+    CustomClipper<RRect>? clipper,\r\n+\r\n+    /// {@macro flutter.rendering.ClipRectLayer.clipBehavior}\r\n+    ///\r\n+    /// Defaults to [Clip.antiAlias].\r\n+    Clip clipBehavior = Clip.antiAlias,\r\n+  }) =>\r\n+      ClipRRect(\r\n         child: this,\r\n       );\r\n }\r\n"
+                },
+                {
+                    "date": 1699978455431,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,14 +1,8 @@\n import \"package:flutter/material.dart\";\r\n \r\n extension CommonWidgetWrapperExtension on Widget {\r\n   Widget withClipRRect({\r\n-    /// The border radius of the rounded corners.\r\n-    ///\r\n-    /// Values are clamped so that horizontal and vertical radii sums do not\r\n-    /// exceed width/height.\r\n-    ///\r\n-    /// This value is ignored if [clipper] is non-null.\r\n     BorderRadiusGeometry borderRadius = BorderRadius.zero,\r\n \r\n     /// If non-null, determines which clip to use.\r\n     CustomClipper<RRect>? clipper,\r\n@@ -18,7 +12,10 @@\n     /// Defaults to [Clip.antiAlias].\r\n     Clip clipBehavior = Clip.antiAlias,\r\n   }) =>\r\n       ClipRRect(\r\n+        borderRadius: borderRadius,\r\n+        clipper: clipper,\r\n+        clipBehavior: clipBehavior,\r\n         child: this,\r\n       );\r\n }\r\n"
+                },
+                {
+                    "date": 1699978485652,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,20 +2,21 @@\n \r\n extension CommonWidgetWrapperExtension on Widget {\r\n   Widget withClipRRect({\r\n     BorderRadiusGeometry borderRadius = BorderRadius.zero,\r\n-\r\n-    /// If non-null, determines which clip to use.\r\n     CustomClipper<RRect>? clipper,\r\n-\r\n-    /// {@macro flutter.rendering.ClipRectLayer.clipBehavior}\r\n-    ///\r\n-    /// Defaults to [Clip.antiAlias].\r\n     Clip clipBehavior = Clip.antiAlias,\r\n+    Key? key,\r\n   }) =>\r\n       ClipRRect(\r\n+        key: key,\r\n         borderRadius: borderRadius,\r\n         clipper: clipper,\r\n         clipBehavior: clipBehavior,\r\n         child: this,\r\n       );\r\n+\r\n+  Widget withPadding({required EdgeInsets padding, Key?}) => Padding(\r\n+        padding: padding,\r\n+        child: this,\r\n+      );\r\n }\r\n"
+                },
+                {
+                    "date": 1699978515694,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,9 +14,13 @@\n         clipBehavior: clipBehavior,\r\n         child: this,\r\n       );\r\n \r\n-  Widget withPadding({required EdgeInsets padding, Key?}) => Padding(\r\n+  Widget withPadding({required EdgeInsets padding, Key? key}) => Padding(\r\n+        key: key,\r\n         padding: padding,\r\n         child: this,\r\n       );\r\n+  \r\n+\r\n+  Widget\r\n }\r\n"
+                },
+                {
+                    "date": 1699978561836,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,28 @@\n+import \"package:flutter/material.dart\";\r\n+\r\n+extension CommonWidgetWrapperExtension on Widget {\r\n+  Widget withClipRRect({\r\n+    BorderRadiusGeometry borderRadius = BorderRadius.zero,\r\n+    CustomClipper<RRect>? clipper,\r\n+    Clip clipBehavior = Clip.antiAlias,\r\n+    Key? key,\r\n+  }) =>\r\n+      ClipRRect(\r\n+        key: key,\r\n+        borderRadius: borderRadius,\r\n+        clipper: clipper,\r\n+        clipBehavior: clipBehavior,\r\n+        child: this,\r\n+      );\r\n+\r\n+  Widget withPadding({required EdgeInsets padding, Key? key}) => Padding(\r\n+        key: key,\r\n+        padding: padding,\r\n+        child: this,\r\n+      );\r\n+\r\n+  Widget withIgnorePointer() => IgnorePointer(\r\n+        child: this,\r\n+      );\r\n+      \r\n+}\r\n"
+                }
+            ],
+            "date": 1699978297395,
+            "name": "Commit-0",
+            "content": "e"
+        }
+    ]
+}
