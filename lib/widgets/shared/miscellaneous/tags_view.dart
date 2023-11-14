@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/widgets/shared/helper/change_notifier_builder.dart";
+import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
 
 const _tagIconSize = 14.0;
@@ -50,13 +51,13 @@ class _TagSelectorState extends State<TagSelector> {
   Widget selectionChip({void Function()? onTap}) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(16.0),
-      child: SizedBox(
-        height: _tagHeight,
-        child: Material(
-          color: TagColors.selector,
-          child: InkWell(
-            onTap: onTap,
-            child: const IgnorePointer(
+      child: ClickableWidget(
+        onTap: onTap,
+        child: const SizedBox(
+          height: _tagHeight,
+          child: Material(
+            color: TagColors.selector,
+            child: IgnorePointer(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
@@ -82,28 +83,31 @@ class _TagSelectorState extends State<TagSelector> {
         if (!context.mounted) {
           return;
         }
+        late OverlayEntry entry;
 
-        var renderBox = context.findRenderObject() as RenderBox?;
-        if (renderBox?.localToGlobal(Offset.zero) case Offset left when renderBox != null) {
-          late OverlayEntry entry;
-
-          entry = OverlayEntry(
-            maintainState: true,
-            builder: (context) => NotificationListener<_RemoveOverlayNotification>(
-              onNotification: (notification) {
-                entry.remove();
-                return true;
-              },
-              child: _TagSelectorOverlay(
-                parentSize: renderBox.size,
-                parentOffset: left,
-                chipBuilder: selectionChip,
+        entry = OverlayEntry(
+          maintainState: true,
+          builder: (context) => NotificationListener<_RemoveOverlayNotification>(
+            onNotification: (notification) {
+              entry.remove();
+              return true;
+            },
+            child: Positioned(
+              top: 0.0,
+              left: 0.0,
+              child: Container(
+                width: 32,
+                height: 32,
+                color: Colors.red,
               ),
             ),
-          );
+          ),
+        );
 
-          Overlay.of(context).insert(entry);
-        }
+        Overlay.of(context).insert(entry);
+        Future.delayed(const Duration(seconds: 2), () {
+          entry.remove();
+        });
       },
     );
   }
@@ -275,12 +279,7 @@ class _TagSelectionView extends StatelessWidget {
                     border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
                   ),
                   child: ListTile(
-                    title: Row(
-                      children: [
-                        Text("$i"),
-                        const Icon(Icons.check, color: Colors.green),
-                      ],
-                    ),
+                    title: Text("$i"),
                     onTap: () {
                       print("$i");
                     },
@@ -308,16 +307,16 @@ class _TagWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(16.0),
-      child: SizedBox(
-        height: _tagHeight,
-        child: Material(
-          color: tag.color,
-          child: InkWell(
-            onTap: () {
-              if (context.mounted) {
-                TagData.of(context).removeTag(tag);
-              }
-            },
+      child: ClickableWidget(
+        onTap: () {
+          if (context.mounted) {
+            TagData.of(context).removeTag(tag);
+          }
+        },
+        child: SizedBox(
+          height: _tagHeight,
+          child: Material(
+            color: tag.color,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
