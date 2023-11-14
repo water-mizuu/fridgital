@@ -160,7 +160,7 @@ class _NearingExpiryState extends State<NearingExpiry> {
   }
 }
 
-class NearingExpiryTile extends StatelessWidget {
+class NearingExpiryTile extends StatefulWidget {
   const NearingExpiryTile({
     required this.index,
     required this.activePage,
@@ -171,19 +171,24 @@ class NearingExpiryTile extends StatelessWidget {
   final ValueNotifier<int?> activePage;
 
   @override
+  State<NearingExpiryTile> createState() => _NearingExpiryTileState();
+}
+
+class _NearingExpiryTileState extends State<NearingExpiryTile> {
+  @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: activePage,
+      listenable: widget.activePage,
       builder: (context, child) {
-        if (activePage.value case int value when value != index) {
+        if (widget.activePage.value case int value when value != widget.index) {
           return MouseRegion(cursor: SystemMouseCursors.click, child: child);
         }
         return child!;
       },
       child: GestureDetector(
         onTap: () async {
-          if (activePage.value case int page when page != index && context.mounted) {
-            ChangePageNotification(index).dispatch(context);
+          if (widget.activePage.value case int page when page != widget.index && context.mounted) {
+            ChangePageNotification(widget.index).dispatch(context);
           }
         },
         child: ClipRRect(
@@ -195,7 +200,7 @@ class NearingExpiryTile extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 16.0),
-                  child: Text("${index % 5}"),
+                  child: Text("${widget.index % 5}"),
                 ),
                 ShaderMask(
                   shaderCallback: (rect) {
