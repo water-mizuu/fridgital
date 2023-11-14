@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 30,
+            "activePatchIndex": 38,
             "patches": [
                 {
                     "date": 1698746456264,
@@ -128,6 +128,38 @@
                 {
                     "date": 1699940229648,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,6 @@\n+import \"dart:math\";\r\n+\r\n import \"package:flutter/material.dart\";\r\n import \"package:fridgital/back_end/tag_data.dart\";\r\n import \"package:fridgital/widgets/inherited_widgets/inherited_tag_data.dart\";\r\n import \"package:fridgital/widgets/shared/miscellaneous/basic_screen.dart\";\r\n@@ -16,9 +18,9 @@\n   final TagData tagData = TagData({\r\n     BuiltInTag.essential,\r\n     const CustomTag(\"meat\", Colors.red),\r\n     for (int i = 0; i < 10; ++i)\r\n-      CustomTag(\"Tag $i\", Color.)\r\n+      CustomTag(\"Tag $i\", Color((Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0)),\r\n   });\r\n \r\n   @override\r\n   void dispose() {\r\n"
+                },
+                {
+                    "date": 1699951012978,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,10 +17,13 @@\n class _InventoryState extends State<Inventory> {\r\n   final TagData tagData = TagData({\r\n     BuiltInTag.essential,\r\n     const CustomTag(\"meat\", Colors.red),\r\n-    for (int i = 0; i < 10; ++i)\r\n-      CustomTag(\"Tag $i\", Color((Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0)),\r\n+    for (int i = 0; i < ; ++i)\r\n+      CustomTag(\r\n+        \"Tag $i\",\r\n+        Color(Random().nextInt(0xFFFFFF)).withOpacity(1.0),\r\n+      ),\r\n   });\r\n \r\n   @override\r\n   void dispose() {\r\n"
+                },
+                {
+                    "date": 1699951046937,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,7 @@\n-import \"dart:math\";\r\n-\r\n import \"package:flutter/material.dart\";\r\n import \"package:fridgital/back_end/tag_data.dart\";\r\n+import \"package:fridgital/shared/constants.dart\";\r\n import \"package:fridgital/widgets/inherited_widgets/inherited_tag_data.dart\";\r\n import \"package:fridgital/widgets/shared/miscellaneous/basic_screen.dart\";\r\n import \"package:fridgital/widgets/shared/miscellaneous/tags_view.dart\";\r\n import \"package:mouse_scroll/mouse_scroll.dart\";\r\n@@ -17,13 +16,9 @@\n class _InventoryState extends State<Inventory> {\r\n   final TagData tagData = TagData({\r\n     BuiltInTag.essential,\r\n     const CustomTag(\"meat\", Colors.red),\r\n-    for (int i = 0; i < ; ++i)\r\n-      CustomTag(\r\n-        \"Tag $i\",\r\n-        Color(Random().nextInt(0xFFFFFF)).withOpacity(1.0),\r\n-      ),\r\n+    for (Color color in TagColors.selectable) CustomTag(\"$color\", color),\r\n   });\r\n \r\n   @override\r\n   void dispose() {\r\n"
+                },
+                {
+                    "date": 1699957707097,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,9 +16,9 @@\n class _InventoryState extends State<Inventory> {\r\n   final TagData tagData = TagData({\r\n     BuiltInTag.essential,\r\n     const CustomTag(\"meat\", Colors.red),\r\n-    for (Color color in TagColors.selectable) CustomTag(\"$color\", color),\r\n+    for (var (int index, UserSelectableColor color) in TagColors.selectable.indexed) CustomTag(\"Tag #$index\", color),\r\n   });\r\n \r\n   @override\r\n   void dispose() {\r\n"
+                },
+                {
+                    "date": 1699957749749,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,10 +15,10 @@\n \r\n class _InventoryState extends State<Inventory> {\r\n   final TagData tagData = TagData({\r\n     BuiltInTag.essential,\r\n-    const CustomTag(\"meat\", Colors.red),\r\n-    for (var (int index, UserSelectableColor color) in TagColors.selectable.indexed) CustomTag(\"Tag #$index\", color),\r\n+    const CustomTag(\"meat\", Colors.),\r\n+    for (var (index, color) in TagColors.selectable.indexed) CustomTag(\"Tag #$index\", color),\r\n   });\r\n \r\n   @override\r\n   void dispose() {\r\n"
+                },
+                {
+                    "date": 1699957985320,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,9 +15,9 @@\n \r\n class _InventoryState extends State<Inventory> {\r\n   final TagData tagData = TagData({\r\n     BuiltInTag.essential,\r\n-    const CustomTag(\"meat\", Colors.),\r\n+    CustomTag(\"meat\", TagColors.selectable[0),\r\n     for (var (index, color) in TagColors.selectable.indexed) CustomTag(\"Tag #$index\", color),\r\n   });\r\n \r\n   @override\r\n"
+                },
+                {
+                    "date": 1699958033421,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,10 +15,11 @@\n \r\n class _InventoryState extends State<Inventory> {\r\n   final TagData tagData = TagData({\r\n     BuiltInTag.essential,\r\n-    CustomTag(\"meat\", TagColors.selectable[0),\r\n-    for (var (index, color) in TagColors.selectable.indexed) CustomTag(\"Tag #$index\", color),\r\n+    CustomTag(\"meat\", TagColors.selectable.$1),\r\n+    for (var (index, color) in TagColors.selectable.) //\r\n+      CustomTag(\"Tag #$index\", color),\r\n   });\r\n \r\n   @override\r\n   void dispose() {\r\n"
+                },
+                {
+                    "date": 1699958099421,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,9 +16,9 @@\n class _InventoryState extends State<Inventory> {\r\n   final TagData tagData = TagData({\r\n     BuiltInTag.essential,\r\n     CustomTag(\"meat\", TagColors.selectable.$1),\r\n-    for (var (index, color) in TagColors.selectable.) //\r\n+    for (var (index, color) in TagColors.selectable.toList().) //\r\n       CustomTag(\"Tag #$index\", color),\r\n   });\r\n \r\n   @override\r\n"
+                },
+                {
+                    "date": 1699958137383,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,84 @@\n+import \"package:flutter/material.dart\";\r\n+import \"package:fridgital/back_end/tag_data.dart\";\r\n+import \"package:fridgital/shared/constants.dart\";\r\n+import \"package:fridgital/widgets/inherited_widgets/inherited_tag_data.dart\";\r\n+import \"package:fridgital/widgets/shared/miscellaneous/basic_screen.dart\";\r\n+import \"package:fridgital/widgets/shared/miscellaneous/tags_view.dart\";\r\n+import \"package:mouse_scroll/mouse_scroll.dart\";\r\n+\r\n+class Inventory extends StatefulWidget {\r\n+  const Inventory({super.key});\r\n+\r\n+  @override\r\n+  State<Inventory> createState() => _InventoryState();\r\n+}\r\n+\r\n+class _InventoryState extends State<Inventory> {\r\n+  final TagData tagData = TagData({\r\n+    BuiltInTag.essential,\r\n+    CustomTag(\"meat\", TagColors.selectable.$1),\r\n+    for (var (index, color) in TagColors.selectable.toList.indexed) //\r\n+      CustomTag(\"Tag #$index\", color),\r\n+  });\r\n+\r\n+  @override\r\n+  void dispose() {\r\n+    tagData.dispose();\r\n+    super.dispose();\r\n+  }\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    return InheritedTagData(\r\n+      tagData: tagData,\r\n+      child: const BasicScreenWidget(\r\n+        child: MouseSingleChildScrollView(\r\n+          child: Column(\r\n+            crossAxisAlignment: CrossAxisAlignment.start,\r\n+            children: [\r\n+              InventoryTitle(),\r\n+              SizedBox(height: 16.0),\r\n+              InventoryTags(),\r\n+            ],\r\n+          ),\r\n+        ),\r\n+      ),\r\n+    );\r\n+  }\r\n+}\r\n+\r\n+class InventoryTitle extends StatelessWidget {\r\n+  const InventoryTitle({super.key});\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    var theme = Theme.of(context);\r\n+\r\n+    return Padding(\r\n+      padding: const EdgeInsets.only(top: 32.0) + const EdgeInsets.symmetric(horizontal: 32.0),\r\n+      child: Column(\r\n+        mainAxisSize: MainAxisSize.min,\r\n+        crossAxisAlignment: CrossAxisAlignment.start,\r\n+        children: [\r\n+          Text(\"Inventory\".toUpperCase(), style: theme.textTheme.titleLarge),\r\n+          const SizedBox(height: 8.0),\r\n+          Text(\"What's currently in your pantry.\", style: theme.textTheme.displayLarge),\r\n+        ],\r\n+      ),\r\n+    );\r\n+  }\r\n+}\r\n+\r\n+class InventoryTags extends StatelessWidget {\r\n+  const InventoryTags({\r\n+    super.key,\r\n+  });\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    return const Padding(\r\n+      padding: EdgeInsets.symmetric(horizontal: 32.0),\r\n+      child: TagsView(),\r\n+    );\r\n+  }\r\n+}\r\n"
                 }
             ],
             "date": 1698746456264,

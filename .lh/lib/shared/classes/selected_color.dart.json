@@ -1,0 +1,26 @@
+{
+    "sourceFile": "lib/shared/classes/selected_color.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1699957632974,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1699957929943,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,6 @@\n-c\n\\ No newline at end of file\n+import \"package:flutter/material.dart\";\r\n+\r\n+class UserSelectableColor extends Color {\r\n+  const UserSelectableColor(super.value);\r\n+  \r\n+}\r\n"
+                },
+                {
+                    "date": 1699957971634,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import \"package:flutter/material.dart\";\r\n \r\n class UserSelectableColor extends Color {\r\n   const UserSelectableColor(super.value);\r\n-  \r\n+\r\n }\r\n"
+                }
+            ],
+            "date": 1699957632974,
+            "name": "Commit-0",
+            "content": "c"
+        }
+    ]
+}

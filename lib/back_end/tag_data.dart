@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:fridgital/shared/classes/selected_color.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/widgets/inherited_widgets/inherited_tag_data.dart";
 
@@ -53,5 +54,5 @@ final class CustomTag implements Tag {
   final String name;
 
   @override
-  final Color color;
+  final UserSelectableColor color;
 }

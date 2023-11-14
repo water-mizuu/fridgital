@@ -1,7 +1,6 @@
-import "dart:math";
-
 import "package:flutter/material.dart";
 import "package:fridgital/back_end/tag_data.dart";
+import "package:fridgital/shared/constants.dart";
 import "package:fridgital/widgets/inherited_widgets/inherited_tag_data.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view.dart";
@@ -17,12 +16,9 @@ class Inventory extends StatefulWidget {
 class _InventoryState extends State<Inventory> {
   final TagData tagData = TagData({
     BuiltInTag.essential,
-    const CustomTag("meat", Colors.red),
-    for (int i = 0; i < 10; ++i)
-      CustomTag(
-        "Tag $i",
-        Color(Random().nextInt(0xFFFFFF)).withOpacity(1.0),
-      ),
+    CustomTag("meat", TagColors.selectable.$1),
+    for (var (index, color) in TagColors.selectable.iterable.indexed) //
+      CustomTag("Tag #$index", color),
   });
 
   @override

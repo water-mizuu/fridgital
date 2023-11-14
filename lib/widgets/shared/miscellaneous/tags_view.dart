@@ -6,6 +6,7 @@ import "package:mouse_scroll/mouse_scroll.dart";
 
 const _tagIconSize = 14.0;
 const _tagHeight = 32.0;
+const _tagGapToIcon = 16.0;
 
 class TagsView extends StatelessWidget {
   const TagsView({super.key});
@@ -46,39 +47,31 @@ class TagSelector extends StatefulWidget {
 }
 
 class _TagSelectorState extends State<TagSelector> {
-  Widget selectionChip({void Function()? onTap, Color? color}) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(16.0),
-          child: SizedBox(
-            width: constraints.maxWidth,
-            height: _tagHeight,
-            child: Material(
-              color: color ?? TagColors.selector,
-              child: Builder(
-                builder: (context) {
-                  return InkWell(
-                    onTap: onTap,
-                    child: const IgnorePointer(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Row(
-                          children: [
-                            Text("filter", style: TextStyle(color: Colors.white)),
-                            Spacer(),
-                            Icon(Icons.add, size: _tagIconSize, color: Colors.white),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
+  Widget selectionChip({void Function()? onTap}) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16.0),
+      child: SizedBox(
+        height: _tagHeight,
+        child: Material(
+          color: TagColors.selector,
+          child: InkWell(
+            onTap: onTap,
+            child: const IgnorePointer(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text("filter", style: TextStyle(color: Colors.white)),
+                    SizedBox(width: _tagGapToIcon),
+                    Icon(Icons.add, size: _tagIconSize, color: Colors.white),
+                  ],
+                ),
               ),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -245,18 +238,14 @@ class _TagSelectorOverlayState extends State<_TagSelectorOverlay> with SingleTic
 }
 
 class _TagCreationTile extends StatelessWidget {
-  const _TagCreationTile({
-    super.key,
-  });
+  const _TagCreationTile();
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: const Row(
         children: [
-          Text("Add here!"),
-          Spacer(),
-          Icon(Icons.add, color: Colors.black),
+          Text("Add"),
         ],
       ),
       onTap: () {
@@ -267,7 +256,7 @@ class _TagCreationTile extends StatelessWidget {
 }
 
 class _TagSelectionView extends StatelessWidget {
-  const _TagSelectionView({super.key});
+  const _TagSelectionView();
 
   @override
   Widget build(BuildContext context) {
@@ -289,9 +278,7 @@ class _TagSelectionView extends StatelessWidget {
                     title: Row(
                       children: [
                         Text("$i"),
-                        const SizedBox(width: 16.0),
                         const Icon(Icons.check, color: Colors.green),
-                        const Spacer(),
                       ],
                     ),
                     onTap: () {
@@ -313,17 +300,12 @@ class _RemoveOverlayNotification extends Notification {
 
 /// Represents a simple removable tag.
 class _TagWidget extends StatelessWidget {
-  const _TagWidget({
-    required this.tag,
-    super.key,
-  });
+  const _TagWidget({required this.tag});
 
   final Tag tag;
 
   @override
   Widget build(BuildContext context) {
-    var data = TagData.of(context);
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(16.0),
       child: SizedBox(
@@ -332,7 +314,9 @@ class _TagWidget extends StatelessWidget {
           color: tag.color,
           child: InkWell(
             onTap: () {
-              data.removeTag(tag);
+              if (context.mounted) {
+                TagData.of(context).removeTag(tag);
+              }
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -340,7 +324,7 @@ class _TagWidget extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(tag.name, style: const TextStyle(color: Colors.white)),
-                  const SizedBox(width: 16.0),
+                  const SizedBox(width: _tagGapToIcon),
                   const Icon(Icons.close, size: _tagIconSize, color: Colors.white),
                 ],
               ),
