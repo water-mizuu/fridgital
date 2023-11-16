@@ -4,13 +4,23 @@ A new Flutter project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+#### Linux
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+`libsqlite3` and `libsqlite3-dev` linux packages are required.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+One time setup for Ubuntu (to run as root):
+
+dart tool/linux_setup.dart
+or
+
+sudo apt-get -y install libsqlite3-0 libsqlite3-dev
+
+
+#### MacOS
+
+Should work without any installations.
+
+#### Windows
+
+Add the `sqlite3.dll` in the same folder as the executable.

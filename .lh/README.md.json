@@ -1,0 +1,30 @@
+{
+    "sourceFile": "README.md",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1700134271149,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1700134301328,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,3 +1,18 @@\n # fridgital\r\n \r\n A new Flutter project.\r\n+\r\n+## Getting Started\r\n+\r\n+\r\n+#### Linux\r\n+\r\n+`libsqlite3` and `libsqlite3-dev\r\n+` linux packages are required.\r\n+\r\n+One time setup for Ubuntu (to run as root):\r\n+\r\n+dart tool/linux_setup.dart\r\n+or\r\n+\r\n+sudo apt-get -y install libsqlite3-0 libsqlite3-dev\r\n"
+                },
+                {
+                    "date": 1700134355496,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,13 +6,15 @@\n \r\n \r\n #### Linux\r\n \r\n-`libsqlite3` and `libsqlite3-dev\r\n-` linux packages are required.\r\n+`libsqlite3` and `libsqlite3-dev` linux packages are required.\r\n \r\n One time setup for Ubuntu (to run as root):\r\n \r\n dart tool/linux_setup.dart\r\n or\r\n \r\n sudo apt-get -y install libsqlite3-0 libsqlite3-dev\r\n+\r\n+\r\n+#### W\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1700134387226,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,5 +16,11 @@\n \r\n sudo apt-get -y install libsqlite3-0 libsqlite3-dev\r\n \r\n \r\n-#### W\n\\ No newline at end of file\n+#### MacOS\r\n+\r\n+Should work without any e\r\n+\r\n+#### Windows\r\n+\r\n+Add the `sqlite3.dll` in the same folder as the executable.\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1700134271149,
+            "name": "Commit-0",
+            "content": "# fridgital\r\n\r\nA new Flutter project.\r\n"
+        }
+    ]
+}
