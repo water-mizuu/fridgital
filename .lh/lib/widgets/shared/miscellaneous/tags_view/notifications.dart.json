@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/widgets/shared/miscellaneous/tags_view/notifications.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1700133911671,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1700133911670,
+            "name": "Commit-0",
+            "content": "\r\n\r\nsealed class OverlayNotification extends Notification {\r\n  const OverlayNotification();\r\n}\r\n\r\nclass SwitchToSelectOverlayNotification extends OverlayNotification {\r\n  const SwitchToSelectOverlayNotification();\r\n}\r\n\r\nclass SwitchToAddOverlayNotification extends OverlayNotification {\r\n  const SwitchToAddOverlayNotification();\r\n}\r\n\r\nclass CreateNewTagOverlayNotification extends OverlayNotification {\r\n  const CreateNewTagOverlayNotification({required this.name, required this.color});\r\n\r\n  final String name;\r\n  final UserSelectableColor color;\r\n}\r\n\r\nclass SelectedTagOverlayNotification extends OverlayNotification {\r\n  const SelectedTagOverlayNotification(this.tag);\r\n\r\n  final Tag tag;\r\n}\r\n\r\nclass CloseOverlayNotification extends OverlayNotification {\r\n  const CloseOverlayNotification();\r\n}"
+        }
+    ]
+}

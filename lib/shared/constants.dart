@@ -11,6 +11,8 @@ abstract final class TagColors {
   static const Color selector = Color(0xffd37979);
   static const Color essential = Color(0xff5aa0a0);
 
+  static const UserSelectableColor addButton = UserSelectableColor(0xffDAB39E);
+
   static const selectable = (
     UserSelectableColor(0xffA95454),
     UserSelectableColor(0xffC98060),

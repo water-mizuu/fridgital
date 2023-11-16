@@ -1,33 +1,27 @@
 import "package:flutter/material.dart";
 import "package:fridgital/shared/classes/selected_color.dart";
 import "package:fridgital/shared/constants.dart";
-import "package:fridgital/widgets/inherited_widgets/inherited_tag_data.dart";
 
 class TagData extends ChangeNotifier {
-  TagData(this.availableTags, this.tags);
+  TagData(this.addableTags, this.activeTags);
   TagData.empty()
-      : availableTags = {},
-        tags = {};
+      : addableTags = {},
+        activeTags = {};
 
-  static TagData? maybeOf(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<InheritedTagData>()?.tagData;
-  }
+  /// These are the tags that can be added.
+  final Set<Tag> addableTags;
 
-  static TagData of(BuildContext context) {
-    return maybeOf(context)!;
-  }
-
-  final Set<Tag> availableTags;
-  final Set<Tag> tags;
+  /// These are the tags that are currently active.
+  final Set<Tag> activeTags;
 
   void addTag(Tag tag) {
-    if (tags.add(tag)) {
+    if (activeTags.add(tag)) {
       notifyListeners();
     }
   }
 
   void removeTag(Tag tag) {
-    if (tags.remove(tag)) {
+    if (activeTags.remove(tag)) {
       notifyListeners();
     }
   }

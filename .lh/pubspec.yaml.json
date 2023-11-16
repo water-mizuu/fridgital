@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 18,
+            "activePatchIndex": 20,
             "patches": [
                 {
                     "date": 1698502106412,
@@ -80,6 +80,14 @@
                 {
                     "date": 1699830246276,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -63,8 +63,9 @@\n   # assets:\r\n   #   - images/a_dot_burr.jpeg\r\n   #   - images/a_dot_ham.jpeg\r\n \r\n+\r\n   # An image asset can refer to one or more resolution-specific \"variants\", see\r\n   # https://flutter.dev/assets-and-images/#resolution-aware\r\n \r\n   # For details regarding adding assets from package dependencies, see\r\n"
+                },
+                {
+                    "date": 1700132758813,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -29,15 +29,18 @@\n # versions available, run `flutter pub outdated`.\r\n dependencies:\r\n   # The following adds the Cupertino Icons font to your application.\r\n   # Use with the CupertinoIcons class for iOS style icons.\r\n+  animations: ^2.0.8\r\n   cupertino_icons: ^1.0.2\r\n   flutter:\r\n     sdk: flutter\r\n   mouse_scroll:\r\n     git:\r\n       url: https://github.com/water-mizuu/mouse_scroll.git\r\n \r\n+  provider: ^6.1.1\r\n+  \r\n   window_manager:\r\n \r\n dev_dependencies:\r\n   # The \"flutter_lints\" package below contains a set of recommended lints to\r\n@@ -53,8 +56,11 @@\n # following page: https://dart.dev/tools/pub/pubspec\r\n \r\n # The following section is specific to Flutter packages.\r\n flutter:\r\n+  assets:\r\n+    - assets/images/pesto.jpg\r\n+\r\n   # The following line ensures that the Material Icons font is\r\n   # included with your application, so that you can use the icons in\r\n   # the material Icons class.\r\n   uses-material-design: true\r\n@@ -63,9 +69,8 @@\n   # assets:\r\n   #   - images/a_dot_burr.jpeg\r\n   #   - images/a_dot_ham.jpeg\r\n \r\n-\r\n   # An image asset can refer to one or more resolution-specific \"variants\", see\r\n   # https://flutter.dev/assets-and-images/#resolution-aware\r\n \r\n   # For details regarding adding assets from package dependencies, see\r\n"
+                },
+                {
+                    "date": 1700132789697,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -27,20 +27,24 @@\n # dependencies can be manually updated by changing the version numbers below to\r\n # the latest version available on pub.dev. To see which dependencies have newer\r\n # versions available, run `flutter pub outdated`.\r\n dependencies:\r\n+\r\n+\r\n   # The following adds the Cupertino Icons font to your application.\r\n   # Use with the CupertinoIcons class for iOS style icons.\r\n-  animations: ^2.0.8\r\n   cupertino_icons: ^1.0.2\r\n   flutter:\r\n     sdk: flutter\r\n+\r\n   mouse_scroll:\r\n     git:\r\n       url: https://github.com/water-mizuu/mouse_scroll.git\r\n \r\n   provider: ^6.1.1\r\n-  \r\n+\r\n+\r\n+  # optional, only used while running on desktop.\r\n   window_manager:\r\n \r\n dev_dependencies:\r\n   # The \"flutter_lints\" package below contains a set of recommended lints to\r\n"
                 }
             ],
             "date": 1698502106412,
