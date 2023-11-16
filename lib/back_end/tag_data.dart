@@ -1,4 +1,7 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
+import "package:fridgital/back_end/database/tables/tags.dart";
 import "package:fridgital/shared/classes/selected_color.dart";
 import "package:fridgital/shared/constants.dart";
 
@@ -7,6 +10,16 @@ class TagData extends ChangeNotifier {
   TagData.empty()
       : addableTags = {},
         activeTags = {};
+
+  static Future<TagData> emptyFromDatabase() async {
+    var addableTags = <Tag>{};
+    var activeTags = <Tag>{};
+
+    var loadedAddable = await CustomTagsTable.instance.fetchAddableTags();
+    addableTags.addAll(loadedAddable);
+
+    return TagData(addableTags, activeTags);
+  }
 
   /// These are the tags that can be added.
   final Set<Tag> addableTags;
@@ -22,6 +35,20 @@ class TagData extends ChangeNotifier {
 
   void removeTag(Tag tag) {
     if (activeTags.remove(tag)) {
+      notifyListeners();
+    }
+  }
+
+  Future<void> addAddableTag(CustomTag tag) async {
+    if (addableTags.add(tag)) {
+      await CustomTagsTable.instance.addAddableTag(tag);
+      notifyListeners();
+    }
+  }
+
+  Future<void> removeAddableTag(CustomTag tag) async {
+    if (addableTags.remove(tag)) {
+      await CustomTagsTable.instance.removeAddableTag(tag);
       notifyListeners();
     }
   }

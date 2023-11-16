@@ -16,6 +16,7 @@ class RouteState extends InheritedWidget {
   final Pages activePage;
   final void Function(Pages) moveTo;
   final void Function() toggleSecondLayer;
+
   final ValueNotifier<int> popNotifier;
 
   static RouteState? maybeOf(BuildContext context) {

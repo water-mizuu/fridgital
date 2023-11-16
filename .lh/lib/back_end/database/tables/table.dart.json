@@ -1,0 +1,38 @@
+{
+    "sourceFile": "lib/back_end/database/tables/table.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 5,
+            "patches": [
+                {
+                    "date": 1700135061642,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1700135091674,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,4 @@\n-c\n\\ No newline at end of file\n+abstract base class DatabaseTable extends ChangeNotif {\r\n+  void load();\r\n+  void create();\r\n+}\r\n"
+                },
+                {
+                    "date": 1700135213965,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,6 @@\n-abstract base class DatabaseTable extends ChangeNotif {\r\n-  void load();\r\n-  void create();\r\n+import \"package:flutter/material.dart\";\r\n+\r\n+abstract base class DatabaseTable extends ChangeNotifier {\r\n+  Future<void> create();\r\n+  Future<void> update();\r\n }\r\n"
+                },
+                {
+                    "date": 1700135539777,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import \"package:flutter/material.dart\";\r\n \r\n abstract base class DatabaseTable extends ChangeNotifier {\r\n+  \r\n   Future<void> create();\r\n-  Future<void> update();\r\n }\r\n"
+                },
+                {
+                    "date": 1700143553664,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,6 @@\n+import \"package:flutter/material.dart\";\r\n+\r\n+abstract base class DatabaseTable extends ChangeNotifier {\r\n+  Future<void> create();\r\n+  \r\n+}\r\n"
+                },
+                {
+                    "date": 1700143586277,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,12 +1,15 @@\n import \"package:flutter/material.dart\";\r\n \r\n-abstract base class DatabaseTable extends ChangeNotifier {\r\n+abstract base class DatabaseTable {\r\n+  String get name;\r\n+\r\n   Future<void> create();\r\n-  \r\n-}\r\n-import \"package:flutter/material.dart\";\r\n \r\n-abstract base class DatabaseTable extends ChangeNotifier {\r\n-  \r\n-  Future<void> create();\r\n+  Future<void> ensureInitialized() async {\r\n+\r\n+    var table = await database.query(\"sqlite_master\", where: \"name = ?\", whereArgs: [addableTagsTable]);\r\n+    if (table.isEmpty) {\r\n+      await create();\r\n+    }\r\n+  }\r\n }\r\n"
+                }
+            ],
+            "date": 1700135061642,
+            "name": "Commit-0",
+            "content": "c"
+        }
+    ]
+}

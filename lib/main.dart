@@ -8,9 +8,22 @@ import "package:fridgital/shared/enums.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/screens/main_screen/main_screen.dart";
 import "package:fridgital/widgets/screens/recipe/one_pot_pesto.dart";
+import "package:sqflite_common_ffi/sqflite_ffi.dart";
 import "package:window_manager/window_manager.dart";
 
+late final Database database;
+
 Future<void> main() async {
+  /// Load the database
+  if (Platform.isWindows || Platform.isLinux) {
+    sqfliteFfiInit();
+  }
+
+  databaseFactory = databaseFactoryFfi;
+  var path = await getDatabasesPath();
+  database = await databaseFactory.openDatabase(path);
+
+  /// Set up the window manager if in desktop.
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
     await windowManager.ensureInitialized();
@@ -74,6 +87,7 @@ class _MyAppState extends State<MyApp> {
   );
 
   final ValueNotifier<int> popNotifier = ValueNotifier<int>(0);
+
   bool isSecondLayerEnabled = false;
   Pages activePage = Pages.home;
 

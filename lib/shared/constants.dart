@@ -13,7 +13,7 @@ abstract final class TagColors {
 
   static const UserSelectableColor addButton = UserSelectableColor(0xffDAB39E);
 
-  static const selectable = (
+  static const selectable = [
     UserSelectableColor(0xffA95454),
     UserSelectableColor(0xffC98060),
     UserSelectableColor(0xffDBAF9C),
@@ -31,7 +31,7 @@ abstract final class TagColors {
     UserSelectableColor(0xff8D5F4C),
     UserSelectableColor(0xff8C7973),
     UserSelectableColor(0xff665252),
-  );
+  ];
 }
 
 extension ListableExtension on (
@@ -72,4 +72,6 @@ extension ListableExtension on (
     yield $16;
     yield $17;
   }
+
+  List<UserSelectableColor> get list => iterable.toList();
 }
