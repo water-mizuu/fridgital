@@ -1,10 +1,9 @@
 import "package:flutter/material.dart";
 import "package:fridgital/back_end/tag_data.dart";
-import "package:fridgital/shared/constants.dart";
-import "package:fridgital/widgets/inherited_widgets/inherited_tag_data.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
-import "package:fridgital/widgets/shared/miscellaneous/tags_view.dart";
+import "package:fridgital/widgets/shared/miscellaneous/tags_view/tags_view.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
+import "package:provider/provider.dart";
 
 class Inventory extends StatefulWidget {
   const Inventory({super.key});
@@ -13,27 +12,13 @@ class Inventory extends StatefulWidget {
   State<Inventory> createState() => _InventoryState();
 }
 
-class _InventoryState extends State<Inventory> {
-  final TagData tagData = TagData({
-    BuiltInTag.essential,
-    CustomTag("meat", TagColors.selectable.$1),
-    for (var (index, color) in TagColors.selectable.iterable.indexed) //
-      CustomTag("Tag #$index", color),
-  }, {
-    BuiltInTag.essential,
-    CustomTag("meat", TagColors.selectable.$1),
-  });
-
-  @override
-  void dispose() {
-    tagData.dispose();
-    super.dispose();
-  }
-
+class _InventoryState extends State<Inventory> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
-    return InheritedTagData(
-      tagData: tagData,
+    super.build(context);
+
+    return ChangeNotifierProvider(
+      create: (context) => TagData({BuiltInTag.essential}, {BuiltInTag.essential}),
       child: const BasicScreenWidget(
         child: MouseSingleChildScrollView(
           child: Column(
@@ -48,6 +33,9 @@ class _InventoryState extends State<Inventory> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class InventoryTitle extends StatelessWidget {
@@ -73,9 +61,7 @@ class InventoryTitle extends StatelessWidget {
 }
 
 class InventoryTags extends StatelessWidget {
-  const InventoryTags({
-    super.key,
-  });
+  const InventoryTags({super.key});
 
   @override
   Widget build(BuildContext context) {
