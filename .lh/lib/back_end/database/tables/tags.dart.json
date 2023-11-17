@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 48,
+            "activePatchIndex": 50,
             "patches": [
                 {
                     "date": 1700135053815,
@@ -200,6 +200,14 @@
                 {
                     "date": 1700148984281,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -23,9 +23,9 @@\n       \"\"\",\r\n     );\r\n   }\r\n \r\n-  Future<Iterable<Tag>> readAddableTags() async {\r\n+  Future<Iterable<Tag>> fetchAddableTags() async {\r\n     await ensureInitialized();\r\n     var rows = await database.query(name);\r\n \r\n     return () sync* {\r\n"
+                },
+                {
+                    "date": 1700189449504,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,48 @@\n+import \"package:fridgital/back_end/database/tables/table.dart\";\r\n+import \"package:fridgital/back_end/tag_data.dart\";\r\n+import \"package:fridgital/main.dart\";\r\n+import \"package:fridgital/shared/constants.dart\";\r\n+\r\n+final class CustomTagsTable extends DatabaseTable {\r\n+  CustomTagsTable._();\r\n+\r\n+  @override\r\n+  String get name => \"addableTags\";\r\n+\r\n+  static CustomTagsTable instance = CustomTagsTable._();\r\n+\r\n+  @override\r\n+  Future<void> create() async {\r\n+    await database.execute(\r\n+      \"\"\"\r\n+      CREATE TABLE $name (\r\n+        id INTEGER PRIMARY KEY,\r\n+        name TEXT NOT NULL,\r\n+        color INTEGER NOT NULL\r\n+      )\r\n+      \"\"\",\r\n+    );\r\n+  }\r\n+\r\n+  Future<Iterable<Tag>> fetchAddableTags() async {\r\n+    await ensureInitialized();\r\n+    var rows = await database.query(name);\r\n+\r\n+    return () sync* {\r\n+      for (var row in rows) {\r\n+        \r\n+        if (row case {\"id\": int _, \"name\": String name, \"color\": int color}) {\r\n+          yield CustomTag(name, TagColors.selectable[color]);\r\n+        }\r\n+      }\r\n+    }();\r\n+  }\r\n+\r\n+  Future<void> addAddableTag(CustomTag tag) async {\r\n+    await database.insert(name, {\"name\": tag.name, \"color\": TagColors.selectable.indexOf(tag.color)});\r\n+  }\r\n+\r\n+  Future<void> removeAddableTag(CustomTag tag) async {\r\n+    await database.delete(name, where: \"name = ?\", whereArgs: [tag.name]);\r\n+  }\r\n+}\r\n"
+                },
+                {
+                    "date": 1700189553985,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -45,51 +45,4 @@\n   Future<void> removeAddableTag(CustomTag tag) async {\r\n     await database.delete(name, where: \"name = ?\", whereArgs: [tag.name]);\r\n   }\r\n }\r\n-import \"package:fridgital/back_end/database/tables/table.dart\";\r\n-import \"package:fridgital/back_end/tag_data.dart\";\r\n-import \"package:fridgital/main.dart\";\r\n-import \"package:fridgital/shared/constants.dart\";\r\n-\r\n-final class CustomTagsTable extends DatabaseTable {\r\n-  CustomTagsTable._();\r\n-\r\n-  @override\r\n-  String get name => \"addableTags\";\r\n-\r\n-  static CustomTagsTable instance = CustomTagsTable._();\r\n-\r\n-  @override\r\n-  Future<void> create() async {\r\n-    await database.execute(\r\n-      \"\"\"\r\n-      CREATE TABLE $name (\r\n-        id INTEGER PRIMARY KEY,\r\n-        name TEXT NOT NULL,\r\n-        color INTEGER NOT NULL\r\n-      )\r\n-      \"\"\",\r\n-    );\r\n-  }\r\n-\r\n-  Future<Iterable<Tag>> fetchAddableTags() async {\r\n-    await ensureInitialized();\r\n-    var rows = await database.query(name);\r\n-\r\n-    return () sync* {\r\n-      for (var row in rows) {\r\n-        if (row case {\"id\": int _, \"name\": String name, \"color\": int color}) {\r\n-          yield CustomTag(name, TagColors.selectable[color]);\r\n-        }\r\n-      }\r\n-    }();\r\n-  }\r\n-\r\n-  Future<void> addAddableTag(CustomTag tag) async {\r\n-    await database.insert(name, { \"name\": tag.name, \"color\": TagColors.selectable.indexOf(tag.color)}    );\r\n-  }\r\n-\r\n-  Future<void> removeAddableTag(CustomTag tag) async {\r\n-    await database.delete(name, where: \"name = ?\", whereArgs: [tag.name]);\r\n-  }\r\n-}\r\n"
                 }
             ],
             "date": 1700135053815,

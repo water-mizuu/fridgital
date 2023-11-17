@@ -2,6 +2,7 @@ import "dart:async";
 
 import "package:flutter/material.dart";
 import "package:fridgital/shared/classes/constant_gradient.dart";
+import "package:fridgital/shared/extensions/time.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/side_button.dart";
@@ -122,7 +123,7 @@ class _NearingExpiryState extends State<NearingExpiry> {
                 unawaited(
                   pageController.animateToPage(
                     index,
-                    duration: const Duration(milliseconds: 380),
+                    duration: 380.ms,
                     curve: Curves.easeOutQuart,
                   ),
                 );

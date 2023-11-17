@@ -45,8 +45,8 @@ class _ShrinkingNavigationState extends State<ShrinkingNavigation> {
   late final routePopNotifier = RouteState.of(context).popNotifier;
 
   void updateRetracted() {
-    if (widget.latestScrollOffset.value case (<= -15.0) || (>= 15.0)) {
-      isRetracted.value = widget.latestScrollOffset.value >= 0.0;
+    if (widget.latestScrollOffset.value case (<= -15.0 || >= 15.0) && var value) {
+      isRetracted.value = value >= 0.0;
     }
   }
 

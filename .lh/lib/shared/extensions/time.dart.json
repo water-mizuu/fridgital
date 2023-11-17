@@ -1,0 +1,26 @@
+{
+    "sourceFile": "lib/shared/extensions/time.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1700191018212,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1700191048253,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,7 @@\n-e\n\\ No newline at end of file\n+extension TimeExtension on int {\r\n+  Duratio\r\n+  Duration get seconds => Duration(seconds: this);\r\n+  Duration get minutes => Duration(minutes: this);\r\n+  Duration get hours => Duration(hours: this);\r\n+  Duration get days => Duration(days: this);\r\n+}\r\n"
+                },
+                {
+                    "date": 1700191219040,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n extension TimeExtension on int {\r\n-  Duration get milliseconds => Duration(milliseconds: this);\r\n+  Duration get ms => Duration(milliseconds: this);\r\n   Duration get seconds => Duration(seconds: this);\r\n   Duration get minutes => Duration(minutes: this);\r\n   Duration get hours => Duration(hours: this);\r\n   Duration get days => Duration(days: this);\r\n"
+                }
+            ],
+            "date": 1700191018212,
+            "name": "Commit-0",
+            "content": "e"
+        }
+    ]
+}
