@@ -29,3 +29,16 @@ class SelectedTagOverlayNotification extends OverlayNotification {
 class CloseOverlayNotification extends OverlayNotification {
   const CloseOverlayNotification();
 }
+
+class ModifyWorkingTagNotification extends OverlayNotification {
+  const ModifyWorkingTagNotification({required this.name, required this.color});
+
+  final String name;
+  final UserSelectableColor color;
+}
+
+class ChooseWorkingTag extends OverlayNotification {
+  const ChooseWorkingTag(this.tag);
+
+  final CustomTag tag;
+}

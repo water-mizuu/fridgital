@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 3,
             "patches": [
                 {
                     "date": 1700133911671,
@@ -16,6 +16,10 @@
                 {
                     "date": 1700182999922,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,10 +6,10 @@\n sealed class OverlayNotification extends Notification {\r\n   const OverlayNotification();\r\n }\r\n \r\n-class SwitchToOverlayNotification extends OverlayNotification {\r\n-  const SwitchToOverlayNotification({required this.mode});\r\n+class SwitchOverlayNotification extends OverlayNotification {\r\n+  const SwitchOverlayNotification({required this.mode});\r\n \r\n   final OverlayMode mode;\r\n }\r\n \r\n"
+                },
+                {
+                    "date": 1700303431105,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,32 @@\n+import \"package:flutter/material.dart\";\r\n+import \"package:fridgital/back_end/tag_data.dart\";\r\n+import \"package:fridgital/shared/classes/selected_color.dart\";\r\n+import \"package:fridgital/widgets/shared/miscellaneous/tags_view/tags_view.dart\";\r\n+\r\n+sealed class OverlayNotification extends Notification {\r\n+  const OverlayNotification();\r\n+}\r\n+\r\n+class SwitchOverlayNotification extends OverlayNotification {\r\n+  const SwitchOverlayNotification({required this.mode});\r\n+\r\n+  final OverlayMode mode;\r\n+}\r\n+\r\n+class CreateNewTagOverlayNotification extends OverlayNotification {\r\n+  const CreateNewTagOverlayNotification({required this.name, required this.color});\r\n+\r\n+  final String name;\r\n+  final UserSelectableColor color;\r\n+}\r\n+\r\n+class SelectedTagOverlayNotification extends OverlayNotification {\r\n+  const SelectedTagOverlayNotification(this.tag);\r\n+\r\n+  final Tag tag;\r\n+}\r\n+\r\n+class CloseOverlayNotification extends OverlayNotification {\r\n+  const CloseOverlayNotification();\r\n+}\r\n+\r\n"
                 }
             ],
             "date": 1700133911670,

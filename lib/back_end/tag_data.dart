@@ -11,8 +11,10 @@ class TagData extends ChangeNotifier {
       : addableTags = {},
         activeTags = {};
 
+  static const Set<BuiltInTag> _builtInTags = {BuiltInTag.essential};
+
   static Future<TagData> emptyFromDatabase() async {
-    var addableTags = <Tag>{};
+    var addableTags = <Tag>{..._builtInTags};
     var activeTags = <Tag>{};
 
     var loadedAddable = await CustomTagsTable.instance.fetchAddableTags();
@@ -35,6 +37,14 @@ class TagData extends ChangeNotifier {
 
   void removeTag(Tag tag) {
     if (activeTags.remove(tag)) {
+      notifyListeners();
+    }
+  }
+
+  Future<void> replaceAddableTag(CustomTag target, CustomTag tag) async {
+    if (addableTags.remove(target)) {
+      addableTags.add(tag);
+      await CustomTagsTable.instance.replaceAddableTag(target, tag);
       notifyListeners();
     }
   }

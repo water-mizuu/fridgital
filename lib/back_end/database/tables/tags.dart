@@ -44,4 +44,13 @@ final class CustomTagsTable extends DatabaseTable {
   Future<void> removeAddableTag(CustomTag tag) async {
     await database.delete(name, where: "name = ?", whereArgs: [tag.name]);
   }
+
+  Future<void> replaceAddableTag(CustomTag target, CustomTag tag) async {
+    await database.update(
+      name,
+      {"name": tag.name, "color": TagColors.selectable.indexOf(tag.color)},
+      where: "name = ?",
+      whereArgs: [target.name],
+    );
+  }
 }
