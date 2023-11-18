@@ -1,5 +1,7 @@
 // ignore_for_file: discarded_futures
 
+import "dart:async";
+
 import "package:flutter/material.dart";
 import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
@@ -26,7 +28,10 @@ class _InventoryState extends State<Inventory> with AutomaticKeepAliveClientMixi
 
   @override
   void dispose() {
-    loadingTagData.then((tagData) => tagData.dispose());
+    unawaited(() async {
+      var tagData = await loadingTagData;
+      tagData.dispose();
+    }());
 
     super.dispose();
   }
@@ -37,31 +42,28 @@ class _InventoryState extends State<Inventory> with AutomaticKeepAliveClientMixi
 
     return FutureBuilder(
       future: loadingTagData,
-      builder: (context, snapshot) {
-        return switch (snapshot) {
-          AsyncSnapshot(connectionState: ConnectionState.done, hasData: true, :var data!) =>
-            ChangeNotifierProvider.value(
-              value: data,
-              child: const BasicScreenWidget(
-                child: MouseSingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      InventoryTitle(),
-                      SizedBox(height: 16.0),
-                      InventoryTags(),
-                    ],
-                  ),
+      builder: (context, snapshot) => switch (snapshot) {
+        AsyncSnapshot(connectionState: ConnectionState.done, hasData: true, :var data!) => //
+          ChangeNotifierProvider.value(
+            value: data,
+            child: const BasicScreenWidget(
+              child: MouseSingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    InventoryTitle(),
+                    SizedBox(height: 16.0),
+                    InventoryTags(),
+                  ],
                 ),
               ),
             ),
-          AsyncSnapshot(connectionState: ConnectionState.done, hasError: true, :var error!) => //
-            BasicScreenWidget(child: Center(child: Text(error.toString()))),
-          // AsyncSnapshot(connectionState: ConnectionState.waiting || ConnectionState.none || ConnectionState.active) =>
-          AsyncSnapshot() => const BasicScreenWidget(
-              child: Center(child: CircularProgressIndicator()),
-            ),
-        };
+          ),
+        AsyncSnapshot(connectionState: ConnectionState.done, hasError: true, :var error!) => //
+          BasicScreenWidget(child: Center(child: Text(error.toString()))),
+        // AsyncSnapshot(connectionState: ConnectionState.waiting || ConnectionState.none || ConnectionState.active) =>
+        AsyncSnapshot() => //
+          const BasicScreenWidget(child: Center(child: CircularProgressIndicator())),
       },
     );
   }

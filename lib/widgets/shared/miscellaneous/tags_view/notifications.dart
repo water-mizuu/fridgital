@@ -1,17 +1,16 @@
 import "package:flutter/material.dart";
 import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/shared/classes/selected_color.dart";
+import "package:fridgital/widgets/shared/miscellaneous/tags_view/tags_view.dart";
 
 sealed class OverlayNotification extends Notification {
   const OverlayNotification();
 }
 
-class SwitchToSelectOverlayNotification extends OverlayNotification {
-  const SwitchToSelectOverlayNotification();
-}
+class SwitchOverlayNotification extends OverlayNotification {
+  const SwitchOverlayNotification({required this.mode});
 
-class SwitchToAddOverlayNotification extends OverlayNotification {
-  const SwitchToAddOverlayNotification();
+  final OverlayMode mode;
 }
 
 class CreateNewTagOverlayNotification extends OverlayNotification {
