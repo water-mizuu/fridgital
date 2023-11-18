@@ -1,3 +1,5 @@
+// TODO(water-mizuu): Refactor this whole file.
+
 import "dart:async";
 import "dart:ui";
 
@@ -92,36 +94,44 @@ class _TagSelectorState extends State<TagSelector> with TickerProviderStateMixin
         }
       }
 
+      void handleNotification(OverlayNotification notification) async {
+        switch (notification) {
+          case SwitchOverlayNotification(:var mode):
+            await transitionTo(mode);
+
+          case SelectedTagOverlayNotification(:var tag):
+            await animationController.reverse(from: 1.0);
+            tagData.addTag(tag);
+            dispose();
+
+          case CloseOverlayNotification():
+            await animationController.reverse(from: 1.0);
+            dispose();
+
+          case CreateNewTagOverlayNotification(:var name, :var color):
+            var tag = CustomTag(name, color);
+
+            await tagData.addAddableTag(tag);
+            await transitionTo(OverlayMode.select);
+
+          case ModifyWorkingTagNotification(:var name, :var color):
+            var toReplace = workingTag.value!;
+            var tag = workingTag.value = CustomTag(name, color);
+
+            await tagData.replaceAddableTag(toReplace, tag);
+            await transitionTo(OverlayMode.select);
+            workingTag.value = null;
+
+          case ChooseWorkingTag(:var tag):
+            workingTag.value = tag;
+        }
+      }
+
       entry = OverlayEntry(
         maintainState: true,
         builder: (_) => NotificationListener<OverlayNotification>(
           onNotification: (notification) {
-            unawaited(() async {
-              switch (notification) {
-                case SwitchOverlayNotification(:var mode):
-                  await transitionTo(mode);
-
-                case SelectedTagOverlayNotification(:var tag):
-                  await animationController.reverse(from: 1.0);
-                  tagData.addTag(tag);
-                  dispose();
-                case CloseOverlayNotification():
-                  await animationController.reverse(from: 1.0);
-                  dispose();
-                case CreateNewTagOverlayNotification(:var name, :var color):
-                  var tag = CustomTag(name, color);
-                  tagData.addableTags.add(tag);
-
-                  await transitionTo(OverlayMode.select);
-                case ModifyWorkingTagNotification(:var name, :var color):
-                  var tag = CustomTag(name, color);
-                  await tagData.replaceAddableTag(workingTag.value!, tag);
-                  await transitionTo(OverlayMode.select);
-                  workingTag.value = null;
-                case ChooseWorkingTag(:var tag):
-                  workingTag.value = tag;
-              }
-            }());
+            handleNotification(notification);
 
             return true;
           },
@@ -146,7 +156,10 @@ class _TagSelectorState extends State<TagSelector> with TickerProviderStateMixin
                           scale: (0.8 + 0.4 * animationController.value).clamp(0.0, 1.0),
                           child: ConstrainedBox(
                             constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.95),
-                            child: child,
+                            child: switch (animationController.isAnimating) {
+                              true => IgnorePointer(child: child),
+                              false => child,
+                            },
                           ),
                         ),
                       ),
@@ -157,7 +170,7 @@ class _TagSelectorState extends State<TagSelector> with TickerProviderStateMixin
                           OverlayMode.add => CreateTagOverlay(tagData: tagData),
 
                           ///
-                          OverlayMode.edit => EditTagOverlay(tag: tag!),
+                          OverlayMode.edit => EditTagOverlay(tagData: tagData, tag: tag!),
                           OverlayMode.selectEdit => SelectEditOverlay(tagData: tagData),
                           OverlayMode.delete => DeleteTagOverlay(tagData: tagData),
                           OverlayMode.selectDelete => SelectDeleteOverlay(tagData: tagData),
@@ -211,16 +224,16 @@ class SelectTagOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     var TagData(:activeTags, :addableTags) = tagData;
-    var availableTags = addableTags.difference(activeTags);
+    var availableTags = addableTags.where((tag) => !activeTags.contains(tag)).toList();
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () {},
       child: Container(
         padding: const EdgeInsets.all(16.0),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: FigmaColors.whiteAccent,
-          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+          borderRadius: BorderRadius.circular(5.0),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -243,26 +256,23 @@ class SelectTagOverlay extends StatelessWidget {
             const SizedBox(height: 24.0),
             ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 284.0),
-              child: switch (availableTags.length) {
-                0 => const SizedBox(),
-                _ => MouseSingleChildScrollView(
-                    child: Wrap(
-                      runSpacing: 4.0,
-                      alignment: WrapAlignment.center,
-                      children: [
-                        for (var tag in availableTags)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 4.0),
-                            child: _TagWidget(
-                              tag: tag,
-                              icon: null,
-                              onTap: () => SelectedTagOverlayNotification(tag).dispatch(context),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-              },
+              child: MouseSingleChildScrollView(
+                child: Wrap(
+                  runSpacing: 4.0,
+                  alignment: WrapAlignment.center,
+                  children: [
+                    for (var tag in availableTags)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 4.0),
+                        child: _TagWidget(
+                          tag: tag,
+                          icon: null,
+                          onTap: () => SelectedTagOverlayNotification(tag).dispatch(context),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ),
             const SizedBox(height: 32.0),
             Row(
@@ -287,22 +297,6 @@ class SelectTagOverlay extends StatelessWidget {
                   icon: Icons.delete_outline,
                   onTap: () {
                     const SwitchOverlayNotification(mode: OverlayMode.selectDelete).dispatch(context);
-                  },
-                ),
-                const SizedBox(height: 8.0, width: 8.0),
-                _IconWidget(
-                  color: TagColors.essential,
-                  icon: Icons.edit,
-                  onTap: () {
-                    const SwitchOverlayNotification(mode: OverlayMode.edit).dispatch(context);
-                  },
-                ),
-                const SizedBox(height: 8.0, width: 8.0),
-                _IconWidget(
-                  color: const Color(0x7f85100D),
-                  icon: Icons.delete,
-                  onTap: () {
-                    const SwitchOverlayNotification(mode: OverlayMode.delete).dispatch(context);
                   },
                 ),
               ],
@@ -485,6 +479,16 @@ class _CreateTagOverlayState extends State<CreateTagOverlay> {
                       return;
                     }
 
+                    if (widget.tagData.addableTags.any((v) => v.name == text)) {
+                      var snackbar = SnackBar(
+                        content: Text("A tag with the name '$text' already exists!"),
+                        duration: 2.s,
+                      );
+
+                      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                      return;
+                    }
+
                     CreateNewTagOverlayNotification(color: color, name: text).dispatch(context);
                   },
                 ),
@@ -499,9 +503,12 @@ class _CreateTagOverlayState extends State<CreateTagOverlay> {
 
 class EditTagOverlay extends StatefulWidget {
   const EditTagOverlay({
+    required this.tagData,
     required this.tag,
     super.key,
   });
+
+  final TagData tagData;
 
   /// This is the tag that we want to be editing.
   final CustomTag tag;
@@ -587,61 +594,60 @@ class _EditTagOverlayState extends State<EditTagOverlay> {
             ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 312),
               child: MouseScroll<ScrollController>(
-                builder: (context, controller, physics) => GridView.builder(
-                  controller: controller,
-                  physics: physics,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
-                  itemCount: TagColors.selectable.length,
-                  itemBuilder: (context, index) {
-                    var color = TagColors.selectable[index];
+                builder: (context, controller, physics) => ValueListenableBuilder(
+                  valueListenable: selectedColor,
+                  builder: (context, selectedColor, _) {
+                    return GridView.builder(
+                      controller: controller,
+                      physics: physics,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
+                      itemCount: TagColors.selectable.length,
+                      itemBuilder: (context, index) {
+                        var color = TagColors.selectable[index];
 
-                    return ClickableWidget(
-                      onTap: () {
-                        selectedColor.value = color;
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: LayoutBuilder(
-                          builder: (context, constraints) => Center(
-                            child: Container(
-                              width: constraints.maxWidth * 0.9,
-                              height: constraints.maxHeight * 0.9,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: color,
-                              ),
-                              child: ValueListenableBuilder(
-                                valueListenable: selectedColor,
-                                builder: (context, selectedColor, child) => //
-                                    selectedColor != color
-                                        ? const SizedBox()
-                                        : Center(
-                                            child: Container(
-                                              width: constraints.maxWidth * 0.8375,
-                                              height: constraints.maxHeight * 0.8375,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: selectedColor == color //
-                                                    ? FigmaColors.whiteAccent
-                                                    : color,
-                                              ),
-                                              child: Center(
-                                                child: Container(
-                                                  width: constraints.maxWidth * 0.7,
-                                                  height: constraints.maxHeight * 0.7,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: color,
-                                                  ),
+                        return ClickableWidget(
+                          onTap: () {
+                            this.selectedColor.value = color;
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: LayoutBuilder(
+                              builder: (context, constraints) => Center(
+                                child: Container(
+                                  width: constraints.maxWidth * 0.9,
+                                  height: constraints.maxHeight * 0.9,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: color,
+                                  ),
+                                  child: selectedColor != color
+                                      ? const SizedBox()
+                                      : Center(
+                                          child: Container(
+                                            width: constraints.maxWidth * 0.8375,
+                                            height: constraints.maxHeight * 0.8375,
+                                            decoration: const BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: FigmaColors.whiteAccent,
+                                            ),
+                                            child: Center(
+                                              child: Container(
+                                                width: constraints.maxWidth * 0.7,
+                                                height: constraints.maxHeight * 0.7,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: color,
                                                 ),
                                               ),
                                             ),
                                           ),
+                                        ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     );
                   },
                 ),
@@ -655,7 +661,7 @@ class _EditTagOverlayState extends State<EditTagOverlay> {
                   icon: Icons.arrow_back,
                   color: TagColors.addButton,
                   onTap: () {
-                    const SwitchOverlayNotification(mode: OverlayMode.select).dispatch(context);
+                    const SwitchOverlayNotification(mode: OverlayMode.selectEdit).dispatch(context);
                   },
                 ),
                 const SizedBox(height: 8.0, width: 8.0),
@@ -666,7 +672,20 @@ class _EditTagOverlayState extends State<EditTagOverlay> {
                     var color = selectedColor.value;
                     var text = textEditingController.text;
                     if (text.isEmpty) {
-                      var snackbar = SnackBar(content: const Text("Please enter a name"), duration: 2.s);
+                      var snackbar = SnackBar(
+                        content: const Text("Please enter a name"),
+                        duration: 2.s,
+                      );
+
+                      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                      return;
+                    }
+
+                    if (widget.tagData.addableTags.any((v) => v != widget.tag && v.name == text)) {
+                      var snackbar = SnackBar(
+                        content: Text("A tag with the name '$text' already exists!"),
+                        duration: 2.s,
+                      );
 
                       ScaffoldMessenger.of(context).showSnackBar(snackbar);
                       return;
@@ -684,17 +703,24 @@ class _EditTagOverlayState extends State<EditTagOverlay> {
   }
 }
 
-// TODO(water-mizuu): Add the ability to edit added tags.
 class SelectEditOverlay extends StatelessWidget {
   const SelectEditOverlay({required this.tagData, super.key});
 
   final TagData tagData;
 
+  void Function() tapHandler(BuildContext context, Tag tag) {
+    return () {
+      if (tag case _ as CustomTag) {
+        ChooseWorkingTag(tag).dispatch(context);
+        const SwitchOverlayNotification(mode: OverlayMode.edit).dispatch(context);
+      }
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    var TagData(:activeTags, :addableTags) = tagData;
-    var availableTags = addableTags.difference(activeTags);
+    var addableTags = tagData.addableTags;
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -727,34 +753,34 @@ class SelectEditOverlay extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24.0),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 284.0),
-              child: switch (availableTags.length) {
-                0 => const SizedBox(),
-                _ => MouseSingleChildScrollView(
-                    child: Wrap(
-                      runSpacing: 4.0,
-                      alignment: WrapAlignment.center,
-                      children: [
-                        for (var tag in availableTags)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 4.0),
-                            child: _TagWidget(
-                              tag: tag,
-                              icon: null,
-                              onTap: () {
-                                if (tag case _ as CustomTag) {
-                                  ChooseWorkingTag(tag).dispatch(context);
-                                  const SwitchOverlayNotification(mode: OverlayMode.edit).dispatch(context);
-                                }
-                              },
-                              enabled: tag is CustomTag,
-                            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 284.0),
+                child: MouseSingleChildScrollView(
+                  child: Wrap(
+                    runSpacing: 4.0,
+                    alignment: WrapAlignment.center,
+                    children: [
+                      for (var tag in addableTags)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 4.0),
+                          child: _TagWidget(
+                            tag: tag,
+                            icon: null,
+                            onTap: () {
+                              if (tag case _ as CustomTag) {
+                                ChooseWorkingTag(tag).dispatch(context);
+                                const SwitchOverlayNotification(mode: OverlayMode.edit).dispatch(context);
+                              }
+                            },
+                            enabled: tag is CustomTag,
                           ),
-                      ],
-                    ),
+                        ),
+                    ],
                   ),
-              },
+                ),
+              ),
             ),
             const SizedBox(height: 32.0),
             _IconWidget(

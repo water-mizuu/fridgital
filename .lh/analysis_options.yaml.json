@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 5,
+            "activePatchIndex": 8,
             "patches": [
                 {
                     "date": 1698505331517,
@@ -28,6 +28,18 @@
                 {
                     "date": 1699372441929,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -147,9 +147,9 @@\n     prefer_final_locals: false\r\n     prefer_final_parameters: false\r\n     prefer_for_elements_to_map_fromIterable: true\r\n     prefer_foreach: true\r\n-    prefer_function_declarations_over_variables: \r\n+    prefer_function_declarations_over_variables: false\r\n     prefer_generic_function_type_aliases: true\r\n     prefer_if_elements_to_conditional_expressions: true\r\n     prefer_if_null_operators: true\r\n     prefer_initializing_formals: true\r\n@@ -182,9 +182,9 @@\n     sort_unnamed_constructors_first: true\r\n     test_types_in_equals: true\r\n     throw_in_finally: true\r\n     tighten_type_of_initializing_formals: true\r\n-    type_annotate_public_apis: true\r\n+    type_annotate_public_apis: \r\n     type_init_formals: true\r\n     type_literal_in_constant_pattern: true\r\n     unawaited_futures: true\r\n     unnecessary_await_in_return: true\r\n"
+                },
+                {
+                    "date": 1700315596495,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -55,9 +55,9 @@\n     avoid_single_cascade_in_expression_statements: true\r\n     avoid_slow_async_io: true\r\n     avoid_type_to_string: true\r\n     avoid_types_as_parameter_names: true\r\n-    avoid_types_on_closure_parameters: true\r\n+    avoid_types_on_closure_parameters true\r\n     avoid_unnecessary_containers: true\r\n     avoid_unused_constructor_parameters: true\r\n     avoid_void_async: false\r\n     avoid_web_libraries_in_flutter: true\r\n@@ -182,9 +182,9 @@\n     sort_unnamed_constructors_first: true\r\n     test_types_in_equals: true\r\n     throw_in_finally: true\r\n     tighten_type_of_initializing_formals: true\r\n-    type_annotate_public_apis: \r\n+    type_annotate_public_apis: false\r\n     type_init_formals: true\r\n     type_literal_in_constant_pattern: true\r\n     unawaited_futures: true\r\n     unnecessary_await_in_return: true\r\n"
+                },
+                {
+                    "date": 1700315659131,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -55,9 +55,9 @@\n     avoid_single_cascade_in_expression_statements: true\r\n     avoid_slow_async_io: true\r\n     avoid_type_to_string: true\r\n     avoid_types_as_parameter_names: true\r\n-    avoid_types_on_closure_parameters true\r\n+    avoid_types_on_closure_parameters: true\r\n     avoid_unnecessary_containers: true\r\n     avoid_unused_constructor_parameters: true\r\n     avoid_void_async: false\r\n     avoid_web_libraries_in_flutter: true\r\n"
+                },
+                {
+                    "date": 1700316510874,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,8 +11,9 @@\n   errors:\r\n     pattern_never_matches_value_type: error\r\n     invalid_annotation_target: ignore\r\n     body_might_complete_normally_nullable: ignore\r\n+    \r\n linter:\r\n   rules:\r\n     always_declare_return_types: true\r\n     always_put_control_body_on_new_line: true\r\n"
                 }
             ],
             "date": 1698505331517,

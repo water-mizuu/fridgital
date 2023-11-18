@@ -12,6 +12,7 @@ analyzer:
     pattern_never_matches_value_type: error
     invalid_annotation_target: ignore
     body_might_complete_normally_nullable: ignore
+    unrelated_type_equality_checks: warning
 linter:
   rules:
     always_declare_return_types: true

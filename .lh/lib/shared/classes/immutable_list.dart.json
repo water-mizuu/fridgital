@@ -1,0 +1,26 @@
+{
+    "sourceFile": "lib/shared/classes/immutable_list.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1700315828430,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1700315858853,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,8 @@\n+class ImmutableList<E> extends Iterable<E> {\r\n+  const ImmutableList(this.values);\r\n \r\n+  final List<E> values;\r\n+\r\n+  @override\r\n+  Itera\r\n+}\r\n"
+                },
+                {
+                    "date": 1700319058570,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,10 @@\n-class ImmutableList<E> extends Iterable<E> {\r\n+fclass ImmutableList<E> extends Iterable<E> {\r\n   const ImmutableList(this.values);\r\n \r\n   final List<E> values;\r\n \r\n+  E operator [](int index) => values[index];\r\n+\r\n   @override\r\n-  Itera\r\n+  Iterator<E> get iterator => values.iterator;\r\n }\r\n"
+                }
+            ],
+            "date": 1700315828430,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}
