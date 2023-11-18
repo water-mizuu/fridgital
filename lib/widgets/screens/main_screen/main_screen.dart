@@ -57,6 +57,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: FractionallySizedBox(
         widthFactor: 1.0,
         child: NotificationListener<Notification>(

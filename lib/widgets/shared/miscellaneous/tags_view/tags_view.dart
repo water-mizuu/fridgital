@@ -116,7 +116,7 @@ class _TagSelectorState extends State<TagSelector> with TickerProviderStateMixin
 
           case ModifyWorkingTagNotification(:var name, :var color):
             var toReplace = workingTag.value!;
-            var tag = workingTag.value = CustomTag(name, color);
+            var tag = CustomTag(name, color);
 
             await tagData.replaceAddableTag(toReplace, tag);
             await transitionTo(OverlayMode.select);
@@ -142,6 +142,7 @@ class _TagSelectorState extends State<TagSelector> with TickerProviderStateMixin
               dispose();
             },
             child: Scaffold(
+              resizeToAvoidBottomInset: false,
               backgroundColor: const Color(0x7fCCAEBB),
               body: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
@@ -156,24 +157,21 @@ class _TagSelectorState extends State<TagSelector> with TickerProviderStateMixin
                           scale: (0.8 + 0.4 * animationController.value).clamp(0.0, 1.0),
                           child: ConstrainedBox(
                             constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.95),
-                            child: switch (animationController.isAnimating) {
-                              true => IgnorePointer(child: child),
-                              false => child,
-                            },
+                            child: child,
                           ),
                         ),
                       ),
                       child: ValueListenableBuilder(
                         valueListenable: workingTag,
-                        builder: (context, tag, child) => switch (overlayMode.value) {
-                          OverlayMode.select => SelectTagOverlay(tagData: tagData),
-                          OverlayMode.add => CreateTagOverlay(tagData: tagData),
+                        builder: (context, tag, child) => switch ((overlayMode.value, tag)) {
+                          (OverlayMode.select, _) => SelectTagOverlay(tagData: tagData),
+                          (OverlayMode.add, _) => CreateTagOverlay(tagData: tagData),
 
                           ///
-                          OverlayMode.edit => EditTagOverlay(tagData: tagData, tag: tag!),
-                          OverlayMode.selectEdit => SelectEditOverlay(tagData: tagData),
-                          OverlayMode.delete => DeleteTagOverlay(tagData: tagData),
-                          OverlayMode.selectDelete => SelectDeleteOverlay(tagData: tagData),
+                          (OverlayMode.edit, var tag!) => EditTagOverlay(tagData: tagData, tag: tag),
+                          (OverlayMode.selectEdit, _) => SelectEditOverlay(tagData: tagData),
+                          (OverlayMode.delete, _) => DeleteTagOverlay(tagData: tagData),
+                          (OverlayMode.selectDelete, _) => SelectDeleteOverlay(tagData: tagData),
                         },
                       ),
                     ),
@@ -371,6 +369,7 @@ class _CreateTagOverlayState extends State<CreateTagOverlay> {
                   ),
                   Expanded(
                     child: TextField(
+                      autofocus: true,
                       controller: textEditingController,
                       decoration: const InputDecoration(
                         hintText: "Tag name",
@@ -518,6 +517,7 @@ class EditTagOverlay extends StatefulWidget {
 }
 
 class _EditTagOverlayState extends State<EditTagOverlay> {
+  late final FocusNode focusNode;
   late final TextEditingController textEditingController;
   late final ValueNotifier<UserSelectableColor> selectedColor;
 
@@ -525,8 +525,13 @@ class _EditTagOverlayState extends State<EditTagOverlay> {
   void initState() {
     super.initState();
 
+    focusNode = FocusNode();
     textEditingController = TextEditingController(text: widget.tag.name);
     selectedColor = ValueNotifier(widget.tag.color);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      focusNode.requestFocus();
+    });
   }
 
   @override
@@ -541,6 +546,7 @@ class _EditTagOverlayState extends State<EditTagOverlay> {
 
   @override
   void dispose() {
+    focusNode.dispose();
     textEditingController.dispose();
     selectedColor.dispose();
 
@@ -578,12 +584,14 @@ class _EditTagOverlayState extends State<EditTagOverlay> {
                   ),
                   Expanded(
                     child: TextField(
+                      autofocus: true,
                       controller: textEditingController,
                       decoration: const InputDecoration(
                         hintText: "Tag name",
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.zero,
                       ),
+                      focusNode: focusNode,
                       style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
                     ),
                   ),
@@ -861,6 +869,7 @@ class _DeleteTagOverlayState extends State<DeleteTagOverlay> {
                   ),
                   Expanded(
                     child: TextField(
+                      autofocus: true,
                       controller: textEditingController,
                       decoration: const InputDecoration(
                         hintText: "Tag name",
@@ -1045,6 +1054,7 @@ class _SelectDeleteOverlayState extends State<SelectDeleteOverlay> {
                   ),
                   Expanded(
                     child: TextField(
+                      autofocus: true,
                       controller: textEditingController,
                       decoration: const InputDecoration(
                         hintText: "Tag name",

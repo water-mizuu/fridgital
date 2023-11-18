@@ -38,6 +38,8 @@ dependencies:
     git:
       url: https://github.com/water-mizuu/mouse_scroll.git
 
+  path: ^1.8.3
+  path_provider: ^2.1.1
   provider: ^6.1.1
 
   # Runtime for SQLite databases, used by sqflite.
