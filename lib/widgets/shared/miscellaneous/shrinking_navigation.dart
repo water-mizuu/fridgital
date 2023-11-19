@@ -402,7 +402,7 @@ class _RetractedBasis extends StatelessWidget {
 /// NOTIFICATIONS USED WITHIN THIS FILE
 
 class ShrinkingNavigationUpdateNotification extends Notification {
-  ShrinkingNavigationUpdateNotification(this.index);
+  const ShrinkingNavigationUpdateNotification(this.index);
   final int index;
 }
 

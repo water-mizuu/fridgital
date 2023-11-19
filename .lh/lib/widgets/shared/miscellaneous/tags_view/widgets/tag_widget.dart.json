@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/widgets/shared/miscellaneous/tags_view/widgets/tag_widget.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1700406465537,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1700406465537,
+            "name": "Commit-0",
+            "content": "// TODO(water-mizuu): Refactor this whole file.\r\n\r\nimport \"package:flutter/material.dart\";\r\nimport \"package:fridgital/back_end/tag_data.dart\";\r\nimport \"package:fridgital/shared/extensions/color_conversion.dart\";\r\nimport \"package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart\";\r\nimport \"package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart\";\r\n\r\n/// Represents a simple removable tag that is composed of text with an optional icon.\r\nclass TagWidget extends StatelessWidget {\r\n  const TagWidget({required this.tag, super.key, this.icon = Icons.close, this.onTap, this.enabled = true});\r\n\r\n  final Tag tag;\r\n  final IconData? icon;\r\n  final void Function()? onTap;\r\n  final bool enabled;\r\n\r\n  @override\r\n  Widget build(BuildContext context) {\r\n    var backgroundColor = enabled ? tag.color : tag.color.desaturate(0.65);\r\n    var textColor = enabled ? Colors.white : Colors.white.dim(0.25);\r\n\r\n    return ClipRRect(\r\n      borderRadius: BorderRadius.circular(16.0),\r\n      child: ClickableWidget(\r\n        cursor: enabled ? SystemMouseCursors.click : MouseCursor.defer,\r\n        onTap: enabled ? onTap : () => (),\r\n        child: SizedBox(\r\n          height: _tagHeight,\r\n          child: Material(\r\n            color: backgroundColor,\r\n            child: Padding(\r\n              padding: const EdgeInsets.symmetric(horizontal: 16.0),\r\n              child: icon == null\r\n                  ? Row(\r\n                      mainAxisSize: MainAxisSize.min,\r\n                      children: [Text(tag.name, style: TextStyle(color: textColor))],\r\n                    )\r\n                  : Row(\r\n                      mainAxisSize: MainAxisSize.min,\r\n                      children: [\r\n                        Text(tag.name, style: TextStyle(color: textColor)),\r\n                        const SizedBox(width: _tagGapToIcon),\r\n                        Icon(icon, size: _tagIconSize, color: textColor),\r\n                      ],\r\n                    ),\r\n            ),\r\n          ),\r\n        ),\r\n      ),\r\n    );\r\n  }\r\n}\r\n"
+        }
+    ]
+}

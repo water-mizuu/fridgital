@@ -3,11 +3,19 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 2,
             "patches": [
                 {
                     "date": 1698755063402,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1700406225577,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,28 +1,28 @@\n import \"package:flutter/material.dart\";\r\n-import \"package:fridgital/widgets/shared/miscellaneous/basic_screen.dart\";\r\n+import \"package:fridgital/widgets/shared/miscellaneous/widgets/basic_screen.dart\";\r\n import \"package:mouse_scroll/mouse_scroll.dart\";\r\n \r\n-class Recipes extends StatelessWidget {\r\n-  const Recipes({super.key});\r\n+class ToBuy extends StatelessWidget {\r\n+  const ToBuy({super.key});\r\n \r\n   @override\r\n   Widget build(BuildContext context) {\r\n     return const BasicScreenWidget(\r\n       child: MouseSingleChildScrollView(\r\n         child: Row(\r\n           children: [\r\n-            RecipeTitle(),\r\n+            ToBuyTitle(),\r\n             SizedBox(height: 16.0),\r\n           ],\r\n         ),\r\n       ),\r\n     );\r\n   }\r\n }\r\n \r\n-class RecipeTitle extends StatelessWidget {\r\n-  const RecipeTitle({super.key});\r\n+class ToBuyTitle extends StatelessWidget {\r\n+  const ToBuyTitle({super.key});\r\n \r\n   @override\r\n   Widget build(BuildContext context) {\r\n     var theme = Theme.of(context);\r\n@@ -32,11 +32,11 @@\n       child: Column(\r\n         mainAxisSize: MainAxisSize.min,\r\n         crossAxisAlignment: CrossAxisAlignment.start,\r\n         children: [\r\n-          Text(\"Suggested\\nRecipes\".toUpperCase(), style: theme.textTheme.titleLarge),\r\n+          Text(\"To-Buy\".toUpperCase(), style: theme.textTheme.titleLarge),\r\n           const SizedBox(height: 8.0),\r\n-          Text(\"Meals you can make based on your inventory.\", style: theme.textTheme.displayLarge),\r\n+          Text(\"Your suggested grocery list.\", style: theme.textTheme.displayLarge),\r\n         ],\r\n       ),\r\n     );\r\n   }\r\n"
+                },
+                {
+                    "date": 1700406260618,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import \"package:flutter/material.dart\";\r\n-import \"package:fridgital/widgets/shared/miscellaneous/widgets/basic_screen.dart\";\r\n+import \"package:fridgital/widgets/shared/miscellaneous/basic_screen.dart\";\r\n import \"package:mouse_scroll/mouse_scroll.dart\";\r\n \r\n class ToBuy extends StatelessWidget {\r\n   const ToBuy({super.key});\r\n"
                 }
             ],
             "date": 1698755063402,

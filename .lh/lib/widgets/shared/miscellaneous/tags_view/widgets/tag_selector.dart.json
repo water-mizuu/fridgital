@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/widgets/shared/miscellaneous/tags_view/widgets/tag_selector.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1700406571736,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1700406571736,
+            "name": "Commit-0",
+            "content": "// TODO(water-mizuu): Refactor this whole file.\r\n\r\nimport \"package:flutter/material.dart\";\r\nimport \"package:fridgital/back_end/tag_data.dart\";\r\nimport \"package:fridgital/shared/constants.dart\";\r\nimport \"package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart\";\r\nimport \"package:fridgital/widgets/shared/miscellaneous/tags_view/shared/notifications.dart\";\r\nimport \"package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/overlay_holder.dart\";\r\nimport \"package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart\";\r\nimport \"package:provider/provider.dart\";\r\n\r\nclass TagSelector extends StatefulWidget {\r\n  const TagSelector({super.key});\r\n\r\n  @override\r\n  State<TagSelector> createState() => _TagSelectorState();\r\n}\r\n\r\nclass _TagSelectorState extends State<TagSelector> {\r\n  void Function() tapHandler(BuildContext context) {\r\n    return () {\r\n      if (!context.mounted) {\r\n        return;\r\n      }\r\n\r\n      OverlayEntry? entry;\r\n\r\n      entry = OverlayEntry(\r\n        maintainState: true,\r\n        builder: (_) => ChangeNotifierProvider.value(\r\n          value: context.read<TagData>(),\r\n          child: NotificationListener<CloseOverlayNotification>(\r\n            onNotification: (notification) {\r\n              entry?.remove();\r\n              return true;\r\n            },\r\n            child: const OverlayHolder(),\r\n          ),\r\n        ),\r\n      );\r\n\r\n      Overlay.of(context).insert(entry);\r\n    };\r\n  }\r\n\r\n  @override\r\n  Widget build(BuildContext context) {\r\n    return ClipRRect(\r\n      borderRadius: BorderRadius.circular(16.0),\r\n      child: ClickableWidget(\r\n        onTap: tapHandler(context),\r\n        child: Container(\r\n          height: tagHeight,\r\n          color: TagColors.selector,\r\n          padding: const EdgeInsets.symmetric(horizontal: 16.0),\r\n          child: const IgnorePointer(\r\n            child: Row(\r\n              mainAxisSize: MainAxisSize.min,\r\n              children: [\r\n                Text(\"filter\", style: TextStyle(color: Colors.white)),\r\n                SizedBox(width: tagGapToIcon),\r\n                Icon(Icons.add, size: tagIconSize, color: Colors.white),\r\n              ],\r\n            ),\r\n          ),\r\n        ),\r\n      ),\r\n    );\r\n  }\r\n}\r\n"
+        }
+    ]
+}

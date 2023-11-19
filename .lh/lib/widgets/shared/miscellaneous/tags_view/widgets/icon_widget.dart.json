@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/widgets/shared/miscellaneous/tags_view/widgets/icon_widget.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1700406494201,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1700406494201,
+            "name": "Commit-0",
+            "content": "// TODO(water-mizuu): Refactor this whole file.\r\n\r\nimport \"package:flutter/material.dart\";\r\nimport \"package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart\";\r\nimport \"package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart\";\r\n\r\n/// Represents a simple removable tag that is composed of only an icon.\r\nclass IconWidget extends StatelessWidget {\r\n  const IconWidget({required this.color, required this.icon, super.key, this.onTap});\r\n\r\n  final Color color;\r\n  final IconData? icon;\r\n  final void Function()? onTap;\r\n\r\n  @override\r\n  Widget build(BuildContext context) {\r\n    return ClipRRect(\r\n      borderRadius: BorderRadius.circular(16.0),\r\n      child: ClickableWidget(\r\n        onTap: onTap,\r\n        child: Container(\r\n          color: color,\r\n          height: tagHeight,\r\n          padding: const EdgeInsets.symmetric(horizontal: 16.0),\r\n          child: Icon(icon, size: tagIconSize, color: Colors.white),\r\n        ),\r\n      ),\r\n    );\r\n  }\r\n}\r\n"
+        }
+    ]
+}

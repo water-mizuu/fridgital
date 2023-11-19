@@ -6,7 +6,7 @@ import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
-import "package:fridgital/widgets/shared/miscellaneous/tags_view/tags_view.dart";
+import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
 import "package:provider/provider.dart";
 

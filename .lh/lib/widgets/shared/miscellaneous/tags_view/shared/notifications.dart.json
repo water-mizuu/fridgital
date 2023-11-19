@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/widgets/shared/miscellaneous/tags_view/shared/notifications.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1700406536206,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1700406536206,
+            "name": "Commit-0",
+            "content": "import \"package:flutter/material.dart\";\r\nimport \"package:fridgital/back_end/tag_data.dart\";\r\nimport \"package:fridgital/shared/classes/selected_color.dart\";\r\nimport \"package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart\";\r\n\r\nimport \"enums/overlay_mode.dart\";\r\n\r\nsealed class OverlayNotification extends Notification {\r\n  const OverlayNotification();\r\n}\r\n\r\nclass SwitchOverlayNotification extends OverlayNotification {\r\n  const SwitchOverlayNotification({required this.mode});\r\n\r\n  final OverlayMode mode;\r\n}\r\n\r\nclass CreateNewTagOverlayNotification extends OverlayNotification {\r\n  const CreateNewTagOverlayNotification({required this.name, required this.color});\r\n\r\n  final String name;\r\n  final UserSelectableColor color;\r\n}\r\n\r\nclass SelectedTagOverlayNotification extends OverlayNotification {\r\n  const SelectedTagOverlayNotification(this.tag);\r\n\r\n  final Tag tag;\r\n}\r\n\r\nclass CloseOverlayNotification extends OverlayNotification {\r\n  const CloseOverlayNotification();\r\n}\r\n\r\nclass ModifyWorkingTagNotification extends OverlayNotification {\r\n  const ModifyWorkingTagNotification({required this.name, required this.color});\r\n\r\n  final String name;\r\n  final UserSelectableColor color;\r\n}\r\n\r\nclass ChooseWorkingTag extends OverlayNotification {\r\n  const ChooseWorkingTag(this.tag);\r\n\r\n  final CustomTag tag;\r\n}\r\n\r\nclass DeleteTag extends OverlayNotification {\r\n  const DeleteTag(this.tag);\r\n\r\n  final CustomTag tag;\r\n}\r\n"
+        }
+    ]
+}
