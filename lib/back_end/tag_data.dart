@@ -69,6 +69,7 @@ class TagData extends ChangeNotifier {
 
   Future<void> removeAddableTag(CustomTag tag) async {
     if (_addableTags.remove(tag)) {
+      _activeTags.remove(tag);
       await CustomTagsTable.instance.removeAddableTag(tag);
       notifyListeners();
     }

@@ -42,3 +42,9 @@ class ChooseWorkingTag extends OverlayNotification {
 
   final CustomTag tag;
 }
+
+class DeleteTag extends OverlayNotification {
+  const DeleteTag(this.tag);
+
+  final CustomTag tag;
+}

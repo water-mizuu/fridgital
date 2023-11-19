@@ -30,7 +30,8 @@ environment:
 dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
+  adaptive_dialog:
+  cupertino_icons:
   flutter:
     sdk: flutter
 
@@ -38,9 +39,9 @@ dependencies:
     git:
       url: https://github.com/water-mizuu/mouse_scroll.git
 
-  path: ^1.8.3
-  path_provider: ^2.1.1
-  provider: ^6.1.1
+  path:
+  path_provider:
+  provider:
 
   # Runtime for SQLite databases, used by sqflite.
   sqflite:
@@ -56,7 +57,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints:
   flutter_test:
     sdk: flutter
 
