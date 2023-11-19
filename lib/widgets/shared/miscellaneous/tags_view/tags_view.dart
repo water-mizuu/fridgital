@@ -141,38 +141,41 @@ class _TagSelectorState extends State<TagSelector> with TickerProviderStateMixin
               await animationController.reverse(from: 1.0);
               dispose();
             },
-            child: Scaffold(
-              resizeToAvoidBottomInset: false,
-              backgroundColor: const Color(0x7fCCAEBB),
-              body: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
-                child: ListenableBuilder(
-                  listenable: overlayMode,
-                  builder: (context, child) => Center(
-                    child: AnimatedBuilder(
-                      animation: animationController,
-                      builder: (context, child) => Opacity(
-                        opacity: animationController.value,
-                        child: Transform.scale(
-                          scale: (0.8 + 0.4 * animationController.value).clamp(0.0, 1.0),
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.95),
-                            child: child,
+            child: ChangeNotifierProvider.value(
+              value: tagData,
+              child: Scaffold(
+                resizeToAvoidBottomInset: false,
+                backgroundColor: const Color(0x7fCCAEBB),
+                body: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
+                  child: ListenableBuilder(
+                    listenable: overlayMode,
+                    builder: (context, child) => Center(
+                      child: AnimatedBuilder(
+                        animation: animationController,
+                        builder: (context, child) => Opacity(
+                          opacity: animationController.value,
+                          child: Transform.scale(
+                            scale: (0.8 + 0.4 * animationController.value).clamp(0.0, 1.0),
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.95),
+                              child: child,
+                            ),
                           ),
                         ),
-                      ),
-                      child: ValueListenableBuilder(
-                        valueListenable: workingTag,
-                        builder: (context, tag, child) => switch ((overlayMode.value, tag)) {
-                          (OverlayMode.select, _) => SelectTagOverlay(tagData: tagData),
-                          (OverlayMode.add, _) => CreateTagOverlay(tagData: tagData),
+                        child: ValueListenableBuilder(
+                          valueListenable: workingTag,
+                          builder: (context, tag, child) => switch ((overlayMode.value, tag)) {
+                            (OverlayMode.select, _) => const SelectTagOverlay(),
+                            (OverlayMode.add, _) => const CreateTagOverlay(),
 
-                          ///
-                          (OverlayMode.edit, var tag!) => EditTagOverlay(tagData: tagData, tag: tag),
-                          (OverlayMode.selectEdit, _) => SelectEditOverlay(tagData: tagData),
-                          (OverlayMode.delete, _) => DeleteTagOverlay(tagData: tagData),
-                          (OverlayMode.selectDelete, _) => SelectDeleteOverlay(tagData: tagData),
-                        },
+                            ///
+                            (OverlayMode.edit, var tag!) => EditTagOverlay(tag: tag),
+                            (OverlayMode.selectEdit, _) => const SelectEditOverlay(),
+                            (OverlayMode.delete, _) => const DeleteTagOverlay(),
+                            (OverlayMode.selectDelete, _) => const SelectDeleteOverlay(),
+                          },
+                        ),
                       ),
                     ),
                   ),
@@ -214,14 +217,12 @@ class _TagSelectorState extends State<TagSelector> with TickerProviderStateMixin
 }
 
 class SelectTagOverlay extends StatelessWidget {
-  const SelectTagOverlay({required this.tagData, super.key});
-
-  final TagData tagData;
+  const SelectTagOverlay({super.key});
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    var TagData(:activeTags, :addableTags) = tagData;
+    var TagData(:activeTags, :addableTags) = context.read();
     var availableTags = addableTags.where((tag) => !activeTags.contains(tag)).toList();
 
     return GestureDetector(
@@ -307,18 +308,14 @@ class SelectTagOverlay extends StatelessWidget {
 }
 
 class CreateTagOverlay extends StatefulWidget {
-  const CreateTagOverlay({
-    required this.tagData,
-    super.key,
-  });
-
-  final TagData tagData;
+  const CreateTagOverlay({super.key});
 
   @override
   State<CreateTagOverlay> createState() => _CreateTagOverlayState();
 }
 
 class _CreateTagOverlayState extends State<CreateTagOverlay> {
+  late final FocusNode focusNode;
   late final TextEditingController textEditingController;
   late final ValueNotifier<UserSelectableColor?> selectedColor;
 
@@ -326,12 +323,18 @@ class _CreateTagOverlayState extends State<CreateTagOverlay> {
   void initState() {
     super.initState();
 
+    focusNode = FocusNode();
     textEditingController = TextEditingController();
     selectedColor = ValueNotifier(null);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      focusNode.requestFocus();
+    });
   }
 
   @override
   void dispose() {
+    focusNode.dispose();
     textEditingController.dispose();
     selectedColor.dispose();
 
@@ -369,6 +372,7 @@ class _CreateTagOverlayState extends State<CreateTagOverlay> {
                   ),
                   Expanded(
                     child: TextField(
+                      focusNode: focusNode,
                       autofocus: true,
                       controller: textEditingController,
                       decoration: const InputDecoration(
@@ -478,7 +482,7 @@ class _CreateTagOverlayState extends State<CreateTagOverlay> {
                       return;
                     }
 
-                    if (widget.tagData.addableTags.any((v) => v.name == text)) {
+                    if (context.read<TagData>().addableTags.any((v) => v.name == text)) {
                       var snackbar = SnackBar(
                         content: Text("A tag with the name '$text' already exists!"),
                         duration: 2.s,
@@ -501,13 +505,7 @@ class _CreateTagOverlayState extends State<CreateTagOverlay> {
 }
 
 class EditTagOverlay extends StatefulWidget {
-  const EditTagOverlay({
-    required this.tagData,
-    required this.tag,
-    super.key,
-  });
-
-  final TagData tagData;
+  const EditTagOverlay({required this.tag, super.key});
 
   /// This is the tag that we want to be editing.
   final CustomTag tag;
@@ -688,8 +686,7 @@ class _EditTagOverlayState extends State<EditTagOverlay> {
                       ScaffoldMessenger.of(context).showSnackBar(snackbar);
                       return;
                     }
-
-                    if (widget.tagData.addableTags.any((v) => v != widget.tag && v.name == text)) {
+                    if (context.read<TagData>().addableTags.any((v) => v != widget.tag && v.name == text)) {
                       var snackbar = SnackBar(
                         content: Text("A tag with the name '$text' already exists!"),
                         duration: 2.s,
@@ -712,9 +709,7 @@ class _EditTagOverlayState extends State<EditTagOverlay> {
 }
 
 class SelectEditOverlay extends StatelessWidget {
-  const SelectEditOverlay({required this.tagData, super.key});
-
-  final TagData tagData;
+  const SelectEditOverlay({super.key});
 
   void Function() tapHandler(BuildContext context, Tag tag) {
     return () {
@@ -728,7 +723,7 @@ class SelectEditOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    var addableTags = tagData.addableTags;
+    var addableTags = context.read<TagData>().addableTags;
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -807,12 +802,7 @@ class SelectEditOverlay extends StatelessWidget {
 
 // TODO(water-mizuu): Work on this
 class DeleteTagOverlay extends StatefulWidget {
-  const DeleteTagOverlay({
-    required this.tagData,
-    super.key,
-  });
-
-  final TagData tagData;
+  const DeleteTagOverlay({super.key});
 
   @override
   State<DeleteTagOverlay> createState() => _DeleteTagOverlayState();
@@ -992,12 +982,7 @@ class _DeleteTagOverlayState extends State<DeleteTagOverlay> {
 
 // TODO(water-mizuu): Work on this
 class SelectDeleteOverlay extends StatefulWidget {
-  const SelectDeleteOverlay({
-    required this.tagData,
-    super.key,
-  });
-
-  final TagData tagData;
+  const SelectDeleteOverlay({super.key});
 
   @override
   State<SelectDeleteOverlay> createState() => _SelectDeleteOverlayState();
