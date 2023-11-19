@@ -4,11 +4,11 @@ import "dart:async";
 import "dart:ui";
 
 import "package:adaptive_dialog/adaptive_dialog.dart";
-import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/shared/classes/selected_color.dart";
 import "package:fridgital/shared/constants.dart";
+import "package:fridgital/shared/extensions/color_conversion.dart";
 import "package:fridgital/shared/extensions/time.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/notifications.dart";
@@ -124,10 +124,9 @@ class OverlayHolder extends StatefulWidget {
 }
 
 class _OverlayHolderState extends State<OverlayHolder> with TickerProviderStateMixin {
-  late var tagData = context.read<TagData>();
-  late var animationController = AnimationController(vsync: this, duration: 250.ms);
-  late var overlayMode = ValueNotifier(OverlayMode.select);
-  late var workingTag = ValueNotifier<CustomTag?>(null);
+  late final AnimationController animationController;
+  late final ValueNotifier<OverlayMode> overlayMode;
+  late final ValueNotifier<CustomTag?> workingTag;
 
   Future<void> transitionTo(OverlayMode mode) async {
     await animationController.reverse(from: 1.0);
@@ -135,37 +134,9 @@ class _OverlayHolderState extends State<OverlayHolder> with TickerProviderStateM
     await animationController.forward(from: 0.0);
   }
 
-  @override
-  void dispose() {
-    animationController.dispose();
-
-    if (kDebugMode) {
-      print("Dispose");
-    }
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    if (kDebugMode) {
-      print("Initialize");
-    }
-    animationController
-      ..addStatusListener((status) {
-        if (status case AnimationStatus.dismissed) {
-          if (kDebugMode) {
-            print("Animation dismissed");
-          }
-          overlayMode.value = OverlayMode.select;
-          workingTag.value = null;
-        }
-      })
-      ..forward(from: 0.0);
-  }
-
   void handleNotification(OverlayNotification notification) async {
+    var tagData = context.read<TagData>();
+
     switch (notification) {
       case SwitchOverlayNotification(:var mode):
         await transitionTo(mode);
@@ -203,20 +174,33 @@ class _OverlayHolderState extends State<OverlayHolder> with TickerProviderStateM
         workingTag.value = tag;
 
       case DeleteTag(:var tag):
-        if (kDebugMode) {
-          print("Before any processing");
-        }
         await tagData.removeAddableTag(tag);
-        if (kDebugMode) {
-          print("After removing addableTag processing");
-        }
-
         await transitionTo(OverlayMode.select);
     }
   }
 
   @override
+  void dispose() {
+    animationController.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    animationController = AnimationController(vsync: this, duration: 250.ms);
+    overlayMode = ValueNotifier(OverlayMode.select);
+    workingTag = ValueNotifier<CustomTag?>(null);
+
+    animationController.forward(from: 0.0);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    var tagData = context.read<TagData>();
+
     return NotificationListener<OverlayNotification>(
       onNotification: (notification) {
         handleNotification(notification);
@@ -242,12 +226,12 @@ class _OverlayHolderState extends State<OverlayHolder> with TickerProviderStateM
               child: ListenableBuilder(
                 listenable: overlayMode,
                 builder: (context, child) => Center(
-                  child: AnimatedBuilder(
-                    animation: animationController,
-                    builder: (context, child) => Opacity(
-                      opacity: animationController.value,
+                  child: ValueListenableBuilder(
+                    valueListenable: animationController,
+                    builder: (context, animation, child) => Opacity(
+                      opacity: animation,
                       child: Transform.scale(
-                        scale: (0.8 + 0.4 * animationController.value).clamp(0.0, 1.0),
+                        scale: (0.8 + 0.4 * animation).clamp(0.0, 1.0),
                         child: ConstrainedBox(
                           constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.95),
                           child: child,
@@ -256,14 +240,14 @@ class _OverlayHolderState extends State<OverlayHolder> with TickerProviderStateM
                     ),
                     child: ValueListenableBuilder(
                       valueListenable: workingTag,
-                      builder: (context, tag, child) => switch ((overlayMode.value, tag)) {
-                        (OverlayMode.select, _) => const SelectTagOverlay(),
-                        (OverlayMode.add, _) => const CreateTagOverlay(),
+                      builder: (context, tag, child) => switch (overlayMode.value) {
+                        OverlayMode.select => const SelectTagOverlay(),
+                        OverlayMode.add => const CreateTagOverlay(),
 
                         ///
-                        (OverlayMode.edit, var tag!) => EditTagOverlay(tag: tag),
-                        (OverlayMode.selectEdit, _) => const SelectEditOverlay(),
-                        (OverlayMode.selectDelete, _) => const SelectDeleteOverlay(),
+                        OverlayMode.edit => EditTagOverlay(tag: tag!),
+                        OverlayMode.selectEdit => const SelectEditOverlay(),
+                        OverlayMode.selectDelete => const SelectDeleteOverlay(),
                       },
                     ),
                   ),
@@ -856,14 +840,12 @@ class SelectEditOverlay extends StatelessWidget {
   }
 }
 
-// TODO(water-mizuu): Work on this
 class SelectDeleteOverlay extends StatelessWidget {
   const SelectDeleteOverlay({super.key});
 
   void Function() tapHandler(BuildContext context, Tag tag) {
     return () async {
-      if (tag case _ as CustomTag) {
-        // ignore: discarded_futures
+      if (tag case Tag() as CustomTag) {
         var answer = await showOkCancelAlertDialog(
           context: context,
           title: "Are you sure you want to delete '${tag.name}'?",
@@ -993,18 +975,8 @@ class _TagWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var backgroundColor = enabled
-        ? tag.color
-        : tag.color //
-            .withRed(tag.color.red ~/ 2)
-            .withGreen(tag.color.green ~/ 2)
-            .withBlue(tag.color.blue ~/ 2);
-    var textColor = enabled //
-        ? Colors.white
-        : Colors.white //
-            .withRed(255 ~/ 2)
-            .withGreen(255 ~/ 2)
-            .withBlue(255 ~/ 2);
+    var backgroundColor = enabled ? tag.color : tag.color.desaturate(0.65);
+    var textColor = enabled ? Colors.white : Colors.white.dim(0.25);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(16.0),
