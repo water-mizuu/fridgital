@@ -1,4 +1,3 @@
-// TODO(water-mizuu): Refactor this whole file.
 
 import "package:flutter/material.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
