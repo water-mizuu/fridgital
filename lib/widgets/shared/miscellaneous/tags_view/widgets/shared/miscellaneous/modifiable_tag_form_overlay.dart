@@ -8,14 +8,13 @@ import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/shared/
 import "package:mouse_scroll/mouse_scroll.dart";
 import "package:provider/provider.dart";
 
-base class ModifiableTagFormOverlay extends StatefulWidget {
+final class ModifiableTagFormOverlay extends StatefulWidget {
   const ModifiableTagFormOverlay({
     required this.initialText,
     required this.initialColor,
     required this.onCancel,
     required this.onSubmit,
     required this.bottomButtons,
-    
     required this.confirmationTag,
     required this.confirmationIcon,
     super.key,
@@ -116,11 +115,10 @@ class _ModifiableTagFormOverlayState extends State<ModifiableTagFormOverlay> {
                   physics: physics,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
                   itemCount: TagColors.selectable.length,
-                  itemBuilder: (context, index) {
-                    var color = TagColors.selectable[index];
-
-                    return ClickableColorCircle(selectedColor: selectedColor, color: color);
-                  },
+                  itemBuilder: (context, index) => ClickableColorCircle(
+                    selectedColor: selectedColor,
+                    color: TagColors.selectable[index],
+                  ),
                 ),
               ),
             ),
