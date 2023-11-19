@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 8,
+            "activePatchIndex": 9,
             "patches": [
                 {
                     "date": 1698505331517,
@@ -40,6 +40,10 @@
                 {
                     "date": 1700316510874,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,8 +11,9 @@\n   errors:\r\n     pattern_never_matches_value_type: error\r\n     invalid_annotation_target: ignore\r\n     body_might_complete_normally_nullable: ignore\r\n+    \r\n linter:\r\n   rules:\r\n     always_declare_return_types: true\r\n     always_put_control_body_on_new_line: true\r\n"
+                },
+                {
+                    "date": 1700383263780,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,9 @@\n   errors:\r\n     pattern_never_matches_value_type: error\r\n     invalid_annotation_target: ignore\r\n     body_might_complete_normally_nullable: ignore\r\n-    \r\n+    unrelated_type_equality_checks: warning\r\n linter:\r\n   rules:\r\n     always_declare_return_types: true\r\n     always_put_control_body_on_new_line: true\r\n@@ -40,9 +40,9 @@\n     avoid_js_rounded_ints: false\r\n     avoid_multiple_declarations_per_line: true\r\n     avoid_null_checks_in_equality_operators: true\r\n     avoid_positional_boolean_parameters: true\r\n-    avoid_print: false\r\n+    avoid_print: \r\n     avoid_private_typedef_functions: true\r\n     avoid_redundant_argument_values: true\r\n     avoid_relative_lib_imports: true\r\n     avoid_renaming_method_parameters: true\r\n"
                 }
             ],
             "date": 1698505331517,
