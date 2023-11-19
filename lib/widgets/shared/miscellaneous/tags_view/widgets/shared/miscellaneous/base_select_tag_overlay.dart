@@ -71,15 +71,16 @@ final class BaseSelectTagOverlay extends StatelessWidget {
                     alignment: WrapAlignment.center,
                     children: [
                       for (var tag in addableTags)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 4.0),
-                          child: TagWidget(
-                            tag: tag,
-                            icon: null,
-                            onTap: () => onTagTap(tag),
-                            enabled: isTagEnabled(tag),
+                        if (isTagRendered(tag))
+                          Padding(
+                            padding: const EdgeInsets.only(right: 4.0),
+                            child: TagWidget(
+                              tag: tag,
+                              icon: null,
+                              onTap: () => onTagTap(tag),
+                              enabled: isTagEnabled(tag),
+                            ),
                           ),
-                        ),
                     ],
                   ),
                 ),
