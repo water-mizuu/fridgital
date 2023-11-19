@@ -15,6 +15,9 @@ base class ModifiableTagFormOverlay extends StatefulWidget {
     required this.onCancel,
     required this.onSubmit,
     required this.bottomButtons,
+    
+    required this.confirmationTag,
+    required this.confirmationIcon,
     super.key,
   });
 
@@ -22,6 +25,10 @@ base class ModifiableTagFormOverlay extends StatefulWidget {
   final UserSelectableColor? initialColor;
   final void Function() onCancel;
   final void Function(String name, UserSelectableColor color) onSubmit;
+
+  final CustomTag confirmationTag;
+  final IconData? confirmationIcon;
+
   final List<Widget> bottomButtons;
 
   @override
@@ -129,8 +136,8 @@ class _ModifiableTagFormOverlayState extends State<ModifiableTagFormOverlay> {
                   const SizedBox(height: 8.0, width: 8.0),
                 ],
                 TagWidget(
-                  tag: const CustomTag("Add", TagColors.addButton),
-                  icon: Icons.add,
+                  tag: widget.confirmationTag,
+                  icon: widget.confirmationIcon,
                   onTap: () {
                     var color = selectedColor.value;
                     if (color == null) {

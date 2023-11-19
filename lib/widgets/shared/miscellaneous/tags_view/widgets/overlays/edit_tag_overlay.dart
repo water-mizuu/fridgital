@@ -21,6 +21,8 @@ class EditTagOverlay extends StatelessWidget {
       onSubmit: (name, color) {
         ModifyWorkingTagNotification(name: name, color: color).dispatch(context);
       },
+      confirmationTag: const CustomTag("Save", TagColors.addButton),
+      confirmationIcon: Icons.check,
       bottomButtons: [
         IconWidget(
           icon: Icons.arrow_back,
