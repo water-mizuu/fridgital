@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
 import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/shared/constants.dart";
@@ -6,6 +8,7 @@ import "package:fridgital/widgets/shared/miscellaneous/tags_view/shared/notifica
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/shared/icon_widget.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/shared/"
     "miscellaneous/base_select_tag_overlay.dart";
+import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/shared/tag_widget.dart";
 
 class SelectDeleteOverlay extends StatelessWidget {
   const SelectDeleteOverlay({super.key});
@@ -19,20 +22,47 @@ class SelectDeleteOverlay extends StatelessWidget {
       onCancel: () => const CloseOverlayNotification().dispatch(context),
       onTagTap: (tag) async {
         if (tag case Tag() as CustomTag) {
-          // var answer = await showOkCancelAlertDialog(
-          //   context: context,
-          //   title: "Are you sure you want to delete '${tag.name}'?",
-          //   message: "This action cannot be undone.",
-          // );
+          var completer = Completer<bool>();
+          await showDialog<void>(
+            context: context,
+            builder: (context) {
+              return AlertDialog.adaptive(
+                title: const Text("Are you sure?"),
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("You are about to delete: "),
+                    TagWidget(tag: tag, icon: null),
+                  ],
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text("Approve"),
+                    onPressed: () {
+                      completer.complete(true);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    child: const Text("Deny"),
+                    onPressed: () {
+                      completer.complete(false);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
 
-          // if (!context.mounted) {
-          //   return;
-          // }
+          if (await completer.future) {
+            if (!context.mounted) {
+              return;
+            }
 
-          // if (answer case OkCancelResult.ok) {
-          //   DeleteTag(tag).dispatch(context);
-          //   const SwitchOverlayNotification(mode: OverlayMode.select).dispatch(context);
-          // }
+            DeleteTag(tag).dispatch(context);
+            const SwitchOverlayNotification(mode: OverlayMode.select).dispatch(context);
+          }
         }
       },
       bottomButtons: [
