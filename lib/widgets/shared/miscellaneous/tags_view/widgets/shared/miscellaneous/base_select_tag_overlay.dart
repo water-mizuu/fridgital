@@ -44,20 +44,23 @@ final class BaseSelectTagOverlay extends StatelessWidget {
           children: [
             Align(
               alignment: Alignment.centerLeft,
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 16.0),
-                    child: ClickableWidget(
-                      onTap: () => onCancel(),
-                      child: const Icon(Icons.close),
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: ClickableWidget(
+                        onTap: onCancel,
+                        child: const Icon(Icons.close),
+                      ),
                     ),
-                  ),
-                  Text(
-                    title,
-                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-                  ),
-                ],
+                    Text(
+                      title,
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 24.0),

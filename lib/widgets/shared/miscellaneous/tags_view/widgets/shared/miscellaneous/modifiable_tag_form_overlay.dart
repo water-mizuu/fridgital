@@ -159,10 +159,8 @@ class _ModifiableTagFormOverlayState extends State<ModifiableTagFormOverlay> {
                       return;
                     }
 
-                    if (context
-                        .read<TagData>()
-                        .addableTags
-                        .any((v) => v.name != widget.initialText && v.name == text)) {
+                    var addableTags = context.read<TagData>().addableTags;
+                    if (addableTags.any((v) => v.name != widget.initialText && v.name == text)) {
                       var snackbar = SnackBar(
                         content: Text("A tag with the name '$text' already exists!"),
                         duration: 2.s,
