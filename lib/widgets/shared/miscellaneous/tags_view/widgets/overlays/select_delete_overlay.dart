@@ -26,6 +26,11 @@ class SelectDeleteOverlay extends StatelessWidget {
           await showDialog<void>(
             context: context,
             builder: (context) {
+              /// These are late vars because they should only be initialized when
+              ///   a popup is shown.
+              late var navigator = Navigator.of(context);
+              late var canPop = navigator.canPop();
+
               return AlertDialog.adaptive(
                 title: const Text("Are you sure?", style: TextStyle(fontWeight: FontWeight.w800)),
                 content: Row(
@@ -40,14 +45,18 @@ class SelectDeleteOverlay extends StatelessWidget {
                     child: const Text("Cancel"),
                     onPressed: () {
                       completer.complete(false);
-                      Navigator.of(context).pop();
+
+                      assert(canPop, "This method must be called when the popup is shown!");
+                      navigator.pop();
                     },
                   ),
                   TextButton(
                     child: const Text("Delete", style: TextStyle(color: Colors.red)),
                     onPressed: () {
                       completer.complete(true);
-                      Navigator.of(context).pop();
+
+                      assert(canPop, "This method must be called when the popup is shown!");
+                      navigator.pop();
                     },
                   ),
                 ],
