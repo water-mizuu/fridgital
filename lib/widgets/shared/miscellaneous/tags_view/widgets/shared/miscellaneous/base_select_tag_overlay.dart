@@ -1,12 +1,15 @@
+import "dart:math" as math;
+
 import "package:flutter/material.dart";
 import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/shared/constants.dart";
+import "package:fridgital/shared/utils.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/shared/tag_widget.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
 import "package:provider/provider.dart";
 
-final class BaseSelectTagOverlay extends StatelessWidget {
+final class BaseSelectTagOverlay extends StatefulWidget {
   const BaseSelectTagOverlay({
     required this.title,
     required this.isTagRendered,
@@ -26,9 +29,41 @@ final class BaseSelectTagOverlay extends StatelessWidget {
   final List<Widget> bottomButtons;
 
   @override
+  State<BaseSelectTagOverlay> createState() => _BaseSelectTagOverlayState();
+}
+
+class _BaseSelectTagOverlayState extends State<BaseSelectTagOverlay> {
+  late final TextEditingController textEditingController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    textEditingController = TextEditingController()
+      ..addListener(() {
+        setState(() {});
+      });
+  }
+
+  @override
+  void dispose() {
+    textEditingController.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    var addableTags = context.read<TagData>().addableTags;
+
+    var addableTags = context.read<TagData>().addableTags.toList();
+    var distances = addableTags.map((tag) => levenshtein(tag.name, textEditingController.text)).toList();
+    var threshold = textEditingController.text == "" //
+        ? intMax
+        : (distances.fold(intMax, math.min) + distances.length);
+    var indices = List<int>.generate(distances.length, (i) => i) //
+      ..sort((a, b) => textEditingController.text == "" ? 0 : distances[a].compareTo(distances[b]))
+      ..removeWhere((i) => distances[i] > threshold);
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -51,12 +86,12 @@ final class BaseSelectTagOverlay extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(right: 16.0),
                       child: ClickableWidget(
-                        onTap: onCancel,
+                        onTap: widget.onCancel,
                         child: const Icon(Icons.close),
                       ),
                     ),
                     Text(
-                      title,
+                      widget.title,
                       style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
                     ),
                   ],
@@ -73,15 +108,15 @@ final class BaseSelectTagOverlay extends StatelessWidget {
                     runSpacing: 4.0,
                     alignment: WrapAlignment.center,
                     children: [
-                      for (var tag in addableTags)
-                        if (isTagRendered(tag))
+                      for (var index in indices)
+                        if (addableTags[index] case var tag when widget.isTagRendered(tag))
                           Padding(
                             padding: const EdgeInsets.only(right: 4.0),
                             child: TagWidget(
                               tag: tag,
                               icon: null,
-                              onTap: () => onTagTap(tag),
-                              enabled: isTagEnabled(tag),
+                              onTap: () => widget.onTagTap(tag),
+                              enabled: widget.isTagEnabled(tag),
                             ),
                           ),
                     ],
@@ -89,11 +124,30 @@ final class BaseSelectTagOverlay extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 32.0),
+            const SizedBox(height: 16.0),
+
+            /// Search field.
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: TextField(
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.search),
+                  hintText: "Search for a tag",
+                  hintStyle: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: "Material Icons",
+                  ),
+                ),
+                controller: textEditingController,
+              ),
+            ),
+            const SizedBox(height: 16.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                for (var (i, button) in bottomButtons.indexed) ...[
+                for (var (i, button) in widget.bottomButtons.indexed) ...[
                   if (i > 0) const SizedBox(width: 8.0),
                   button,
                 ],

@@ -1,6 +1,8 @@
 import "package:flutter/widgets.dart";
 import "package:fridgital/shared/classes/selected_color.dart";
 
+const int intMax = 1 << 63 - 1;
+
 abstract final class FigmaColors {
   static const Color textDark = Color(0xFF2D2020);
   static const Color whiteAccent = Color(0xFFFFFDF6);
@@ -32,46 +34,4 @@ abstract final class TagColors {
     UserSelectableColor(0xff8C7973),
     UserSelectableColor(0xff665252),
   ];
-}
-
-extension ListableExtension on (
-  UserSelectableColor,
-  UserSelectableColor,
-  UserSelectableColor,
-  UserSelectableColor,
-  UserSelectableColor,
-  UserSelectableColor,
-  UserSelectableColor,
-  UserSelectableColor,
-  UserSelectableColor,
-  UserSelectableColor,
-  UserSelectableColor,
-  UserSelectableColor,
-  UserSelectableColor,
-  UserSelectableColor,
-  UserSelectableColor,
-  UserSelectableColor,
-  UserSelectableColor,
-) {
-  Iterable<UserSelectableColor> get iterable sync* {
-    yield $1;
-    yield $2;
-    yield $3;
-    yield $4;
-    yield $5;
-    yield $6;
-    yield $7;
-    yield $8;
-    yield $9;
-    yield $10;
-    yield $11;
-    yield $12;
-    yield $13;
-    yield $14;
-    yield $15;
-    yield $16;
-    yield $17;
-  }
-
-  List<UserSelectableColor> get list => iterable.toList();
 }
