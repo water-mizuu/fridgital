@@ -1,4 +1,3 @@
-import "package:adaptive_dialog/adaptive_dialog.dart";
 import "package:flutter/material.dart";
 import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/shared/constants.dart";
@@ -20,20 +19,20 @@ class SelectDeleteOverlay extends StatelessWidget {
       onCancel: () => const CloseOverlayNotification().dispatch(context),
       onTagTap: (tag) async {
         if (tag case Tag() as CustomTag) {
-          var answer = await showOkCancelAlertDialog(
-            context: context,
-            title: "Are you sure you want to delete '${tag.name}'?",
-            message: "This action cannot be undone.",
-          );
+          // var answer = await showOkCancelAlertDialog(
+          //   context: context,
+          //   title: "Are you sure you want to delete '${tag.name}'?",
+          //   message: "This action cannot be undone.",
+          // );
 
-          if (!context.mounted) {
-            return;
-          }
+          // if (!context.mounted) {
+          //   return;
+          // }
 
-          if (answer case OkCancelResult.ok) {
-            DeleteTag(tag).dispatch(context);
-            const SwitchOverlayNotification(mode: OverlayMode.select).dispatch(context);
-          }
+          // if (answer case OkCancelResult.ok) {
+          //   DeleteTag(tag).dispatch(context);
+          //   const SwitchOverlayNotification(mode: OverlayMode.select).dispatch(context);
+          // }
         }
       },
       bottomButtons: [
