@@ -35,18 +35,18 @@ class SelectDeleteOverlay extends StatelessWidget {
                     TagWidget(tag: tag, icon: null),
                   ],
                 ),
-                actions: <Widget>[
+                actions: [
                   TextButton(
-                    child: const Text("Approve"),
+                    child: const Text("Cancel"),
                     onPressed: () {
-                      completer.complete(true);
+                      completer.complete(false);
                       Navigator.of(context).pop();
                     },
                   ),
                   TextButton(
-                    child: const Text("Deny"),
+                    child: const Text("Delete", style: TextStyle(color: Colors.red)),
                     onPressed: () {
-                      completer.complete(false);
+                      completer.complete(true);
                       Navigator.of(context).pop();
                     },
                   ),
