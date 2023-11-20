@@ -27,7 +27,7 @@ class SelectDeleteOverlay extends StatelessWidget {
             context: context,
             builder: (context) {
               return AlertDialog.adaptive(
-                title: const Text("Are you sure?"),
+                title: const Text("Are you sure?", style: TextStyle(fontWeight: FontWeight.w800)),
                 content: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

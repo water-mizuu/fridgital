@@ -68,7 +68,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   static final ThemeData themeData = ThemeData(
     fontFamily: "Nunito",
-    colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+    colorScheme: ColorScheme.fromSeed(seedColor: FigmaColors.pinkAccent),
     textTheme: const TextTheme(
       titleLarge: TextStyle(
         fontSize: 45.0,
