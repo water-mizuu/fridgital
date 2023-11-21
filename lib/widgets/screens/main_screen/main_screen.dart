@@ -1,4 +1,7 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
+import "package:fridgital/main.dart";
 import "package:fridgital/widgets/screens/main_screen/tabs/home/home.dart";
 import "package:fridgital/widgets/screens/main_screen/tabs/inventory/inventory.dart";
 import "package:fridgital/widgets/screens/main_screen/tabs/recipes/recipes.dart";
@@ -20,6 +23,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
   bool handleNotification(Notification notification) {
     if (notification case ShrinkingNavigationUpdateNotification(:var index)) {
+      unawaited(sharedPreferences.setInt("last-open-tab", index));
       tabController.animateTo(index);
 
       return true;
@@ -42,7 +46,11 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    tabController = TabController(length: 4, vsync: this, initialIndex: initialIndex);
+    tabController = TabController(
+      length: 4,
+      vsync: this,
+      initialIndex: sharedPreferences.getInt("last-open-tab") ?? initialIndex,
+    );
     latestScrollOffset = ValueNotifier<double>(0.0);
   }
 

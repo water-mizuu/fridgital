@@ -12,18 +12,25 @@ import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/screens/main_screen/main_screen.dart";
 import "package:fridgital/widgets/screens/recipe/one_pot_pesto.dart";
 import "package:path/path.dart";
+import "package:shared_preferences/shared_preferences.dart";
 import "package:sqflite_common_ffi/sqflite_ffi.dart";
 import "package:window_manager/window_manager.dart";
 
 late final Database database;
+late final SharedPreferences sharedPreferences;
 
 Future<void> main() async {
-  /// Load the database
-
-  /// Set up the window manager if in desktop.
   WidgetsFlutterBinding.ensureInitialized();
-  if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-    /// Database as well.
+
+  var isWeb = kIsWeb;
+  var isDesktop = !isWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
+  var isMobile = !isWeb && (Platform.isAndroid || Platform.isIOS || Platform.isFuchsia);
+
+  /// Load the shared preferences.
+  sharedPreferences = await SharedPreferences.getInstance(); // well that's simple.
+
+  /// Load the sqflite database.
+  if (isDesktop) {
     if (Platform.isWindows || Platform.isLinux) {
       sqfliteFfiInit();
     }
@@ -31,7 +38,15 @@ Future<void> main() async {
     databaseFactory = databaseFactoryFfi;
     var path = await getDatabasesPath();
     database = await databaseFactory.openDatabase(path);
+  } else if (isMobile) {
+    var path = join(await getDatabasesPath(), "fridgital.db");
+    database = await databaseFactory.openDatabase(path);
+  } else {
+    database = await databaseFactory.openDatabase(inMemoryDatabasePath);
+  }
 
+  /// Set up the window manager if in desktop.
+  if (isDesktop) {
     await windowManager.ensureInitialized();
 
     const size = Size(430, 768);
@@ -47,12 +62,8 @@ Future<void> main() async {
       await windowManager.show();
       await windowManager.focus();
     });
-  } else if (Platform.isAndroid || Platform.isIOS) {
-    var path = join(await getDatabasesPath(), "fridgital.db");
-    database = await databaseFactory.openDatabase(path);
-  } else {
-    database = await databaseFactory.openDatabase(inMemoryDatabasePath);
   }
+
   runApp(const MyApp());
 }
 

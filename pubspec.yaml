@@ -42,6 +42,7 @@ dependencies:
   path_provider:
   provider:
 
+  shared_preferences:
   # Runtime for SQLite databases, used by sqflite.
   sqflite:
   sqflite_common_ffi:

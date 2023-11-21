@@ -1,7 +1,5 @@
-import "dart:async";
-
 import "package:flutter/material.dart";
-import "package:fridgital/back_end/tag_data.dart";
+import "package:fridgital/shared/mixins/empty_tag_data_mixin.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
@@ -14,33 +12,14 @@ class Inventory extends StatefulWidget {
   State<Inventory> createState() => _InventoryState();
 }
 
-class _InventoryState extends State<Inventory> with AutomaticKeepAliveClientMixin {
-  late final Future<TagData> loadingTagData;
-
-  @override
-  void initState() {
-    super.initState();
-
-    loadingTagData = TagData.emptyFromDatabase();
-  }
-
-  @override
-  void dispose() {
-    unawaited(() async {
-      var tagData = await loadingTagData;
-      tagData.dispose();
-    }());
-
-    super.dispose();
-  }
-
+class _InventoryState extends State<Inventory> with AutomaticKeepAliveClientMixin, EmptyTagDataMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
     return BasicScreenWidget(
       child: FutureBuilder(
-        future: loadingTagData,
+        future: tagDataFuture,
         builder: (context, snapshot) => switch (snapshot) {
           AsyncSnapshot(connectionState: ConnectionState.done, hasData: true, :var data!) => //
             ChangeNotifierProvider.value(

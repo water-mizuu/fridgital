@@ -1,8 +1,6 @@
-import "dart:async";
-
 import "package:flutter/material.dart";
-import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/shared/constants.dart";
+import "package:fridgital/shared/mixins/empty_tag_data_mixin.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/checkbox_tile.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart";
@@ -16,23 +14,7 @@ class ToBuy extends StatefulWidget {
   State<ToBuy> createState() => _ToBuyState();
 }
 
-class _ToBuyState extends State<ToBuy> with AutomaticKeepAliveClientMixin {
-  late final Future<TagData> tagDataFuture;
-
-  @override
-  void initState() {
-    super.initState();
-
-    tagDataFuture = TagData.emptyFromDatabase();
-  }
-
-  @override
-  void dispose() {
-    tagDataFuture.then((tagData) => tagData.dispose());
-
-    super.dispose();
-  }
-
+class _ToBuyState extends State<ToBuy> with AutomaticKeepAliveClientMixin, EmptyTagDataMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
