@@ -1,5 +1,4 @@
 import "package:flutter/widgets.dart";
-import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/enums.dart";
 
 class RouteState extends InheritedWidget {
@@ -33,6 +32,5 @@ class RouteState extends InheritedWidget {
 
   @override
   bool updateShouldNotify(covariant RouteState oldWidget) =>
-      oldWidget.activePage != activePage ||
-      oldWidget.isSecondLayerEnabled != isSecondLayerEnabled;
+      oldWidget.activePage != activePage || oldWidget.isSecondLayerEnabled != isSecondLayerEnabled;
 }

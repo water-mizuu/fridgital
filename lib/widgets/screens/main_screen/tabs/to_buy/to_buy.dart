@@ -44,7 +44,9 @@ class ToBuyTitle extends StatelessWidget {
               height: 660,
               width: 360,
               decoration: const BoxDecoration(
-                  color: FigmaColors.whiteAccent, borderRadius: BorderRadius.all(Radius.circular(10))),
+                color: FigmaColors.whiteAccent,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
               child: CheckBox(
                 itemNameToBuy: "hi",
                 itemObtainStatus: false,
