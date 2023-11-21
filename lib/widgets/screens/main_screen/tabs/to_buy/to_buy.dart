@@ -3,6 +3,7 @@ import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/mixins/empty_tag_data_mixin.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/checkbox_tile.dart";
+import "package:fridgital/widgets/shared/miscellaneous/shrinking_navigation.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
 import "package:provider/provider.dart";
@@ -36,7 +37,7 @@ class _ToBuyState extends State<ToBuy> with AutomaticKeepAliveClientMixin, Empty
                   Expanded(child: ToBuyBody()),
 
                   /// Insets for the navbar.
-                  SizedBox(height: 64.0 + 16.0),
+                  shrinkingNavigationOffset,
                 ],
               ),
             ),

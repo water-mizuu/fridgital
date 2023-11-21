@@ -17,6 +17,8 @@ const padding = 8.0;
 
 const retractedSize = iconSize + padding * 2;
 
+const shrinkingNavigationOffset = SizedBox(height: 80);
+
 class ShrinkingNavigation extends StatefulWidget {
   const ShrinkingNavigation({
     required this.controller,
