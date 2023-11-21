@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
+import "package:fridgital/shared/constants.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
+import "package:fridgital/widgets/shared/miscellaneous/checkbox_tile.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
 
 class ToBuy extends StatelessWidget {
@@ -36,6 +38,20 @@ class ToBuyTitle extends StatelessWidget {
           Text("To-Buy".toUpperCase(), style: theme.textTheme.titleLarge),
           const SizedBox(height: 8.0),
           Text("Your suggested grocery list.", style: theme.textTheme.displayLarge),
+          Padding(
+            padding: const EdgeInsets.only(top: 15),
+            child: Container(
+              height: 660,
+              width: 360,
+              decoration: const BoxDecoration(
+                  color: FigmaColors.whiteAccent, borderRadius: BorderRadius.all(Radius.circular(10))),
+              child: CheckBox(
+                itemNameToBuy: "hi",
+                itemObtainStatus: false,
+                onChanged: (p0) {},
+              ),
+            ),
+          ),
         ],
       ),
     );
