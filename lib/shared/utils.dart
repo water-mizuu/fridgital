@@ -1,5 +1,10 @@
 import "dart:math" as math;
 
+/// Returns the Levenshtein distance between two strings.
+/// The Levenshtein distance is the minimum number of single-character
+///   edits (insertions, deletions or substitutions) required to change one word into the other.
+///
+/// https://en.wikipedia.org/wiki/Levenshtein_distance
 int levenshtein(String left, String right) {
   switch ((left.length, right.length)) {
     case (0, var rightLength):

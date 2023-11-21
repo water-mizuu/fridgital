@@ -25,7 +25,9 @@ class SelectTagOverlay extends StatelessWidget {
         IconWidget(
           color: TagColors.addButton,
           icon: Icons.add,
-          onTap: () => const SwitchOverlayNotification(mode: OverlayMode.add).dispatch(context),
+          onTap: () {
+            const SwitchOverlayNotification(mode: OverlayMode.add).dispatch(context);
+          },
         ),
         IconWidget(
           color: TagColors.addButton,

@@ -56,13 +56,15 @@ class _BaseSelectTagOverlayState extends State<BaseSelectTagOverlay> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
 
-    var addableTags = context.read<TagData>().addableTags.toList();
-    var distances = addableTags.map((tag) => levenshtein(tag.name, textEditingController.text)).toList();
-    var threshold = textEditingController.text == "" //
-        ? intMax
-        : (distances.fold(intMax, math.min) + distances.length);
+    var addableTags = context.select((TagData data) => data.addableTags).toList();
+    var isTextEmpty = textEditingController.text == "";
+    var distances = [
+      for (var tag in addableTags) //
+        if (isTextEmpty) 0 else levenshtein(tag.name, textEditingController.text),
+    ];
+    var threshold = distances.map((d) => d + distances.length).fold(intMax, math.min);
     var indices = List<int>.generate(distances.length, (i) => i) //
-      ..sort((a, b) => textEditingController.text == "" ? 0 : distances[a].compareTo(distances[b]))
+      ..sort((a, b) => isTextEmpty ? 0 : distances[a].compareTo(distances[b]))
       ..removeWhere((i) => distances[i] > threshold);
 
     return GestureDetector(
