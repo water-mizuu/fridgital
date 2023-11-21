@@ -1,28 +1,73 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
+import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/checkbox_tile.dart";
+import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
+import "package:provider/provider.dart";
 
-class ToBuy extends StatelessWidget {
+class ToBuy extends StatefulWidget {
   const ToBuy({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const BasicScreenWidget(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          ToBuyTitle(),
-          SizedBox(height: 16.0),
-          Expanded(child: ToBuyBody()),
+  State<ToBuy> createState() => _ToBuyState();
+}
 
-          /// Insets for the navbar.
-          SizedBox(height: 64.0 + 16.0),
-        ],
+class _ToBuyState extends State<ToBuy> with AutomaticKeepAliveClientMixin {
+  late final Future<TagData> tagDataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+
+    tagDataFuture = TagData.emptyFromDatabase();
+  }
+
+  @override
+  void dispose() {
+    tagDataFuture.then((tagData) => tagData.dispose());
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+
+    return BasicScreenWidget(
+      child: FutureBuilder(
+        future: tagDataFuture,
+        builder: (context, snapshot) => switch (snapshot) {
+          AsyncSnapshot(connectionState: ConnectionState.done, hasData: true, :var data!) =>
+            ChangeNotifierProvider.value(
+              value: data,
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ToBuyTitle(),
+                  SizedBox(height: 16.0),
+                  ToBuyTags(),
+                  SizedBox(height: 16.0),
+                  Expanded(child: ToBuyBody()),
+
+                  /// Insets for the navbar.
+                  SizedBox(height: 64.0 + 16.0),
+                ],
+              ),
+            ),
+          AsyncSnapshot(connectionState: ConnectionState.done, hasError: true, :var error!) =>
+            Center(child: Text(error.toString())),
+          AsyncSnapshot() => const Center(child: CircularProgressIndicator()),
+        },
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class ToBuyTitle extends StatelessWidget {
@@ -33,7 +78,7 @@ class ToBuyTitle extends StatelessWidget {
     var theme = Theme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.all(32.0),
+      padding: const EdgeInsets.only(top: 32.0) + const EdgeInsets.symmetric(horizontal: 32.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,6 +88,18 @@ class ToBuyTitle extends StatelessWidget {
           Text("Your suggested grocery list.", style: theme.textTheme.displayLarge),
         ],
       ),
+    );
+  }
+}
+
+class ToBuyTags extends StatelessWidget {
+  const ToBuyTags({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 32.0),
+      child: TagsView(),
     );
   }
 }
