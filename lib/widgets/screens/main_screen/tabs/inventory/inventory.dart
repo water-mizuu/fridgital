@@ -1,8 +1,5 @@
-// ignore_for_file: discarded_futures
-
 import "dart:async";
 
-import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
@@ -41,38 +38,29 @@ class _InventoryState extends State<Inventory> with AutomaticKeepAliveClientMixi
   Widget build(BuildContext context) {
     super.build(context);
 
-    return FutureBuilder(
-      future: loadingTagData,
-      builder: (context, snapshot) {
-        switch (snapshot) {
-          case AsyncSnapshot(connectionState: ConnectionState.done, hasData: true, :var data!): //
-            return ChangeNotifierProvider.value(
+    return BasicScreenWidget(
+      child: FutureBuilder(
+        future: loadingTagData,
+        builder: (context, snapshot) => switch (snapshot) {
+          AsyncSnapshot(connectionState: ConnectionState.done, hasData: true, :var data!) => //
+            ChangeNotifierProvider.value(
               value: data,
-              child: const BasicScreenWidget(
-                child: MouseSingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      InventoryTitle(),
-                      SizedBox(height: 16.0),
-                      InventoryTags(),
-                    ],
-                  ),
+              child: const MouseSingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    InventoryTitle(),
+                    SizedBox(height: 16.0),
+                    InventoryTags(),
+                  ],
                 ),
               ),
-            );
-          case AsyncSnapshot(connectionState: ConnectionState.done, hasError: true, :var error!): //
-            if (kDebugMode) {
-              print("The future returned with an error: $error");
-            }
-            return BasicScreenWidget(child: Center(child: Text(error.toString())));
-          case AsyncSnapshot(): //
-            if (kDebugMode) {
-              print("The snapshot is $snapshot, with state: ${snapshot.connectionState} and data: ${snapshot.data}");
-            }
-            return const BasicScreenWidget(child: Center(child: CircularProgressIndicator()));
-        }
-      },
+            ),
+          AsyncSnapshot(connectionState: ConnectionState.done, hasError: true, :var error!) =>
+            Center(child: Text(error.toString())),
+          _ => const Center(child: CircularProgressIndicator()),
+        },
+      ),
     );
   }
 
