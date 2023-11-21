@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/mixins/empty_tag_data_mixin.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart";
@@ -31,6 +32,8 @@ class _InventoryState extends State<Inventory> with AutomaticKeepAliveClientMixi
                     InventoryTitle(),
                     SizedBox(height: 16.0),
                     InventoryTags(),
+                    SizedBox(height: 16.0),
+                    InventoryTabs(),
                   ],
                 ),
               ),
@@ -77,6 +80,74 @@ class InventoryTags extends StatelessWidget {
     return const Padding(
       padding: EdgeInsets.symmetric(horizontal: 32.0),
       child: TagsView(),
+    );
+  }
+}
+
+enum InventoryTab { freezer, refrigerator, pantry }
+
+class InventoryTabs extends StatefulWidget {
+  const InventoryTabs({super.key});
+
+  @override
+  State<InventoryTabs> createState() => _InventoryTabsState();
+}
+
+class _InventoryTabsState extends State<InventoryTabs> with TickerProviderStateMixin {
+  late final TabController tabController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    tabController.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        /// This is where the tabs can be selected.
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32.0),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            decoration: BoxDecoration(
+              color: FigmaColors.whiteAccent,
+              borderRadius: BorderRadius.circular(32.0),
+            ),
+            child: DefaultTextStyle(
+              style: const TextStyle(
+                color: Colors.black,
+                fontFamily: "Nunito",
+                fontWeight: FontWeight.w700,
+              ),
+              child: TabBar(
+                controller: tabController,
+                labelPadding: EdgeInsets.zero,
+                labelStyle: const TextStyle(
+                  fontFamily: "Nunito",
+                  fontWeight: FontWeight.w700,
+                ),
+                tabs: const [
+                  Tab(text: "FREEZER"),
+                  Tab(text: "REFRIGERATOR"),
+                  Tab(text: "PANTRY"),
+                ],
+              ),
+            ),
+          ),
+        ),
+
+        /// This is where the tabs are.
+      ],
     );
   }
 }
