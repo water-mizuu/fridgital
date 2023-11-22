@@ -1,10 +1,12 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:fridgital/back_end/database/tables/tags.dart";
+import "package:fridgital/back_end/database/tables/values/built_in_tags.dart";
+import "package:fridgital/back_end/database/tables/values/custom_tags.dart";
 import "package:fridgital/shared/classes/immutable_list.dart";
 import "package:fridgital/shared/classes/selected_color.dart";
 import "package:fridgital/shared/constants.dart";
+import "package:fridgital/shared/mixins/record_equatable.dart";
 
 class TagData extends ChangeNotifier {
   TagData(this._addableTags, this._activeTags);
@@ -12,14 +14,15 @@ class TagData extends ChangeNotifier {
       : _addableTags = [],
         _activeTags = [];
 
-  static const Set<BuiltInTag> _builtInTags = {BuiltInTag.essential};
-
   static Future<TagData> emptyFromDatabase() async {
-    var addableTags = <Tag>[..._builtInTags];
+    var addableTags = <Tag>[];
     var activeTags = <Tag>[];
 
-    var loadedAddable = await CustomTagsTable.instance.fetchAddableTags();
-    addableTags.addAll(loadedAddable);
+    var [loadedBuiltInTags, loadedCustomTags] = await Future.wait([
+      BuiltInTagsTable.instance.fetchAddableBuiltInTags(),
+      CustomTagsTable.instance.fetchAddableCustomTags(),
+    ]);
+    addableTags.addAll([...loadedBuiltInTags, ...loadedCustomTags]);
 
     return TagData(addableTags, activeTags);
   }
@@ -81,24 +84,30 @@ sealed class Tag {
   Color get color;
 }
 
-final class BuiltInTag implements Tag {
-  const BuiltInTag._(this.name, this.color);
+class BuiltInTag implements Tag {
+  const BuiltInTag(this.name, this.color);
 
-  static const BuiltInTag essential = BuiltInTag._("essentials", TagColors.essential);
+  static const List<BuiltInTag> values = [essential];
+  static const BuiltInTag essential = BuiltInTag("essentials", TagColors.essential);
 
   @override
   final String name;
 
   @override
   final Color color;
+
+  Record get record => (name, color);
 }
 
-final class CustomTag implements Tag {
+class CustomTag with RecordEquatable implements Tag {
   const CustomTag(this.name, this.color);
 
   @override
   final String name;
 
   @override
-  final UserSelectableColor color;
+  final TagColor color;
+
+  @override
+  Record get record => (name, color);
 }

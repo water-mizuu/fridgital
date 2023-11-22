@@ -17,7 +17,7 @@ class CreateNewTagOverlayNotification extends OverlayNotification {
   const CreateNewTagOverlayNotification({required this.name, required this.color});
 
   final String name;
-  final UserSelectableColor color;
+  final TagColor color;
 }
 
 class SelectedTagOverlayNotification extends OverlayNotification {
@@ -34,7 +34,7 @@ class ModifyWorkingTagNotification extends OverlayNotification {
   const ModifyWorkingTagNotification({required this.name, required this.color});
 
   final String name;
-  final UserSelectableColor color;
+  final TagColor color;
 }
 
 class ChooseWorkingTag extends OverlayNotification {

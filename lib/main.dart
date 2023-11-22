@@ -1,17 +1,17 @@
-// ignore_for_file: discarded_futures
-
 import "dart:async";
 import "dart:io";
 
 import "package:flutter/foundation.dart";
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
+import "package:fridgital/back_end/product_data.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/enums.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/screens/main_screen/main_screen.dart";
-import "package:fridgital/widgets/screens/recipe/one_pot_pesto.dart";
+import "package:fridgital/widgets/screens/new_product_screen/new_product_screen.dart";
 import "package:path/path.dart";
+import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "package:sqflite_common_ffi/sqflite_ffi.dart";
 import "package:window_manager/window_manager.dart";
@@ -36,8 +36,10 @@ Future<void> main() async {
     }
 
     databaseFactory = databaseFactoryFfi;
+
     var path = await getDatabasesPath();
     database = await databaseFactory.openDatabase(path);
+    // database = await databaseFactory.openDatabase(inMemoryDatabasePath);
   } else if (isMobile) {
     var path = join(await getDatabasesPath(), "fridgital.db");
     database = await databaseFactory.openDatabase(path);
@@ -107,8 +109,10 @@ class _MyAppState extends State<MyApp> {
     useMaterial3: true,
   );
 
+  late final Future<ProductData> productData;
   final ValueNotifier<int> popNotifier = ValueNotifier<int>(0);
   bool isSecondLayerEnabled = false;
+  bool isCreatingNewProduct = false;
   Pages activePage = Pages.home;
 
   void changePage(Pages page) {
@@ -125,7 +129,15 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    unawaited(productData = ProductData.fromDatabase());
+  }
+
+  @override
   void dispose() {
+    unawaited(productData.then((data) => data.dispose()));
     popNotifier.dispose();
 
     super.dispose();
@@ -138,25 +150,41 @@ class _MyAppState extends State<MyApp> {
       isSecondLayerEnabled: isSecondLayerEnabled,
       toggleSecondLayer: toggleSecondLayer,
       moveTo: changePage,
+      isCreatingNewProduct: isCreatingNewProduct,
+      setIsCreatingNewProduct: ({required bool value}) {
+        setState(() {
+          isCreatingNewProduct = value;
+        });
+      },
+      toggleCreatingNewProduct: () {
+        setState(() {
+          isCreatingNewProduct = !isCreatingNewProduct;
+        });
+      },
       popNotifier: popNotifier,
       child: MaterialApp(
         scrollBehavior: const MaterialScrollBehavior().copyWith(
           dragDevices: PointerDeviceKind.values.toSet(),
         ),
         theme: themeData,
-        home: Navigator(
-          pages: [
-            const MaterialPage(child: MainScreen()),
-            if (isSecondLayerEnabled) const MaterialPage(child: OnePotPesto(index: 0)),
-          ],
-          onPopPage: (route, result) {
-            setState(() {
-              isSecondLayerEnabled = false;
-            });
+        home: FutureProvider.value(
+          initialData: ProductData([]),
+          value: productData,
+          builder: (context, child) {
+            return ChangeNotifierProvider.value(
+              value: context.watch<ProductData>(),
+              child: Navigator(
+                pages: [
+                  const MaterialPage(child: MainScreen()),
+                  if (isCreatingNewProduct) const MaterialPage(child: NewProductScreen()),
+                ],
+                onPopPage: (route, result) {
+                  --popNotifier.value;
 
-            --popNotifier.value;
-
-            return route.didPop(result);
+                  return route.didPop(result);
+                },
+              ),
+            );
           },
         ),
       ),

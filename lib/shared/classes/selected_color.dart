@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
 
-class UserSelectableColor extends Color {
-  const UserSelectableColor(super.value);
+class TagColor extends Color {
+  const TagColor(super.value);
 }

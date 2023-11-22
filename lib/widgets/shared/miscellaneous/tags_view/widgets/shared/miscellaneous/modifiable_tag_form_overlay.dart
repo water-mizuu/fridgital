@@ -21,13 +21,11 @@ final class ModifiableTagFormOverlay extends StatefulWidget {
   });
 
   final String? initialText;
-  final UserSelectableColor? initialColor;
+  final TagColor? initialColor;
   final void Function() onCancel;
-  final void Function(String name, UserSelectableColor color) onSubmit;
-
+  final void Function(String name, TagColor color) onSubmit;
   final CustomTag confirmationTag;
   final IconData? confirmationIcon;
-
   final List<Widget> bottomButtons;
 
   @override
@@ -37,7 +35,7 @@ final class ModifiableTagFormOverlay extends StatefulWidget {
 class _ModifiableTagFormOverlayState extends State<ModifiableTagFormOverlay> {
   late final FocusNode focusNode;
   late final TextEditingController textEditingController;
-  late final ValueNotifier<UserSelectableColor?> selectedColor;
+  late final ValueNotifier<TagColor?> selectedColor;
 
   @override
   void initState() {
@@ -169,7 +167,6 @@ class _ModifiableTagFormOverlayState extends State<ModifiableTagFormOverlay> {
                       ScaffoldMessenger.of(context).showSnackBar(snackbar);
                       return;
                     }
-
                     widget.onSubmit(text, color);
                   },
                 ),
@@ -189,8 +186,8 @@ class ClickableColorCircle extends StatelessWidget {
     super.key,
   });
 
-  final ValueNotifier<UserSelectableColor?> selectedColor;
-  final UserSelectableColor color;
+  final ValueNotifier<TagColor?> selectedColor;
+  final TagColor color;
 
   @override
   Widget build(BuildContext context) {

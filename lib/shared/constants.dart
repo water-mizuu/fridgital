@@ -13,25 +13,25 @@ abstract final class TagColors {
   static const Color selector = Color(0xffd37979);
   static const Color essential = Color(0xff5aa0a0);
 
-  static const UserSelectableColor addButton = UserSelectableColor(0xffDAB39E);
+  static const TagColor addButton = TagColor(0xffDAB39E);
 
   static const selectable = [
-    UserSelectableColor(0xffA95454),
-    UserSelectableColor(0xffC98060),
-    UserSelectableColor(0xffDBAF9C),
-    UserSelectableColor(0xffDDA767),
-    UserSelectableColor(0xffD3BE96),
-    UserSelectableColor(0xffADBD93),
-    UserSelectableColor(0xff72A18D),
-    UserSelectableColor(0xff5AA0A0),
-    UserSelectableColor(0xff92A8C8),
-    UserSelectableColor(0xff5476A9),
-    UserSelectableColor(0xff615CA4),
-    UserSelectableColor(0xff9879B1),
-    UserSelectableColor(0xff7B558D),
-    UserSelectableColor(0xffA57D71),
-    UserSelectableColor(0xff8D5F4C),
-    UserSelectableColor(0xff8C7973),
-    UserSelectableColor(0xff665252),
+    TagColor(0xffA95454),
+    TagColor(0xffC98060),
+    TagColor(0xffDBAF9C),
+    TagColor(0xffDDA767),
+    TagColor(0xffD3BE96),
+    TagColor(0xffADBD93),
+    TagColor(0xff72A18D),
+    TagColor(0xff5AA0A0),
+    TagColor(0xff92A8C8),
+    TagColor(0xff5476A9),
+    TagColor(0xff615CA4),
+    TagColor(0xff9879B1),
+    TagColor(0xff7B558D),
+    TagColor(0xffA57D71),
+    TagColor(0xff8D5F4C),
+    TagColor(0xff8C7973),
+    TagColor(0xff665252),
   ];
 }
