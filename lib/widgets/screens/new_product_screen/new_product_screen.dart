@@ -139,17 +139,16 @@ class _NewProductScreenState extends State<NewProductScreen> with EmptyTagDataMi
                             return;
                           }
 
-                          await context //
-                              .read<ProductData>()
-                              .addProduct(
+                          await context.read<ProductData>().addProduct(
                                 name: name.value,
-                                addedDate: addedDate.value ?? DateTime.now(),
+                                addedDate: addedDate.value ??
+                                    DateTime.now()
+                                        .copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0),
                                 storageUnits: storageUnits.value,
                                 storageLocation: storageLocation.value,
                                 expiryDate: expiryDate.value,
                                 notes: notes.value,
                                 tags: tags,
-                                // ignore: avoid_redundant_argument_values
                                 imageUrl: null,
                               );
                           if (!context.mounted) {

@@ -80,12 +80,12 @@ final class ProductTable extends DatabaseTable {
     required List<Tag> tags,
     required StorageLocation storageLocation,
     required String storageUnits,
-    String? imageUrl,
-    DateTime? expiryDate,
-    String notes = "",
+    required String? imageUrl,
+    required DateTime? expiryDate,
+    required String notes,
   }) async {
-    var productId = await database.insert(
-      name,
+    var id = await database.insert(
+      this.name,
       {
         "name": name,
         "addedDate": addedDate.toIso8601String(),
@@ -120,22 +120,22 @@ final class ProductTable extends DatabaseTable {
       for (var tag in tags)
         switch (tag) {
           CustomTag(:var name) => ProductCustomTagsTable.instance.register(
-              productId: productId,
+              productId: id,
               tagId: ids.firstWhere((pair) => pair.$1 == name).$2,
             ),
           BuiltInTag(:var name) => ProductBuiltInTagsTable.instance.register(
-              productId: productId,
+              productId: id,
               tagId: ids.firstWhere((pair) => pair.$1 == name).$2,
             ),
         },
     ]);
 
     if (kDebugMode) {
-      print("Successfully added '$name' with id $productId");
+      print("Successfully added '$name' with id $id");
     }
 
     return Product(
-      id: productId,
+      id: id,
       name: name,
       addedDate: addedDate,
       tags: tags,

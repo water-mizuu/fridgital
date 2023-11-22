@@ -22,9 +22,9 @@ class ProductData extends ChangeNotifier {
     required List<Tag> tags,
     required StorageLocation storageLocation,
     required String storageUnits,
-    String? imageUrl,
-    DateTime? expiryDate,
-    String notes = "",
+    required String? imageUrl,
+    required DateTime? expiryDate,
+    required String notes,
   }) async {
     var product = await ProductTable.instance.addProduct(
       name: name,
