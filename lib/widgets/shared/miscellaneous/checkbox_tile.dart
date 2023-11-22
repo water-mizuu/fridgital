@@ -29,7 +29,10 @@ class CheckBox extends StatelessWidget {
           ),
           Text(
             itemNameToBuy,
-            style: TextStyle(fontSize: 20.0),
+            style: TextStyle(
+              fontSize: 20.0,
+              color: itemObtainStatus ? FigmaColors.lightGreyAccent : Colors.black,
+            ),
           ),
         ],
       ),

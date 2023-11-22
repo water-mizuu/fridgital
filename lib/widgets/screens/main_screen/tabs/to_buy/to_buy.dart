@@ -1,3 +1,4 @@
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/mixins/empty_tag_data_mixin.dart";
@@ -94,9 +95,9 @@ class ToBuyBody extends StatelessWidget {
     super.key,
   });
 
-  static List<(String, bool)> toBuyList = [
-    ("hi", false),
-    ("bye", false),
+  static List<String> toBuyList = [
+    "hi",
+    "bye",
   ];
   // ignore: avoid_positional_boolean_parameters
   final void Function(bool)? onChanged;
@@ -117,37 +118,28 @@ class ToBuyBody extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
-                        for (int i = 0; i < 50; ++i) ...[
-                          const Divider(
-                            color: FigmaColors.lightGreyAccent,
-                            thickness: 1.0,
-                          ),
-
-                          ListView.builder(
-                            itemCount: toBuyList.length,
-                            itemBuilder: (context, index) {
-                              return CheckBox(
-                                itemNameToBuy: toBuyList[index].$1,
-                                itemObtainStatus: toBuyList[index].$2,
-                                onChanged: onChanged,
-                              );
-                            },
-                          ),
-                          // CheckBox(
-                          //   itemNameToBuy: "hi",
-                          //   itemObtainStatus: false,
-                          //   onChanged: (p0) {},
-                          // ),
+                        for (int index = 0; index < toBuyList.length; ++index) ...[
+                          if (index > 0)
+                            const Divider(
+                              color: FigmaColors.lightGreyAccent,
+                              thickness: 1.0,
+                            ),
+                          ToBuyTile(toBuyList: toBuyList, index: index, onChanged: onChanged),
                         ],
                       ],
                     ),
                   ),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(left: 15.0, right: 8.0, bottom: 15.0, top: 8.0),
+              Padding(
+                padding: const EdgeInsets.only(left: 15.0, right: 8.0, bottom: 15.0, top: 8.0),
                 child: ClickableWidget(
-                  child: Row(
+                  onTap: () {
+                    if (kDebugMode) {
+                      print("Deez nuts. Gotteem");
+                    }
+                  },
+                  child: const Row(
                     children: [
                       Icon(
                         Icons.add,
@@ -169,6 +161,42 @@ class ToBuyBody extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class ToBuyTile extends StatefulWidget {
+  const ToBuyTile({
+    required this.toBuyList,
+    required this.index,
+    required this.onChanged,
+    super.key,
+  });
+
+  final List<String> toBuyList;
+  final int index;
+
+  // ignore: avoid_positional_boolean_parameters
+  final void Function(bool p1)? onChanged;
+
+  @override
+  State<ToBuyTile> createState() => _ToBuyTileState();
+}
+
+class _ToBuyTileState extends State<ToBuyTile> {
+  bool isActive = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return CheckBox(
+      itemNameToBuy: widget.toBuyList[widget.index],
+      itemObtainStatus: isActive,
+      onChanged: (bool val) {
+        setState(() {
+          isActive = !isActive;
+        });
+        widget.onChanged?.call(isActive);
+      },
     );
   }
 }
