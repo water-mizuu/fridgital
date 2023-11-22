@@ -3,6 +3,7 @@ import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/mixins/empty_tag_data_mixin.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/checkbox_tile.dart";
+import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
 import "package:fridgital/widgets/shared/miscellaneous/shrinking_navigation.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
@@ -27,14 +28,14 @@ class _ToBuyState extends State<ToBuy> with AutomaticKeepAliveClientMixin, Empty
           AsyncSnapshot(connectionState: ConnectionState.done, hasData: true, :var data!) =>
             ChangeNotifierProvider.value(
               value: data,
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  ToBuyTitle(),
-                  SizedBox(height: 16.0),
-                  ToBuyTags(),
-                  SizedBox(height: 16.0),
-                  Expanded(child: ToBuyBody()),
+                  const ToBuyTitle(),
+                  const SizedBox(height: 16.0),
+                  const ToBuyTags(),
+                  const SizedBox(height: 16.0),
+                  Expanded(child: ToBuyBody(onChanged: (v) {})),
 
                   /// Insets for the navbar.
                   shrinkingNavigationOffset,
@@ -88,7 +89,17 @@ class ToBuyTags extends StatelessWidget {
 }
 
 class ToBuyBody extends StatelessWidget {
-  const ToBuyBody({super.key});
+  const ToBuyBody({
+    required this.onChanged,
+    super.key,
+  });
+
+  static List<(String, bool)> toBuyList = [
+    ("hi", false),
+    ("bye", false),
+  ];
+  // ignore: avoid_positional_boolean_parameters
+  final void Function(bool)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -96,25 +107,65 @@ class ToBuyBody extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 32.0),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(10)),
-        child: MouseSingleChildScrollView(
-          child: ColoredBox(
-            color: FigmaColors.whiteAccent,
-            child: Column(
-              children: [
-                for (int i = 0; i < 50; ++i) ...[
-                  CheckBox(
-                    itemNameToBuy: "hi",
-                    itemObtainStatus: false,
-                    onChanged: (p0) {},
+        child: ColoredBox(
+          color: FigmaColors.whiteAccent,
+          child: Column(
+            children: [
+              Expanded(
+                child: MouseSingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        for (int i = 0; i < 50; ++i) ...[
+                          const Divider(
+                            color: FigmaColors.lightGreyAccent,
+                            thickness: 1.0,
+                          ),
+
+                          ListView.builder(
+                            itemCount: toBuyList.length,
+                            itemBuilder: (context, index) {
+                              return CheckBox(
+                                itemNameToBuy: toBuyList[index].$1,
+                                itemObtainStatus: toBuyList[index].$2,
+                                onChanged: onChanged,
+                              );
+                            },
+                          ),
+                          // CheckBox(
+                          //   itemNameToBuy: "hi",
+                          //   itemObtainStatus: false,
+                          //   onChanged: (p0) {},
+                          // ),
+                        ],
+                      ],
+                    ),
                   ),
-                  CheckBox(
-                    itemNameToBuy: "hi",
-                    itemObtainStatus: true,
-                    onChanged: (p0) {},
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 15.0, right: 8.0, bottom: 15.0, top: 8.0),
+                child: ClickableWidget(
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.add,
+                        color: FigmaColors.lightGreyAccent,
+                      ),
+                      Text(
+                        "Add Item...",
+                        style: TextStyle(
+                          color: FigmaColors.lightGreyAccent,
+                          fontStyle: FontStyle.italic,
+                          fontSize: 20.0,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ],
-            ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

@@ -15,16 +15,22 @@ class CheckBox extends StatelessWidget {
     return Container(
       child: Row(
         children: [
-          SizedBox(
-            width: 24,
-            height: 24,
-            child: RoundCheckBox(
-              color: TagColors.selectable[2],
-              value: itemObtainStatus,
-              onChanged: onChanged,
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: SizedBox(
+              width: 20,
+              height: 20,
+              child: RoundCheckBox(
+                color: TagColors.selectable[2],
+                value: itemObtainStatus,
+                onChanged: onChanged,
+              ),
             ),
           ),
-          Text(itemNameToBuy),
+          Text(
+            itemNameToBuy,
+            style: TextStyle(fontSize: 20.0),
+          ),
         ],
       ),
     );
