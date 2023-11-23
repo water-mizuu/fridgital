@@ -91,8 +91,6 @@ class InventoryTags extends StatelessWidget {
   }
 }
 
-enum InventoryTab { freezer, refrigerator, pantry }
-
 class InventoryTabs extends StatefulWidget {
   const InventoryTabs({super.key});
 
@@ -147,8 +145,6 @@ class _InventoryTabsState extends State<InventoryTabs> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    var productData = context.watch<ProductData>();
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -189,33 +185,7 @@ class _InventoryTabsState extends State<InventoryTabs> with TickerProviderStateM
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: MouseSingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                for (var product in productData.products.where((p) => p.storageLocation == location))
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      child: Container(
-                                        padding: const EdgeInsets.all(12.0),
-                                        color: Colors.grey[100],
-                                        child: Text(
-                                          "${product.name} - ${product.tags}",
-                                          style: const TextStyle(fontStyle: FontStyle.italic),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                      InventoryTabLocation(location: location),
                       TextButton(
                         child: Text("Add a product to ${location.name}"),
                         onPressed: () {
@@ -229,6 +199,127 @@ class _InventoryTabsState extends State<InventoryTabs> with TickerProviderStateM
           ),
         ),
       ],
+    );
+  }
+}
+
+class InventoryTabLocation extends StatelessWidget {
+  const InventoryTabLocation({required this.location, super.key});
+
+  final StorageLocation location;
+
+  @override
+  Widget build(BuildContext context) {
+    var productData = context.watch<ProductData>();
+
+    return Expanded(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8.0),
+        child: MouseSingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var product in productData.products.where((p) => p.storageLocation == location))
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: InventoryProduct(product: product),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class InventoryProduct extends StatefulWidget {
+  const InventoryProduct({
+    required this.product,
+    super.key,
+  });
+
+  final Product product;
+
+  @override
+  State<InventoryProduct> createState() => _InventoryProductState();
+}
+
+class _InventoryProductState extends State<InventoryProduct> with TickerProviderStateMixin {
+  static const double tileHeight = 96.0;
+
+  final GlobalKey behindKey = GlobalKey();
+
+  late final ValueNotifier<bool> isOptionsVisible;
+  late final AnimationController animationController;
+
+  void toggleIsOptionsVisible() {
+    setState(() {
+      isOptionsVisible.value = !isOptionsVisible.value;
+    });
+
+    if (isOptionsVisible.value) {
+      animationController.forward();
+    } else {
+      animationController.reverse();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    isOptionsVisible = ValueNotifier<bool>(false);
+    animationController = AnimationController(vsync: this, duration: 150.ms);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) => AnimatedBuilder(
+        animation: animationController,
+        builder: (context, child) => SizedBox(
+          height: tileHeight +
+              (Curves.easeOut.transform(animationController.value) *
+                  ((behindKey.currentContext?.findRenderObject() as RenderBox?)?.size.height ?? 0.0)),
+          child: child,
+        ),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  key: behindKey,
+                  padding: const EdgeInsets.all(12.0),
+                  color: FigmaColors.pinkAccent,
+                  child: const Text(
+                    "DELETE",
+                    style: TextStyle(fontStyle: FontStyle.italic, color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              width: constraints.maxWidth,
+              child: GestureDetector(
+                onSecondaryTap: toggleIsOptionsVisible,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Container(
+                    height: tileHeight,
+                    padding: const EdgeInsets.all(12.0),
+                    color: isOptionsVisible.value ? Colors.grey[400] : FigmaColors.whiteAccent,
+                    child: Text(
+                      "${widget.product.name} - ${widget.product.tags}",
+                      style: const TextStyle(fontStyle: FontStyle.italic),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

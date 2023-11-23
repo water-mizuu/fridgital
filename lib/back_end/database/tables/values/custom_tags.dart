@@ -9,16 +9,15 @@ final class CustomTagsTable extends DatabaseTable {
   const CustomTagsTable._();
 
   static const CustomTagsTable instance = CustomTagsTable._();
-  static const String tableName = "addableTags";
 
   @override
-  String get name => tableName;
+  String get tableName => "addableTags";
 
   @override
   Future<void> create() async {
     await database.execute(
       """
-      CREATE TABLE $name (
+      CREATE TABLE $tableName (
         id INTEGER PRIMARY KEY,
         name TEXT NOT NULL,
         color INTEGER NOT NULL
@@ -29,7 +28,7 @@ final class CustomTagsTable extends DatabaseTable {
 
   Future<CustomTag> fetchTagWithId(int id) async {
     await ensureInitialized();
-    var rows = await database.query(name, where: "id = ?", whereArgs: [id]);
+    var rows = await database.query(tableName, where: "id = ?", whereArgs: [id]);
     assert(rows.length == 1, "Ids should be unique!");
 
     var row = rows.first;
@@ -44,7 +43,7 @@ final class CustomTagsTable extends DatabaseTable {
 
   Future<List<CustomTag>> fetchAddableCustomTags() async {
     await ensureInitialized();
-    var rows = await database.query(name);
+    var rows = await database.query(tableName);
     var tags = <CustomTag>[];
 
     for (var row in rows) {
@@ -68,12 +67,12 @@ final class CustomTagsTable extends DatabaseTable {
   }
 
   Future<void> removeAddableTag(int id) async {
-    await database.delete(name, where: "id = ?", whereArgs: [id]);
+    await database.delete(tableName, where: "id = ?", whereArgs: [id]);
   }
 
   Future<void> replaceAddableTag(CustomTag target, CustomTag tag) async {
     await database.update(
-      name,
+      tableName,
       {"name": tag.name, "color": TagColors.selectable.indexOf(tag.color)},
       where: "id = ?",
       whereArgs: [target.id],

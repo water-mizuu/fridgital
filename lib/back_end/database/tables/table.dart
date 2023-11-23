@@ -3,16 +3,16 @@ import "package:fridgital/main.dart";
 abstract base class DatabaseTable {
   const DatabaseTable();
 
-  String get name;
+  String get tableName;
 
   Future<void> create();
 
   Future<void> drop() async {
-    await database.execute("DROP TABLE IF EXISTS $name");
+    await database.execute("DROP TABLE IF EXISTS $tableName");
   }
 
   Future<void> ensureInitialized() async {
-    var table = await database.query("sqlite_master", where: "name = ?", whereArgs: [name]);
+    var table = await database.query("sqlite_master", where: "name = ?", whereArgs: [tableName]);
     if (table.isEmpty) {
       await create();
     }

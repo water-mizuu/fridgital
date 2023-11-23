@@ -8,16 +8,15 @@ final class BuiltInTagsTable extends DatabaseTable {
   const BuiltInTagsTable._();
 
   static const BuiltInTagsTable instance = BuiltInTagsTable._();
-  static const String tableName = "builtInTags";
 
   @override
-  String get name => tableName;
+  String get tableName => "builtInTags";
 
   @override
   Future<void> create() async {
     await database.execute(
       """
-      CREATE TABLE $name (
+      CREATE TABLE $tableName (
         id INTEGER PRIMARY KEY,
         name TEXT NOT NULL,
 
@@ -30,13 +29,13 @@ final class BuiltInTagsTable extends DatabaseTable {
 
     await Future.wait([
       for (var BuiltInTag(:name, color: Color(:red, :green, :blue)) in BuiltInTag.values)
-        database.insert(this.name, {"name": name, "red": red, "green": green, "blue": blue}),
+        database.insert(this.tableName, {"name": name, "red": red, "green": green, "blue": blue}),
     ]);
   }
 
   Future<BuiltInTag> fetchTagWithId(int id) async {
     await ensureInitialized();
-    var rows = await database.query(name, where: "id = ?", whereArgs: [id]);
+    var rows = await database.query(tableName, where: "id = ?", whereArgs: [id]);
     assert(rows.length == 1, "Ids should be unique!");
 
     var row = rows.first;
@@ -51,7 +50,7 @@ final class BuiltInTagsTable extends DatabaseTable {
 
   Future<List<BuiltInTag>> fetchAddableBuiltInTags() async {
     await ensureInitialized();
-    var rows = await database.query(name);
+    var rows = await database.query(tableName);
     var tags = <BuiltInTag>[];
 
     for (var row in rows) {
