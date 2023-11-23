@@ -21,9 +21,35 @@ class _NewProductScreenState extends State<NewProductScreen> with EmptyTagDataMi
   late final ValueNotifier<String?> imageUrl;
   late final ValueNotifier<DateTime?> addedDate;
   late final ValueNotifier<String> storageUnits;
-  late final ValueNotifier<StorageLocation> storageLocation;
   late final ValueNotifier<DateTime?> expiryDate;
   late final ValueNotifier<String> notes;
+
+  Future<void> submit() async {
+    var tagData = await tagDataFuture;
+    var tags = tagData.activeTags.toList();
+
+    if (!context.mounted) {
+      return;
+    }
+
+    late var today = DateTime.now().copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
+    var productData = context.read<ProductData>();
+    var location = context.read<StorageLocation>();
+    await productData.addProduct(
+      name: name.value,
+      addedDate: addedDate.value ?? today,
+      storageUnits: storageUnits.value,
+      storageLocation: location,
+      expiryDate: expiryDate.value,
+      notes: notes.value,
+      tags: tags,
+      imageUrl: null,
+    );
+    if (!context.mounted) {
+      return;
+    }
+    RouteState.of(context).isCreatingNewProduct = false;
+  }
 
   @override
   void initState() {
@@ -33,7 +59,6 @@ class _NewProductScreenState extends State<NewProductScreen> with EmptyTagDataMi
     imageUrl = ValueNotifier<String?>(null);
     addedDate = ValueNotifier<DateTime?>(null);
     storageUnits = ValueNotifier<String>("Pounds");
-    storageLocation = ValueNotifier<StorageLocation>(StorageLocation.freezer);
     expiryDate = ValueNotifier<DateTime?>(null);
     notes = ValueNotifier<String>("");
   }
@@ -44,7 +69,6 @@ class _NewProductScreenState extends State<NewProductScreen> with EmptyTagDataMi
     imageUrl.dispose();
     addedDate.dispose();
     storageUnits.dispose();
-    storageLocation.dispose();
     expiryDate.dispose();
     notes.dispose();
     super.dispose();
@@ -131,31 +155,7 @@ class _NewProductScreenState extends State<NewProductScreen> with EmptyTagDataMi
                         mapper: (name) => name,
                       ),
                       TextButton(
-                        onPressed: () async {
-                          var tagData = await tagDataFuture;
-                          var tags = tagData.activeTags.toList();
-
-                          if (!context.mounted) {
-                            return;
-                          }
-
-                          await context.read<ProductData>().addProduct(
-                                name: name.value,
-                                addedDate: addedDate.value ??
-                                    DateTime.now()
-                                        .copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0),
-                                storageUnits: storageUnits.value,
-                                storageLocation: storageLocation.value,
-                                expiryDate: expiryDate.value,
-                                notes: notes.value,
-                                tags: tags,
-                                imageUrl: null,
-                              );
-                          if (!context.mounted) {
-                            return;
-                          }
-                          RouteState.of(context).isCreatingNewProduct = false;
-                        },
+                        onPressed: submit,
                         child: const Text("Add"),
                       ),
                     ],
@@ -170,7 +170,7 @@ class _NewProductScreenState extends State<NewProductScreen> with EmptyTagDataMi
   }
 }
 
-class NewProductField<T, C extends ValueNotifier<T>> extends StatefulWidget {
+class NewProductField<T, VT extends ValueNotifier<T>> extends StatefulWidget {
   const NewProductField({
     required this.title,
     required this.valueNotifier,
@@ -179,14 +179,14 @@ class NewProductField<T, C extends ValueNotifier<T>> extends StatefulWidget {
   });
 
   final String title;
-  final C valueNotifier;
+  final VT valueNotifier;
   final T Function(String) mapper;
 
   @override
-  State<NewProductField<T, C>> createState() => _NewProductFieldState<T, C>();
+  State<NewProductField<T, VT>> createState() => _NewProductFieldState<T, VT>();
 }
 
-class _NewProductFieldState<T, C extends ValueNotifier<T>> extends State<NewProductField<T, C>> {
+class _NewProductFieldState<T, VT extends ValueNotifier<T>> extends State<NewProductField<T, VT>> {
   late final TextEditingController textEditingController;
 
   @override

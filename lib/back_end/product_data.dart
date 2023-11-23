@@ -7,8 +7,10 @@ enum StorageLocation { freezer, refrigerator, pantry }
 
 class ProductData extends ChangeNotifier {
   ProductData(this._products);
+  ProductData.empty() : _products = [];
+
   static Future<ProductData> fromDatabase() async {
-    var products = await ProductTable.instance.fetchProducts().then((products) => products.toList());
+    var products = await ProductTable.instance.fetchProducts();
 
     return ProductData(products);
   }
@@ -16,7 +18,7 @@ class ProductData extends ChangeNotifier {
   final List<Product> _products;
   ImmutableList<Product> get products => ImmutableList<Product>(_products);
 
-  Future<Product> addProduct({
+  Future<void> addProduct({
     required String name,
     required DateTime addedDate,
     required List<Tag> tags,
@@ -39,8 +41,6 @@ class ProductData extends ChangeNotifier {
 
     _products.add(product);
     notifyListeners();
-
-    return product;
   }
 }
 

@@ -110,6 +110,8 @@ class _MyAppState extends State<MyApp> {
   );
 
   late final Future<ProductData> productData;
+
+  late StorageLocation workingLocation;
   final ValueNotifier<int> popNotifier = ValueNotifier<int>(0);
   bool isSecondLayerEnabled = false;
   bool isCreatingNewProduct = false;
@@ -132,7 +134,10 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    unawaited(productData = ProductData.fromDatabase());
+    unawaited(() async {
+      productData = ProductData.fromDatabase();
+      workingLocation = StorageLocation.values[sharedPreferences.getInt(SharedPreferencesKeys.inventoryLocation) ?? 0];
+    }());
   }
 
   @override
@@ -162,32 +167,54 @@ class _MyAppState extends State<MyApp> {
         });
       },
       popNotifier: popNotifier,
-      child: MaterialApp(
-        scrollBehavior: const MaterialScrollBehavior().copyWith(
-          dragDevices: PointerDeviceKind.values.toSet(),
-        ),
-        theme: themeData,
-        home: FutureProvider.value(
-          initialData: ProductData([]),
-          value: productData,
-          builder: (context, child) {
-            return ChangeNotifierProvider.value(
-              value: context.watch<ProductData>(),
-              child: Navigator(
-                pages: [
-                  const MaterialPage(child: MainScreen()),
-                  if (isCreatingNewProduct) const MaterialPage(child: NewProductScreen()),
-                ],
-                onPopPage: (route, result) {
-                  --popNotifier.value;
+      child: NotificationListener(
+        onNotification: (notification) {
+          if (notification case ChangeWorkingStorageLocationNotification(:var location)) {
+            if (kDebugMode) {
+              print("Working location changed to $location");
+            }
+            setState(() {
+              workingLocation = location;
+            });
+            return true;
+          }
 
-                  return route.didPop(result);
-                },
+          return false;
+        },
+        child: MaterialApp(
+          scrollBehavior: const MaterialScrollBehavior().copyWith(
+            dragDevices: PointerDeviceKind.values.toSet(),
+          ),
+          theme: themeData,
+          home: FutureProvider.value(
+            initialData: ProductData.empty(),
+            value: productData,
+            builder: (context, child) => Provider.value(
+              value: workingLocation,
+              child: ChangeNotifierProvider.value(
+                value: context.watch<ProductData>(),
+                child: Navigator(
+                  pages: [
+                    const MaterialPage(child: MainScreen()),
+                    if (isCreatingNewProduct) const MaterialPage(child: NewProductScreen()),
+                  ],
+                  onPopPage: (route, result) {
+                    --popNotifier.value;
+
+                    return route.didPop(result);
+                  },
+                ),
               ),
-            );
-          },
+            ),
+          ),
         ),
       ),
     );
   }
+}
+
+class ChangeWorkingStorageLocationNotification extends Notification {
+  const ChangeWorkingStorageLocationNotification(this.location);
+
+  final StorageLocation location;
 }

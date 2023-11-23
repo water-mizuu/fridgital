@@ -39,7 +39,7 @@ final class ProductTable extends DatabaseTable {
     );
   }
 
-  Future<Iterable<Product>> fetchProducts() async {
+  Future<List<Product>> fetchProducts() async {
     await ensureInitialized();
     var rows = await database.query(name);
     var products = <Product>[];
@@ -52,10 +52,13 @@ final class ProductTable extends DatabaseTable {
             "addedDate": String addedDate,
             "storageLocation": int storageLocation,
             "storageUnits": String units,
+            "notes": String notes,
+            "expiryDate": String? expiryDate,
+            "imageUrl": String? imageUrl,
           }) {
         var [custom, builtIn] = await Future.wait([
-          ProductCustomTagsTable.instance.fetchCustomTagsOfProduct(id: row["id"]! as int),
-          ProductBuiltInTagsTable.instance.fetchBuiltInTags(productId: row["id"]! as int),
+          ProductCustomTagsTable.instance.fetchCustomTagsOfProduct(id: id),
+          ProductBuiltInTagsTable.instance.fetchBuiltInTags(productId: id),
         ]);
 
         var product = Product(
@@ -65,6 +68,9 @@ final class ProductTable extends DatabaseTable {
           storageLocation: StorageLocation.values[storageLocation],
           storageUnits: units,
           tags: [...custom, ...builtIn],
+          notes: notes,
+          expiryDate: expiryDate != null ? DateTime.parse(expiryDate) : null,
+          imageUrl: imageUrl,
         );
 
         products.add(product);
@@ -141,6 +147,9 @@ final class ProductTable extends DatabaseTable {
       tags: tags,
       storageLocation: storageLocation,
       storageUnits: storageUnits,
+      imageUrl: imageUrl,
+      expiryDate: expiryDate,
+      notes: notes,
     );
   }
 

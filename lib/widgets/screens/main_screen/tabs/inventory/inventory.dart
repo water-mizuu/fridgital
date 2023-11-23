@@ -1,6 +1,11 @@
+import "dart:async";
+
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:fridgital/back_end/product_data.dart";
+import "package:fridgital/main.dart";
 import "package:fridgital/shared/constants.dart";
+import "package:fridgital/shared/extensions/time.dart";
 import "package:fridgital/shared/mixins/empty_tag_data_mixin.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
@@ -98,11 +103,39 @@ class InventoryTabs extends StatefulWidget {
 class _InventoryTabsState extends State<InventoryTabs> with TickerProviderStateMixin {
   late final TabController tabController;
 
+  late Future<void>? debounce;
+
   @override
   void initState() {
     super.initState();
 
-    tabController = TabController(length: 3, vsync: this);
+    tabController = TabController(length: 3, vsync: this)
+      ..addListener(() {
+        if (tabController.indexIsChanging) {
+          return;
+        }
+
+        if (kDebugMode) {
+          print("Tab changed to ${tabController.index}");
+        }
+
+        var index = tabController.index;
+        late Future<void> debounced;
+        unawaited(
+          debounce = debounced = Future.delayed(200.ms, () async {
+            if (debounce != debounced) {
+              return;
+            }
+
+            if (!context.mounted) {
+              return;
+            }
+
+            ChangeWorkingStorageLocationNotification(StorageLocation.values[index]).dispatch(context);
+            await sharedPreferences.setInt(SharedPreferencesKeys.inventoryLocation, index);
+          }),
+        );
+      });
   }
 
   @override
@@ -184,7 +217,7 @@ class _InventoryTabsState extends State<InventoryTabs> with TickerProviderStateM
                         ),
                       ),
                       TextButton(
-                        child: const Text("add"),
+                        child: Text("Add a product to ${location.name}"),
                         onPressed: () {
                           RouteState.of(context).toggleCreatingNewProduct();
                         },

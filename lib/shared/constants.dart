@@ -36,3 +36,8 @@ abstract final class TagColors {
     TagColor(0xff665252),
   ];
 }
+
+abstract final class SharedPreferencesKeys {
+  static const lastOpenTab = "last-open-tab";
+  static const inventoryLocation = "inventory-location";
+}
