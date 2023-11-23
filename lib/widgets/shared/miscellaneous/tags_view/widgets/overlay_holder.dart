@@ -54,23 +54,21 @@ class _OverlayHolderState extends State<OverlayHolder> with TickerProviderStateM
         }
 
       case CreateNewTagOverlayNotification(:var name, :var color):
-        var tag = CustomTag(name, color);
-
-        await tagData.addAddableTag(tag);
+        await tagData.addAddableTag(name: name, color: color);
         await transitionTo(OverlayMode.select);
 
       case ModifyWorkingTagNotification(:var name, :var color):
         var toReplace = workingTag.value!;
-        var tag = CustomTag(name, color);
+        var tag = CustomTag(toReplace.id, name, color);
 
         await tagData.replaceAddableTag(toReplace, tag);
         await transitionTo(OverlayMode.select);
         workingTag.value = null;
 
-      case ChooseWorkingTag(:var tag):
+      case ChooseWorkingTagNotification(:var tag):
         workingTag.value = tag;
 
-      case DeleteTag(:var tag):
+      case DeleteTagNotification(:var tag):
         await tagData.removeAddableTag(tag);
         await transitionTo(OverlayMode.select);
     }

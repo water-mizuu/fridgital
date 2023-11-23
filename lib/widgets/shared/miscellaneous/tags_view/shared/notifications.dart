@@ -37,14 +37,14 @@ class ModifyWorkingTagNotification extends OverlayNotification {
   final TagColor color;
 }
 
-class ChooseWorkingTag extends OverlayNotification {
-  const ChooseWorkingTag(this.tag);
+class ChooseWorkingTagNotification extends OverlayNotification {
+  const ChooseWorkingTagNotification(this.tag);
 
   final CustomTag tag;
 }
 
-class DeleteTag extends OverlayNotification {
-  const DeleteTag(this.tag);
+class DeleteTagNotification extends OverlayNotification {
+  const DeleteTagNotification(this.tag);
 
   final CustomTag tag;
 }

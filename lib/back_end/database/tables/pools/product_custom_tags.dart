@@ -53,4 +53,9 @@ final class ProductCustomTagsTable extends DatabaseTable {
 
     return tags;
   }
+
+  /// TODO(water-mizuu): Add the following:
+  ///   - remove tag from specific product
+  ///   - remove all tags from specific product
+  ///   - remove a product.
 }

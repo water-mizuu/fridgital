@@ -2,6 +2,7 @@ import "package:flutter/foundation.dart";
 import "package:fridgital/back_end/database/tables/table.dart";
 import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/main.dart";
+import "package:fridgital/shared/classes/selected_color.dart";
 import "package:fridgital/shared/constants.dart";
 
 final class CustomTagsTable extends DatabaseTable {
@@ -32,8 +33,8 @@ final class CustomTagsTable extends DatabaseTable {
     assert(rows.length == 1, "Ids should be unique!");
 
     var row = rows.first;
-    if (rows.first case {"id": int _, "name": String name, "color": int color}) {
-      return CustomTag(name, TagColors.selectable[color]);
+    if (rows.first case {"id": int id, "name": String name, "color": int color}) {
+      return CustomTag(id, name, TagColors.selectable[color]);
     } else if (kDebugMode) {
       print("Row was not matched! The data was: $row");
     }
@@ -47,8 +48,8 @@ final class CustomTagsTable extends DatabaseTable {
     var tags = <CustomTag>[];
 
     for (var row in rows) {
-      if (row case {"id": _, "name": String name, "color": int color}) {
-        tags.add(CustomTag(name, TagColors.selectable[color]));
+      if (row case {"id": int id, "name": String name, "color": int color}) {
+        tags.add(CustomTag(id, name, TagColors.selectable[color]));
       } else if (kDebugMode) {
         print("Row was not matched! The data was: $row");
       }
@@ -57,20 +58,25 @@ final class CustomTagsTable extends DatabaseTable {
     return tags;
   }
 
-  Future<void> addAddableTag(CustomTag tag) async {
-    await database.insert(name, {"name": tag.name, "color": TagColors.selectable.indexOf(tag.color)});
+  Future<CustomTag> addAddableTag({required String name, required TagColor color}) async {
+    var id = await database.insert(
+      name,
+      {"name": name, "color": TagColors.selectable.indexOf(color)},
+    );
+
+    return CustomTag(id, name, color);
   }
 
-  Future<void> removeAddableTag(CustomTag tag) async {
-    await database.delete(name, where: "name = ?", whereArgs: [tag.name]);
+  Future<void> removeAddableTag(int id) async {
+    await database.delete(name, where: "id = ?", whereArgs: [id]);
   }
 
   Future<void> replaceAddableTag(CustomTag target, CustomTag tag) async {
     await database.update(
       name,
       {"name": tag.name, "color": TagColors.selectable.indexOf(tag.color)},
-      where: "name = ?",
-      whereArgs: [target.name],
+      where: "id = ?",
+      whereArgs: [target.id],
     );
   }
 }

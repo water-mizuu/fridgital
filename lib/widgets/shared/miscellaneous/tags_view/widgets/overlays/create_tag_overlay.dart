@@ -18,7 +18,7 @@ class CreateTagOverlay extends StatelessWidget {
       onSubmit: (name, color) {
         CreateNewTagOverlayNotification(name: name, color: color).dispatch(context);
       },
-      confirmationTag: const CustomTag("Add", TagColors.addButton),
+      confirmationTag: const CustomTag(-1, "Add", TagColors.addButton),
       confirmationIcon: Icons.add,
       bottomButtons: [
         IconWidget(

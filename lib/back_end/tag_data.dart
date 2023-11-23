@@ -62,24 +62,25 @@ class TagData extends ChangeNotifier {
     }
   }
 
-  Future<void> addAddableTag(CustomTag tag) async {
-    if (!_addableTags.contains(tag)) {
+  Future<void> addAddableTag({required String name, required TagColor color}) async {
+    if (!_addableTags.any((tag) => tag.name == name)) {
+      var tag = await CustomTagsTable.instance.addAddableTag(name: name, color: color);
       _addableTags.add(tag);
-      await CustomTagsTable.instance.addAddableTag(tag);
       notifyListeners();
     }
   }
 
   Future<void> removeAddableTag(CustomTag tag) async {
     if (_addableTags.remove(tag)) {
+      await CustomTagsTable.instance.removeAddableTag(tag.id);
       _activeTags.remove(tag);
-      await CustomTagsTable.instance.removeAddableTag(tag);
       notifyListeners();
     }
   }
 }
 
 sealed class Tag {
+  int get id;
   String get name;
   Color get color;
 }
@@ -91,6 +92,9 @@ class BuiltInTag implements Tag {
   static const BuiltInTag essential = BuiltInTag("essentials", TagColors.essential);
 
   @override
+  int get id => throw UnsupportedError("[BuiltInTag]s should not have its id accessed. This is likely a logic error.");
+
+  @override
   final String name;
 
   @override
@@ -100,7 +104,11 @@ class BuiltInTag implements Tag {
 }
 
 class CustomTag with RecordEquatable implements Tag {
-  const CustomTag(this.name, this.color);
+  const CustomTag(this.id, this.name, this.color);
+
+  /// Represents the id of the tag in the database.
+  @override
+  final int id;
 
   @override
   final String name;

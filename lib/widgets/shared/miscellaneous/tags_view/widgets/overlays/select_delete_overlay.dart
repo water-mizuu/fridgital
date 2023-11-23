@@ -70,7 +70,7 @@ class SelectDeleteOverlay extends StatelessWidget {
               return;
             }
 
-            DeleteTag(tag).dispatch(context);
+            DeleteTagNotification(tag).dispatch(context);
             const SwitchOverlayNotification(mode: OverlayMode.select).dispatch(context);
           }
         }

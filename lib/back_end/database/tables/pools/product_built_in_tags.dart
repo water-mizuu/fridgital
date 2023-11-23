@@ -33,6 +33,7 @@ final class ProductBuiltInTagsTable extends DatabaseTable {
 
   Future<void> register({required int productId, required int tagId}) async {
     await ensureInitialized();
+
     await database.insert(name, {"productId": productId, "tagId": tagId});
   }
 
@@ -53,4 +54,9 @@ final class ProductBuiltInTagsTable extends DatabaseTable {
 
     return tags;
   }
+
+  /// TODO(water-mizuu): Add the following:
+  ///   - remove tag from specific product
+  ///   - remove all tags from specific product
+  ///   - remove a product.
 }
