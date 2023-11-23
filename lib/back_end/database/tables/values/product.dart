@@ -13,17 +13,16 @@ final class ProductTable extends DatabaseTable {
   const ProductTable._();
 
   static const ProductTable instance = ProductTable._();
-  static const String tableName = "product";
 
   @override
-  String get name => tableName;
+  String get tableName => "product";
 
   @override
   Future<void> create() async {
     /// The image CAN be null.
     await database.execute(
       """
-      CREATE TABLE $name (
+      CREATE TABLE $tableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 
         name TEXT NOT NULL,
@@ -41,7 +40,7 @@ final class ProductTable extends DatabaseTable {
 
   Future<List<Product>> fetchProducts() async {
     await ensureInitialized();
-    var rows = await database.query(name);
+    var rows = await database.query(tableName);
     var products = <Product>[];
 
     for (var row in rows) {
@@ -74,6 +73,8 @@ final class ProductTable extends DatabaseTable {
         );
 
         products.add(product);
+      } else if (kDebugMode) {
+        print("Failed to parse product with id ${row["id"]}. The row info is: \n $row");
       }
     }
 
@@ -91,7 +92,7 @@ final class ProductTable extends DatabaseTable {
     required String notes,
   }) async {
     var id = await database.insert(
-      this.name,
+      this.tableName,
       {
         "name": name,
         "addedDate": addedDate.toIso8601String(),
@@ -109,12 +110,12 @@ final class ProductTable extends DatabaseTable {
       for (var tag in tags)
         switch (tag) {
           CustomTag(:var name) => database.query(
-              CustomTagsTable.tableName,
+              CustomTagsTable.instance.tableName,
               where: "name = ?",
               whereArgs: [name],
             ).then((rows) => (name, rows[0]["id"]! as int)),
           BuiltInTag(:var name) => database.query(
-              BuiltInTagsTable.tableName,
+              BuiltInTagsTable.instance.tableName,
               where: "name = ?",
               whereArgs: [name],
             ).then((rows) => (name, rows[0]["id"]! as int))
@@ -153,5 +154,15 @@ final class ProductTable extends DatabaseTable {
     );
   }
 
-  Future<void> removeProduct(Product product) async {}
+  Future<void> removeProduct(int productId) async {
+    await Future.wait([
+      database.delete(tableName, where: "id = ?", whereArgs: [productId]),
+      ProductCustomTagsTable.instance.unregisterProduct(productId: productId),
+      ProductBuiltInTagsTable.instance.unregisterProduct(productId: productId),
+    ]);
+
+    if (kDebugMode) {
+      print("Removed product with id $productId");
+    }
+  }
 }

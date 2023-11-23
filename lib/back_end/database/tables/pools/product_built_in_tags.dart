@@ -10,22 +10,21 @@ final class ProductBuiltInTagsTable extends DatabaseTable {
   const ProductBuiltInTagsTable._();
 
   static const ProductBuiltInTagsTable instance = ProductBuiltInTagsTable._();
-  static const String tableName = "productBuiltTags";
 
   @override
-  String get name => tableName;
+  String get tableName => "productBuiltTags";
 
   @override
   Future<void> create() async {
     await database.execute(
       """
-      CREATE TABLE $name (
+      CREATE TABLE $tableName (
         id INTEGER PRIMARY KEY,
         productId INTEGER,
         tagId INTEGER,
 
-        FOREIGN KEY (productId) REFERENCES ${ProductTable.tableName} (id),
-        FOREIGN KEY (tagId) REFERENCES ${BuiltInTagsTable.tableName} (id)
+        FOREIGN KEY (productId) REFERENCES ${ProductTable.instance.tableName} (id),
+        FOREIGN KEY (tagId) REFERENCES ${BuiltInTagsTable.instance.tableName} (id)
       )
       """,
     );
@@ -34,12 +33,12 @@ final class ProductBuiltInTagsTable extends DatabaseTable {
   Future<void> register({required int productId, required int tagId}) async {
     await ensureInitialized();
 
-    await database.insert(name, {"productId": productId, "tagId": tagId});
+    await database.insert(tableName, {"productId": productId, "tagId": tagId});
   }
 
   Future<Iterable<BuiltInTag>> fetchBuiltInTags({required int productId}) async {
     await ensureInitialized();
-    var rows = await database.query(name, where: "productId = ?", whereArgs: [productId]);
+    var rows = await database.query(tableName, where: "productId = ?", whereArgs: [productId]);
 
     var futures = <Future<BuiltInTag>>[];
     for (var row in rows) {
@@ -53,6 +52,16 @@ final class ProductBuiltInTagsTable extends DatabaseTable {
     var tags = await Future.wait(futures);
 
     return tags;
+  }
+
+  Future<void> unregisterProduct({required int productId}) async {
+    await ensureInitialized();
+    await database.delete(tableName, where: "productId = ?", whereArgs: [productId]);
+  }
+
+  Future<void> removeTagFromProduct({required int productId, required int tagId}) async {
+    await ensureInitialized();
+    await database.delete(tableName, where: "productId = ? AND tagId = ?", whereArgs: [productId, tagId]);
   }
 
   /// TODO(water-mizuu): Add the following:

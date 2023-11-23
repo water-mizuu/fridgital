@@ -42,6 +42,14 @@ class ProductData extends ChangeNotifier {
     _products.add(product);
     notifyListeners();
   }
+
+  Future<void> removeProduct({required int id}) async {
+    if (_products.any((product) => product.id == id)) {
+      await ProductTable.instance.removeProduct(id);
+      _products.removeWhere((product) => product.id == id);
+      notifyListeners();
+    }
+  }
 }
 
 class Product extends ChangeNotifier {
