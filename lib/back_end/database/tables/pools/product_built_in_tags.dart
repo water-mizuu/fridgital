@@ -36,7 +36,7 @@ final class ProductBuiltInTagsTable extends DatabaseTable {
     await database.insert(tableName, {"productId": productId, "tagId": tagId});
   }
 
-  Future<Iterable<BuiltInTag>> fetchBuiltInTags({required int productId}) async {
+  Future<List<BuiltInTag>> fetchBuiltInTags({required int productId}) async {
     await ensureInitialized();
     var rows = await database.query(tableName, where: "productId = ?", whereArgs: [productId]);
 
@@ -63,9 +63,4 @@ final class ProductBuiltInTagsTable extends DatabaseTable {
     await ensureInitialized();
     await database.delete(tableName, where: "productId = ? AND tagId = ?", whereArgs: [productId, tagId]);
   }
-
-  /// TODO(water-mizuu): Add the following:
-  ///   - remove tag from specific product
-  ///   - remove all tags from specific product
-  ///   - remove a product.
 }

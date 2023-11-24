@@ -18,7 +18,7 @@ class TagData extends ChangeNotifier {
     var addableTags = <Tag>[];
     var activeTags = <Tag>[];
 
-    var [loadedBuiltInTags, loadedCustomTags] = await Future.wait([
+    var <List<Tag>>[loadedBuiltInTags, loadedCustomTags] = await Future.wait([
       BuiltInTagsTable.instance.fetchAddableBuiltInTags(),
       CustomTagsTable.instance.fetchAddableCustomTags(),
     ]);
@@ -51,9 +51,9 @@ class TagData extends ChangeNotifier {
   }
 
   Future<void> replaceAddableTag(CustomTag target, CustomTag tag) async {
-    if (_addableTags.indexOf(target) case >= 0 && var addableIndex) {
+    if (_addableTags.indexWhere((id) => tag.id == target.id) case >= 0 && var addableIndex) {
       _addableTags[addableIndex] = tag;
-      if (_activeTags.indexOf(target) case >= 0 && var activeIndex) {
+      if (_activeTags.indexWhere((id) => tag.id == target.id) case >= 0 && var activeIndex) {
         _activeTags[activeIndex] = tag;
       }
 
@@ -80,12 +80,17 @@ class TagData extends ChangeNotifier {
 }
 
 sealed class Tag {
+  /// Represents the id of the tag in the database.
   int get id;
+
+  /// Represents the name of the tag.
   String get name;
+
+  /// Represents the color of the tag.
   Color get color;
 }
 
-class BuiltInTag implements Tag {
+class BuiltInTag with RecordEquatable implements Tag {
   const BuiltInTag(this.name, this.color);
 
   static const List<BuiltInTag> values = [essential];
@@ -100,13 +105,13 @@ class BuiltInTag implements Tag {
   @override
   final Color color;
 
-  Record get record => (name, color);
+  @override
+  (String, Color) get record => (name, color);
 }
 
 class CustomTag with RecordEquatable implements Tag {
   const CustomTag(this.id, this.name, this.color);
 
-  /// Represents the id of the tag in the database.
   @override
   final int id;
 

@@ -35,9 +35,9 @@ final class ProductCustomTagsTable extends DatabaseTable {
     await database.insert(tableName, {"productId": productId, "tagId": tagId});
   }
 
-  Future<Iterable<CustomTag>> fetchCustomTagsOfProduct({required int id}) async {
+  Future<List<CustomTag>> fetchCustomTags({required int productId}) async {
     await ensureInitialized();
-    var rows = await database.query(tableName, where: "productId = ?", whereArgs: [id]);
+    var rows = await database.query(tableName, where: "productId = ?", whereArgs: [productId]);
 
     var futures = <Future<CustomTag>>[];
     for (var row in rows) {
@@ -62,8 +62,4 @@ final class ProductCustomTagsTable extends DatabaseTable {
     await ensureInitialized();
     await database.delete(tableName, where: "productId = ? AND tagId = ?", whereArgs: [productId, tagId]);
   }
-
-  /// TODO(water-mizuu): Add the following:
-  ///   - [x] remove tag from specific product
-  ///   - [x] remove all tags from specific product
 }

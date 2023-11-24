@@ -55,8 +55,8 @@ final class ProductTable extends DatabaseTable {
             "expiryDate": String? expiryDate,
             "imageUrl": String? imageUrl,
           }) {
-        var [custom, builtIn] = await Future.wait([
-          ProductCustomTagsTable.instance.fetchCustomTagsOfProduct(id: id),
+        var <List<Tag>>[custom, builtIn] = await Future.wait([
+          ProductCustomTagsTable.instance.fetchCustomTags(productId: id),
           ProductBuiltInTagsTable.instance.fetchBuiltInTags(productId: id),
         ]);
 
