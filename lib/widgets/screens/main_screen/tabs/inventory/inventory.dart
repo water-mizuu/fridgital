@@ -3,6 +3,7 @@ import "dart:async";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:fridgital/back_end/product_data.dart";
+import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/main.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/extensions/time.dart";
@@ -210,6 +211,7 @@ class InventoryTabLocation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var tagData = context.watch<TagData>();
     var productData = context.watch<ProductData>();
 
     return Expanded(
@@ -220,10 +222,11 @@ class InventoryTabLocation extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               for (var product in productData.products.where((p) => p.storageLocation == location))
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: InventoryProduct(product: product),
-                ),
+                if (tagData.activeTags.isEmpty || tagData.activeTags.any((tag) => product.tags.contains(tag)))
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: InventoryProduct(product: product),
+                  ),
             ],
           ),
         ),
@@ -245,7 +248,7 @@ class InventoryProduct extends StatefulWidget {
 }
 
 class _InventoryProductState extends State<InventoryProduct> with TickerProviderStateMixin {
-  static const double tileHeight = 96.0;
+  static const double tileHeight = 128.0;
 
   final GlobalKey behindKey = GlobalKey();
 
