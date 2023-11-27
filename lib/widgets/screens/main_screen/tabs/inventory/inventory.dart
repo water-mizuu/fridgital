@@ -6,6 +6,7 @@ import "package:fridgital/back_end/product_data.dart";
 import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/main.dart";
 import "package:fridgital/shared/constants.dart";
+import "package:fridgital/shared/extensions/as_extension.dart";
 import "package:fridgital/shared/extensions/time.dart";
 import "package:fridgital/shared/mixins/empty_tag_data_mixin.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
@@ -280,12 +281,15 @@ class _InventoryProductState extends State<InventoryProduct> with TickerProvider
     return LayoutBuilder(
       builder: (context, constraints) => AnimatedBuilder(
         animation: animationController,
-        builder: (context, child) => SizedBox(
-          height: tileHeight +
-              (Curves.easeOut.transform(animationController.value) *
-                  ((behindKey.currentContext?.findRenderObject() as RenderBox?)?.size.height ?? 0.0)),
-          child: child,
-        ),
+        builder: (context, child) {
+          var height = behindKey.currentContext?.findRenderObject()?.as<RenderBox>().size.height ?? 0.0;
+          var curve = Curves.easeOut.transform(animationController.value);
+
+          return SizedBox(
+            height: tileHeight + curve * height,
+            child: child,
+          );
+        },
         child: Stack(
           children: [
             Positioned.fill(
