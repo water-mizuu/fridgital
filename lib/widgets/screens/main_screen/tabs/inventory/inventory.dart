@@ -2,13 +2,14 @@ import "dart:async";
 
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
 import "package:fridgital/back_end/product_data.dart";
 import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/main.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/extensions/as_extension.dart";
 import "package:fridgital/shared/extensions/time.dart";
-import "package:fridgital/shared/mixins/empty_tag_data_mixin.dart";
+import "package:fridgital/shared/hooks/use_tag_data_future.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/shrinking_navigation.dart";
@@ -16,17 +17,15 @@ import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_vi
 import "package:mouse_scroll/mouse_scroll.dart";
 import "package:provider/provider.dart";
 
-class Inventory extends StatefulWidget {
+class Inventory extends HookWidget {
   const Inventory({super.key});
 
   @override
-  State<Inventory> createState() => _InventoryState();
-}
-
-class _InventoryState extends State<Inventory> with AutomaticKeepAliveClientMixin, EmptyTagDataMixin {
-  @override
   Widget build(BuildContext context) {
-    super.build(context);
+    useAutomaticKeepAlive();
+
+    // ignore: discarded_futures
+    var tagDataFuture = useTagDataFuture();
 
     return BasicScreenWidget(
       child: FutureBuilder(
@@ -54,9 +53,6 @@ class _InventoryState extends State<Inventory> with AutomaticKeepAliveClientMixi
       ),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }
 
 class InventoryTitle extends StatelessWidget {
