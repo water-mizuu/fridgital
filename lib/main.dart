@@ -216,6 +216,7 @@ class _MyAppState extends State<MyApp> {
 }
 
 class ChangeWorkingStorageLocationNotification extends Notification {
+  // ignore: unreachable_from_main
   const ChangeWorkingStorageLocationNotification(this.location);
 
   final StorageLocation location;
