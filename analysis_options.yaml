@@ -13,6 +13,7 @@ analyzer:
     invalid_annotation_target: ignore
     body_might_complete_normally_nullable: ignore
     unrelated_type_equality_checks: warning
+    unnecessary_cast: ignore
 linter:
   rules:
     always_declare_return_types: true

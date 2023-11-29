@@ -309,6 +309,7 @@ class _InventoryProductState extends State<InventoryProduct> with TickerProvider
             SizedBox(
               width: constraints.maxWidth,
               child: GestureDetector(
+                onLongPress: toggleIsOptionsVisible,
                 onSecondaryTap: toggleIsOptionsVisible,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8.0),

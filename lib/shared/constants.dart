@@ -8,6 +8,7 @@ abstract final class FigmaColors {
   static const Color whiteAccent = Color(0xFFFFFDF6);
   static const Color pinkAccent = Color(0xFFB18887);
   static const Color lightGreyAccent = Color(0xFFC3B2B2);
+  static const Color darkGreyAccent = Color(0xFF807171);
 }
 
 abstract final class TagColors {

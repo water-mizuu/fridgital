@@ -56,11 +56,47 @@ class RecipeTile extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 16.0),
-                  child: Text(
-                    "hi",
-                    style: TextStyle(fontWeight: FontWeight.w500),
+                const SizedBox(
+                  width: 150,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 10.0, top: 20.0),
+                        child: Text(
+                          "Title",
+                          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 40),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 10.0),
+                        child: Text(
+                          "Difficulty",
+                          style:
+                              TextStyle(color: FigmaColors.darkGreyAccent, fontWeight: FontWeight.w700, fontSize: 18),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 10.0),
+                        child: Text(
+                          "Contains [ingredient1], [ingredient2], and [ingredient3]",
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              TextStyle(color: FigmaColors.darkGreyAccent, fontWeight: FontWeight.w700, fontSize: 18),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 10.0),
+                        child: Text(
+                          "view recipe...",
+                          style: TextStyle(
+                            color: FigmaColors.darkGreyAccent,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 18,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Builder(
