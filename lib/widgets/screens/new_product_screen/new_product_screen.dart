@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:fridgital/back_end/product_data.dart";
+import "package:fridgital/shared/classes/reference.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/mixins/empty_tag_data_mixin.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
@@ -17,12 +18,12 @@ class NewProductScreen extends StatefulWidget {
 }
 
 class _NewProductScreenState extends State<NewProductScreen> with EmptyTagDataMixin {
-  late final ValueNotifier<String> name;
-  late final ValueNotifier<String?> imageUrl;
-  late final ValueNotifier<DateTime?> addedDate;
-  late final ValueNotifier<String> storageUnits;
-  late final ValueNotifier<DateTime?> expiryDate;
-  late final ValueNotifier<String> notes;
+  late final Reference<String> name;
+  late final Reference<String?> imageUrl;
+  late final Reference<DateTime?> addedDate;
+  late final Reference<String> storageUnits;
+  late final Reference<DateTime?> expiryDate;
+  late final Reference<String> notes;
 
   Future<void> submit() async {
     var tagData = await tagDataFuture;
@@ -55,12 +56,12 @@ class _NewProductScreenState extends State<NewProductScreen> with EmptyTagDataMi
   void initState() {
     super.initState();
 
-    name = ValueNotifier<String>("");
-    imageUrl = ValueNotifier<String?>(null);
-    addedDate = ValueNotifier<DateTime?>(null);
-    storageUnits = ValueNotifier<String>("Pounds");
-    expiryDate = ValueNotifier<DateTime?>(null);
-    notes = ValueNotifier<String>("");
+    name = Reference<String>("");
+    imageUrl = Reference<String?>(null);
+    addedDate = Reference<DateTime?>(null);
+    storageUnits = Reference<String>("Pounds");
+    expiryDate = Reference<DateTime?>(null);
+    notes = Reference<String>("");
   }
 
   @override
@@ -71,6 +72,7 @@ class _NewProductScreenState extends State<NewProductScreen> with EmptyTagDataMi
     storageUnits.dispose();
     expiryDate.dispose();
     notes.dispose();
+
     super.dispose();
   }
 
@@ -131,27 +133,25 @@ class _NewProductScreenState extends State<NewProductScreen> with EmptyTagDataMi
                     children: [
                       ProductTextField(
                         title: "Name",
-                        valueNotifier: name,
+                        reference: name,
                         mapper: (name) => name,
                       ),
                       ProductDateField(
                         title: "Date Added",
-                        valueNotifier: addedDate,
-                        // mapper: (name) => DateTime.tryParse(name),
+                        reference: addedDate,
                       ),
                       ProductTextField(
                         title: "Storage Units",
-                        valueNotifier: storageUnits,
+                        reference: storageUnits,
                         mapper: (units) => units,
                       ),
-                      ProductTextField(
+                      ProductDateField(
                         title: "Expiry Date",
-                        valueNotifier: expiryDate,
-                        mapper: (name) => DateTime.tryParse(name),
+                        reference: expiryDate,
                       ),
                       ProductTextField(
                         title: "Notes",
-                        valueNotifier: notes,
+                        reference: notes,
                         mapper: (name) => name,
                       ),
                       TextButton(
@@ -170,23 +170,23 @@ class _NewProductScreenState extends State<NewProductScreen> with EmptyTagDataMi
   }
 }
 
-class ProductTextField<T, VT extends ValueNotifier<T>> extends StatefulWidget {
+class ProductTextField<T, VT extends Reference<T>> extends StatefulWidget {
   const ProductTextField({
     required this.title,
-    required this.valueNotifier,
+    required this.reference,
     required this.mapper,
     super.key,
   });
 
   final String title;
-  final VT valueNotifier;
+  final VT reference;
   final T Function(String) mapper;
 
   @override
   State<ProductTextField<T, VT>> createState() => _ProductTextFieldState<T, VT>();
 }
 
-class _ProductTextFieldState<T, VT extends ValueNotifier<T>> extends State<ProductTextField<T, VT>> {
+class _ProductTextFieldState<T, VT extends Reference<T>> extends State<ProductTextField<T, VT>> {
   late final TextEditingController textEditingController;
 
   @override
@@ -195,7 +195,7 @@ class _ProductTextFieldState<T, VT extends ValueNotifier<T>> extends State<Produ
 
     textEditingController = TextEditingController()
       ..addListener(() {
-        widget.valueNotifier.value = widget.mapper(textEditingController.text);
+        widget.reference.value = widget.mapper(textEditingController.text);
       });
   }
 
@@ -233,9 +233,9 @@ class _ProductTextFieldState<T, VT extends ValueNotifier<T>> extends State<Produ
 }
 
 class ProductDateField extends StatefulWidget {
-  const ProductDateField({required this.title, required this.valueNotifier, super.key});
+  const ProductDateField({required this.title, required this.reference, super.key});
 
-  final ValueNotifier<DateTime?> valueNotifier;
+  final Reference<DateTime?> reference;
   final String title;
 
   @override
@@ -251,7 +251,7 @@ class _ProductDateFieldState extends State<ProductDateField> {
 
     dateTime = ValueNotifier<DateTime?>(null)
       ..addListener(() {
-        widget.valueNotifier.value = dateTime.value;
+        widget.reference.value = dateTime.value;
       });
   }
 
