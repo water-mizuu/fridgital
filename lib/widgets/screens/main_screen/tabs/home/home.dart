@@ -1,6 +1,7 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
 import "package:fridgital/shared/classes/constant_gradient.dart";
 import "package:fridgital/shared/extensions/time.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
@@ -51,41 +52,20 @@ class HomeTitle extends StatelessWidget {
   }
 }
 
-class NearingExpiry extends StatefulWidget {
-  const NearingExpiry({
-    super.key,
-  });
-
-  @override
-  State<NearingExpiry> createState() => _NearingExpiryState();
-}
-
-class _NearingExpiryState extends State<NearingExpiry> {
-  late final PageController pageController;
-  late final ValueNotifier<int?> activePage;
-
-  @override
-  void initState() {
-    super.initState();
-
-    pageController = new PageController(initialPage: 1e9.toInt(), viewportFraction: 0.75);
-    activePage = new ValueNotifier<int?>(null);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      activePage.value = pageController.page!.round();
-    });
-  }
-
-  @override
-  void dispose() {
-    pageController.dispose();
-    activePage.dispose();
-
-    super.dispose();
-  }
+class NearingExpiry extends HookWidget {
+  const NearingExpiry({super.key});
 
   @override
   Widget build(BuildContext context) {
+    var pageController = usePageController(initialPage: 1e9.toInt(), viewportFraction: 0.75);
+    var activePage = useValueNotifier<int?>(null);
+
+    useState(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        activePage.value = pageController.page!.round();
+      });
+    });
+
     var theme = Theme.of(context);
 
     return Column(
@@ -161,7 +141,7 @@ class _NearingExpiryState extends State<NearingExpiry> {
   }
 }
 
-class NearingExpiryTile extends StatefulWidget {
+class NearingExpiryTile extends StatelessWidget {
   const NearingExpiryTile({
     required this.index,
     required this.activePage,
@@ -172,24 +152,19 @@ class NearingExpiryTile extends StatefulWidget {
   final ValueNotifier<int?> activePage;
 
   @override
-  State<NearingExpiryTile> createState() => _NearingExpiryTileState();
-}
-
-class _NearingExpiryTileState extends State<NearingExpiryTile> {
-  @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: widget.activePage,
+      listenable: activePage,
       builder: (context, child) {
-        if (widget.activePage.value case int value when value != widget.index) {
+        if (activePage.value case int value when value != index) {
           return MouseRegion(cursor: SystemMouseCursors.click, child: child);
         }
         return child!;
       },
       child: GestureDetector(
         onTap: () async {
-          if (widget.activePage.value case int page when page != widget.index && context.mounted) {
-            ChangePageNotification(widget.index).dispatch(context);
+          if (activePage.value case int page when page != index && context.mounted) {
+            ChangePageNotification(index).dispatch(context);
           }
         },
         child: ClipRRect(
@@ -201,18 +176,17 @@ class _NearingExpiryTileState extends State<NearingExpiryTile> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 16.0),
-                  child: Text("${widget.index % 5}"),
+                  child: Text("${index % 5}"),
                 ),
                 ShaderMask(
-                  shaderCallback: (rect) {
-                    return const LinearGradient(colors: [Colors.transparent, Colors.black])
-                        .createShader(Offset.zero & rect.size);
-                  },
+                  shaderCallback: (rect) => //
+                      const LinearGradient(colors: [Colors.transparent, Colors.black])
+                          .createShader(Offset.zero & rect.size),
                   blendMode: BlendMode.dstIn,
                   child: ShaderMask(
-                    shaderCallback: (rect) {
-                      return ConstantGradient(color: const Color(0xff92a8d1)).createShader(Offset.zero & rect.size);
-                    },
+                    shaderCallback: (rect) => //
+                        ConstantGradient(color: const Color(0xff92a8d1)) //
+                            .createShader(Offset.zero & rect.size),
                     blendMode: BlendMode.color,
                     child: AspectRatio(
                       aspectRatio: 1.0,

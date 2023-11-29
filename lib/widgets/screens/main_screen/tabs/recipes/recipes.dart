@@ -50,7 +50,7 @@ class RecipeTile extends StatelessWidget {
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(10)),
         child: SizedBox(
-          height: 200,
+          height: 175,
           child: ColoredBox(
             color: FigmaColors.whiteAccent,
             child: Row(
@@ -58,45 +58,39 @@ class RecipeTile extends StatelessWidget {
               children: [
                 const SizedBox(
                   width: 150,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 10.0, top: 20.0),
-                        child: Text(
-                          "Title",
-                          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 40),
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 10.0),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: 20.0),
+                          child: Text(
+                            "Title",
+                            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 37),
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 10.0),
-                        child: Text(
+                        Text(
                           "Difficulty",
                           style:
-                              TextStyle(color: FigmaColors.darkGreyAccent, fontWeight: FontWeight.w700, fontSize: 18),
+                              TextStyle(color: FigmaColors.darkGreyAccent, fontWeight: FontWeight.w700, fontSize: 16),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 10.0),
-                        child: Text(
+                        Text(
                           "Contains [ingredient1], [ingredient2], and [ingredient3]",
                           overflow: TextOverflow.ellipsis,
                           style:
-                              TextStyle(color: FigmaColors.darkGreyAccent, fontWeight: FontWeight.w700, fontSize: 18),
+                              TextStyle(color: FigmaColors.darkGreyAccent, fontWeight: FontWeight.w700, fontSize: 16),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 10.0),
-                        child: Text(
+                        Text(
                           "view recipe...",
                           style: TextStyle(
                             color: FigmaColors.darkGreyAccent,
                             fontWeight: FontWeight.w800,
-                            fontSize: 18,
+                            fontSize: 16,
                             decoration: TextDecoration.underline,
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 Builder(

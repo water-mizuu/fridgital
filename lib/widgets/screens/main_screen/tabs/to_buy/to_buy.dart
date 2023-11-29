@@ -98,6 +98,7 @@ class ToBuyBody extends StatelessWidget {
   static List<String> toBuyList = [
     "hi",
     "bye",
+    "good hello",
   ];
   // ignore: avoid_positional_boolean_parameters
   final void Function(bool)? onChanged;

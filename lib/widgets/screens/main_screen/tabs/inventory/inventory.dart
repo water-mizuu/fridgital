@@ -9,6 +9,7 @@ import "package:fridgital/main.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/extensions/as_extension.dart";
 import "package:fridgital/shared/extensions/time.dart";
+import "package:fridgital/shared/hooks/use_reference.dart";
 import "package:fridgital/shared/hooks/use_tag_data_future.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
@@ -95,7 +96,7 @@ class InventoryTabs extends HookWidget {
   @override
   Widget build(BuildContext context) {
     var tabController = useTabController(initialLength: 3, vsync: useSingleTickerProvider());
-    var debounce = useState<Future<void>?>(null);
+    var debounce = useReference<Future<void>?>(null);
 
     useEffect(() {
       tabController.addListener(() {
@@ -112,11 +113,7 @@ class InventoryTabs extends HookWidget {
         unawaited(
           debounce.value = debounced = Future.delayed(200.ms, () async {
             /// If we are not the active debounce anymore, then do nothing.
-            if (debounce.value != debounced) {
-              return;
-            }
-
-            if (!context.mounted) {
+            if (debounce.value != debounced || !context.mounted) {
               return;
             }
 
@@ -124,8 +121,6 @@ class InventoryTabs extends HookWidget {
             await sharedPreferences.setInt(SharedPreferencesKeys.inventoryLocation, index);
           }),
         );
-
-        return;
       });
     });
 

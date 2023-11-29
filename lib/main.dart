@@ -8,7 +8,6 @@ import "package:fridgital/back_end/product_data.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/enums.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
-import "package:fridgital/widgets/screens/item_info/item_info.dart";
 import "package:fridgital/widgets/screens/main_screen/main_screen.dart";
 import "package:fridgital/widgets/screens/new_product_screen/new_product_screen.dart";
 import "package:path/path.dart";
@@ -198,7 +197,7 @@ class _MyAppState extends State<MyApp> {
                   pages: [
                     const MaterialPage(child: MainScreen()),
                     if (isCreatingNewProduct) const MaterialPage(child: NewProductScreen()),
-                    const MaterialPage(child: ItemInfo()),
+                    // const MaterialPage(child: ItemInfo()),
                   ],
                   onPopPage: (route, result) {
                     --popNotifier.value;
