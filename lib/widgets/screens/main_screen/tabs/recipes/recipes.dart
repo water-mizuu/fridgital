@@ -11,7 +11,7 @@ class Recipes extends StatelessWidget {
     return const BasicScreenWidget(
       child: MouseSingleChildScrollView(
         child: Column(
-          children: [RecipeTitle(), SizedBox(height: 16.0), RecipeTab()],
+          children: [RecipeTitle(), SizedBox(height: 16.0), RecipeTile()],
         ),
       ),
     );
@@ -40,8 +40,8 @@ class RecipeTitle extends StatelessWidget {
   }
 }
 
-class RecipeTab extends StatelessWidget {
-  const RecipeTab({super.key});
+class RecipeTile extends StatelessWidget {
+  const RecipeTile({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -49,41 +49,43 @@ class RecipeTab extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 32.0),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(10)),
-        child: ColoredBox(
-          color: FigmaColors.whiteAccent,
-          child: Row(
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 16.0),
-                child: Text("hi"),
-              ),
-              SizedBox(
-                height: 200,
-                child: AspectRatio(
-                  aspectRatio: 1.0,
-                  child: Image.asset(
-                    "assets/images/pesto.jpg",
-                    width: 200,
-                    fit: BoxFit.cover,
+        child: SizedBox(
+          height: 200,
+          child: ColoredBox(
+            color: FigmaColors.whiteAccent,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 16.0),
+                  child: Text("hi"),
+                ),
+                ShaderMask(
+                  shaderCallback: (rect) => LinearGradient(
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withAlpha(127),
+                    ],
+                  ).createShader(Offset.zero & rect.size),
+                  blendMode: BlendMode.dstIn,
+                  child: ShaderMask(
+                    shaderCallback: (rect) =>
+                        const LinearGradient(colors: [FigmaColors.whiteAccent, FigmaColors.whiteAccent])
+                            .createShader(Offset.zero & rect.size),
+                    // blendMode: BlendMode.saturation,
+                    // Uncomment the line above to remove the color of the image
+                    child: AspectRatio(
+                      aspectRatio: 1.0,
+                      child: Image.asset(
+                        "assets/images/pesto.jpg",
+                        width: 200,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              // ShaderMask(
-              //   shaderCallback: (rect) {
-              //     return const LinearGradient(colors: [Colors.transparent, Colors.black])
-              //         .createShader(Offset.zero & rect.size);
-              //   },
-              //   blendMode: BlendMode.dstIn,
-              //   child: AspectRatio(
-              //     aspectRatio: 1.0,
-              //     child: Image.asset(
-              //       "assets/images/pesto.jpg",
-              //       width: 200,
-              //       fit: BoxFit.cover,
-              //     ),
-              //   ),
-              // ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

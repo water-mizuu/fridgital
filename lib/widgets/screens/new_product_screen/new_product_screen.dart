@@ -129,27 +129,27 @@ class _NewProductScreenState extends State<NewProductScreen> with EmptyTagDataMi
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      NewProductField(
+                      ProductTextField(
                         title: "Name",
                         valueNotifier: name,
                         mapper: (name) => name,
                       ),
-                      NewProductField(
+                      ProductDateField(
                         title: "Date Added",
                         valueNotifier: addedDate,
-                        mapper: (name) => DateTime.tryParse(name),
+                        // mapper: (name) => DateTime.tryParse(name),
                       ),
-                      NewProductField(
+                      ProductTextField(
                         title: "Storage Units",
                         valueNotifier: storageUnits,
                         mapper: (units) => units,
                       ),
-                      NewProductField(
+                      ProductTextField(
                         title: "Expiry Date",
                         valueNotifier: expiryDate,
                         mapper: (name) => DateTime.tryParse(name),
                       ),
-                      NewProductField(
+                      ProductTextField(
                         title: "Notes",
                         valueNotifier: notes,
                         mapper: (name) => name,
@@ -170,8 +170,8 @@ class _NewProductScreenState extends State<NewProductScreen> with EmptyTagDataMi
   }
 }
 
-class NewProductField<T, VT extends ValueNotifier<T>> extends StatefulWidget {
-  const NewProductField({
+class ProductTextField<T, VT extends ValueNotifier<T>> extends StatefulWidget {
+  const ProductTextField({
     required this.title,
     required this.valueNotifier,
     required this.mapper,
@@ -183,10 +183,10 @@ class NewProductField<T, VT extends ValueNotifier<T>> extends StatefulWidget {
   final T Function(String) mapper;
 
   @override
-  State<NewProductField<T, VT>> createState() => _NewProductFieldState<T, VT>();
+  State<ProductTextField<T, VT>> createState() => _ProductTextFieldState<T, VT>();
 }
 
-class _NewProductFieldState<T, VT extends ValueNotifier<T>> extends State<NewProductField<T, VT>> {
+class _ProductTextFieldState<T, VT extends ValueNotifier<T>> extends State<ProductTextField<T, VT>> {
   late final TextEditingController textEditingController;
 
   @override
@@ -220,10 +220,136 @@ class _NewProductFieldState<T, VT extends ValueNotifier<T>> extends State<NewPro
           children: [
             Align(
               alignment: Alignment.topLeft,
-              child: Text(widget.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16.0)),
+              child: Text(widget.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20.0)),
             ),
             TextField(
               controller: textEditingController,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ProductDateField extends StatefulWidget {
+  const ProductDateField({required this.title, required this.valueNotifier, super.key});
+
+  final ValueNotifier<DateTime?> valueNotifier;
+  final String title;
+
+  @override
+  State<ProductDateField> createState() => _ProductDateFieldState();
+}
+
+class _ProductDateFieldState extends State<ProductDateField> {
+  late final ValueNotifier<DateTime?> dateTime;
+
+  @override
+  void initState() {
+    super.initState();
+
+    dateTime = ValueNotifier<DateTime?>(null)
+      ..addListener(() {
+        widget.valueNotifier.value = dateTime.value;
+      });
+  }
+
+  @override
+  void dispose() {
+    dateTime.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Container(
+        padding: const EdgeInsets.all(8.0) - const EdgeInsets.only(bottom: 8.0),
+        decoration: const BoxDecoration(
+          color: FigmaColors.whiteAccent,
+          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+        ),
+        child: Column(
+          children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: Text(widget.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20.0)),
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.calendar_today_rounded, size: 20.0, color: FigmaColors.lightGreyAccent),
+                  const SizedBox(width: 12.0),
+                  ClickableWidget(
+                    onTap: () async {
+                      var date = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                      );
+
+                      if (date == null) {
+                        return;
+                      }
+
+                      dateTime.value = date;
+                    },
+                    child: ListenableBuilder(
+                      listenable: dateTime,
+                      builder: (context, _) {
+                        var date = switch (dateTime.value?.toLocal()) {
+                          var date? => [
+                              TextSpan(
+                                text: date.month.toString().padLeft(2, "0"),
+                                style: const TextStyle(color: FigmaColors.textDark),
+                              ),
+                              const TextSpan(text: "/", style: TextStyle(color: FigmaColors.textDark)),
+                              TextSpan(
+                                text: date.day.toString().padLeft(2, "0"),
+                                style: const TextStyle(color: FigmaColors.textDark),
+                              ),
+                              const TextSpan(text: "/", style: TextStyle(color: FigmaColors.textDark)),
+                              TextSpan(
+                                text: date.year.toString().padLeft(4, "0"),
+                                style: const TextStyle(color: FigmaColors.textDark),
+                              ),
+                            ],
+                          null => [
+                              const TextSpan(text: "00", style: TextStyle(color: Colors.transparent)),
+                              const TextSpan(text: "/", style: TextStyle(color: FigmaColors.textDark)),
+                              const TextSpan(text: "00", style: TextStyle(color: Colors.transparent)),
+                              const TextSpan(text: "/", style: TextStyle(color: FigmaColors.textDark)),
+                              const TextSpan(text: "0000", style: TextStyle(color: Colors.transparent)),
+                            ],
+                        };
+
+                        return Text.rich(
+                          TextSpan(children: date),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 20.0,
+                            decoration: TextDecoration.underline,
+                          ),
+                        );
+                        // return Text(
+                        //   style: const TextStyle(
+                        //     fontWeight: FontWeight.w800,
+                        //     fontSize: 20.0,
+                        //     decoration: TextDecoration.underline,
+                        //     fontFamily: "Operator Mono",
+                        //   ),
+                        // );
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
