@@ -58,31 +58,45 @@ class RecipeTile extends StatelessWidget {
               children: [
                 const Padding(
                   padding: EdgeInsets.only(left: 16.0),
-                  child: Text("hi"),
-                ),
-                ShaderMask(
-                  shaderCallback: (rect) => LinearGradient(
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withAlpha(127),
-                    ],
-                  ).createShader(Offset.zero & rect.size),
-                  blendMode: BlendMode.dstIn,
-                  child: ShaderMask(
-                    shaderCallback: (rect) =>
-                        const LinearGradient(colors: [FigmaColors.whiteAccent, FigmaColors.whiteAccent])
-                            .createShader(Offset.zero & rect.size),
-                    // blendMode: BlendMode.saturation,
-                    // Uncomment the line above to remove the color of the image
-                    child: AspectRatio(
-                      aspectRatio: 1.0,
-                      child: Image.asset(
-                        "assets/images/pesto.jpg",
-                        width: 200,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                  child: Text(
+                    "hi",
+                    style: TextStyle(fontWeight: FontWeight.w500),
                   ),
+                ),
+                Builder(
+                  builder: (context) {
+                    var widget = AspectRatio(
+                      aspectRatio: 1.0,
+                      child: Image.asset("assets/images/pesto.jpg", width: 200, fit: BoxFit.cover),
+                    ) as Widget;
+
+                    // widget = ShaderMask(
+                    //   shaderCallback: (rect) => const LinearGradient(
+                    //     colors: [
+                    //       FigmaColors.whiteAccent,
+                    //       FigmaColors.whiteAccent,
+                    //     ],
+                    //   ).createShader(Offset.zero & rect.size),
+                    //   blendMode: BlendMode.dstIn,
+                    //   child: widget,
+                    // );
+
+                    // Uncomment the line above to remove the color of the image
+
+                    // ignore: join_return_with_assignment
+                    widget = ShaderMask(
+                      shaderCallback: (rect) => LinearGradient(
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withAlpha(127),
+                        ],
+                      ).createShader(Offset.zero & rect.size),
+                      blendMode: BlendMode.dstIn,
+                      child: widget,
+                    );
+
+                    return widget;
+                  },
                 ),
               ],
             ),
