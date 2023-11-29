@@ -1,5 +1,6 @@
 import "dart:async";
 import "dart:io";
+import "dart:math";
 
 import "package:flutter/foundation.dart";
 import "package:flutter/gestures.dart";
@@ -7,6 +8,7 @@ import "package:flutter/material.dart";
 import "package:fridgital/back_end/product_data.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/enums.dart";
+import "package:fridgital/shared/extensions/time.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/screens/main_screen/main_screen.dart";
 import "package:fridgital/widgets/screens/new_product_screen/new_product_screen.dart";
@@ -142,7 +144,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    unawaited(productData.then((data) => data.dispose()));
+    unawaited(() async {
+      (await productData).dispose();
+    }());
     popNotifier.dispose();
 
     super.dispose();
@@ -165,6 +169,20 @@ class _MyAppState extends State<MyApp> {
         setState(() {
           isCreatingNewProduct = !isCreatingNewProduct;
         });
+      },
+      createDummyProduct: (tags) async {
+        var productData = await this.productData;
+
+        await productData.addProduct(
+          name: "Product #${Random().nextInt(1111111)}",
+          addedDate: DateTime.now(),
+          storageUnits: "kg", // The superior unit of measurement.
+          storageLocation: workingLocation,
+          expiryDate: DateTime.now().add(30.days),
+          notes: "",
+          tags: tags,
+          imageUrl: null,
+        );
       },
       popNotifier: popNotifier,
       child: NotificationListener(

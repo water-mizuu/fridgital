@@ -1,4 +1,5 @@
 import "package:flutter/widgets.dart";
+import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/shared/enums.dart";
 
 class RouteState extends InheritedWidget {
@@ -11,6 +12,7 @@ class RouteState extends InheritedWidget {
     required bool isCreatingNewProduct,
     required void Function({required bool value}) setIsCreatingNewProduct,
     required this.toggleCreatingNewProduct,
+    required this.createDummyProduct,
     required super.child,
     super.key,
   })  : _isCreatingNewProduct = isCreatingNewProduct,
@@ -21,6 +23,7 @@ class RouteState extends InheritedWidget {
   final void Function(Pages) moveTo;
   final void Function() toggleSecondLayer;
   final void Function() toggleCreatingNewProduct;
+  final void Function(List<Tag>) createDummyProduct;
   final ValueNotifier<int> popNotifier;
 
   final bool _isCreatingNewProduct;

@@ -16,6 +16,8 @@ class ProductData extends ChangeNotifier {
   }
 
   final List<Product> _products;
+
+  @pragma("vm:prefer-inline")
   ImmutableList<Product> get products => ImmutableList<Product>(_products);
 
   Future<void> addProduct({

@@ -1,4 +1,5 @@
 import "dart:async";
+import "dart:math";
 
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
@@ -13,6 +14,7 @@ import "package:fridgital/shared/hooks/use_reference.dart";
 import "package:fridgital/shared/hooks/use_tag_data_future.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
+import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
 import "package:fridgital/widgets/shared/miscellaneous/shrinking_navigation.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
@@ -170,7 +172,13 @@ class InventoryTabs extends HookWidget {
                         TextButton(
                           child: Text("Add a product to ${location.name}"),
                           onPressed: () {
-                            RouteState.of(context).toggleCreatingNewProduct();
+                            var addableTags = context.read<TagData>().addableTags;
+                            var tagCount = Random().nextInt(addableTags.length);
+                            var tags = (addableTags.toList()..shuffle()) //
+                                .take(tagCount)
+                                .toList();
+
+                            RouteState.of(context).createDummyProduct(tags);
                           },
                         ),
                       ],
@@ -185,30 +193,161 @@ class InventoryTabs extends HookWidget {
   }
 }
 
-class InventoryTabLocation extends HookWidget {
+class InventoryTabLocation extends StatefulWidget {
   const InventoryTabLocation({required this.location, super.key});
 
   final StorageLocation location;
 
   @override
-  Widget build(BuildContext context) {
-    var tagData = context.watch<TagData>();
-    var productData = context.watch<ProductData>();
+  State<InventoryTabLocation> createState() => _InventoryTabLocationState();
+}
 
+class _InventoryTabLocationState extends State<InventoryTabLocation> with SingleTickerProviderStateMixin {
+  late final ScrollController scrollController;
+  late final AnimationController animationController;
+
+  late final List<Product> products;
+  late final List<GlobalKey> globalKeys;
+  late final Map<GlobalKey, bool> isBeingDeleted;
+  Animation<double>? heightAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    scrollController = ScrollController();
+    animationController = AnimationController(vsync: this, duration: 325.ms);
+
+    products = [];
+    globalKeys = [];
+    isBeingDeleted = {};
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    /// We compute the products to show here.
+    ///
+    /// ESSAY:
+    /// Why here, and why not in [build]?
+    ///
+    /// Well the answer is, we need this to run every time our [watch] method gets updated.
+    ///  Therefore, we can control whether or not this updates our UI.
+    ///
+    /// Basically, I don't like putting this in [build], so I put it here.
+    var tags = context.watch<TagData>().activeTags;
+    var shownProducts = context //
+        .watch<ProductData>()
+        .products
+        .where((product) => product.storageLocation == widget.location)
+        .where((product) => !tags.isNotEmpty || tags.every(product.tags.contains));
+
+    products
+      ..clear()
+      ..addAll(shownProducts);
+
+    globalKeys
+      ..clear()
+      ..addAll(shownProducts.map((product) => new GlobalKey()));
+
+    isBeingDeleted
+      ..clear()
+      ..addAll(Map.fromIterable(globalKeys, value: (_) => false));
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    animationController.dispose();
+
+    super.dispose();
+  }
+
+  Future<void> deleteItemAt(int index) async {
+    var globalKey = globalKeys[index];
+
+    var renderBox = globalKey.currentContext?.findRenderObject()?.as<RenderBox>();
+    var size = renderBox?.size ?? Size.zero;
+
+    /// First, we make the item disappear.
+    ///   Update the state to rebuild the widget.
+    setState(() {
+      ///  e do this by marking the GlobalKey as being deleted.
+      isBeingDeleted[globalKey] = true;
+    });
+
+    /// Then, We replace it with a [SizedBox] of the same size.
+    ///   We do this by creating an animation. Get the size of the box.
+    ///   Since we marked the GlobalKey as being deleted, then the [build]
+    ///   method will handle the replacement for us.
+
+    heightAnimation = Tween<double>(begin: size.height, end: 0.0)
+        .animate(CurvedAnimation(curve: Curves.fastOutSlowIn, parent: animationController));
+
+    /// Then, we link the height of the [SizedBox] to the animation.
+    ///  We do this by using an [AnimatedBuilder] in the build method.
+
+    /// Then, we start to shrink the [SizedBox] to zero.
+    ///   We do this by calling forward on the animation controller.
+
+    await animationController.forward();
+
+    /// Then, we reset the animation controller, and set [heightAnimation] to null.
+
+    animationController.reset();
+    heightAnimation = null;
+
+    /// Lastly, we un mark the GlobalKey as being deleted.
+    setState(() {
+      /// We do this by marking the GlobalKey as being deleted.
+      isBeingDeleted[globalKey] = false;
+
+      /// We also remove the GlobalKey from the list.
+      products.removeAt(index);
+      globalKeys.removeAt(index);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Expanded(
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8.0),
-        child: MouseSingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (var product in productData.products.where((p) => p.storageLocation == location))
-                if (tagData.activeTags.isEmpty || tagData.activeTags.every((tag) => product.tags.contains(tag)))
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: InventoryProduct(product: product),
-                  ),
-            ],
+        child: Scrollbar(
+          thumbVisibility: true,
+          controller: scrollController,
+          child: MouseSingleChildScrollView(
+            controller: scrollController,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                /// Iteration
+                for (var (index, product) in products.indexed.take(globalKeys.length))
+                  if (isBeingDeleted[globalKeys[index]] case true)
+                    AnimatedBuilder(
+                      animation: animationController,
+                      builder: (context, child) => SizedBox(height: heightAnimation!.value),
+                    )
+                  else
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      key: globalKeys[index],
+                      child: InventoryProduct(
+                        index: index,
+                        product: product,
+                        onDelete: () async {
+                          await deleteItemAt(index);
+                          if (!context.mounted) {
+                            return;
+                          }
+
+                          await context.read<ProductData>().removeProduct(id: product.id);
+                        },
+                      ),
+                    ),
+              ],
+            ),
           ),
         ),
       ),
@@ -216,28 +355,36 @@ class InventoryTabLocation extends HookWidget {
   }
 }
 
-class InventoryProduct extends HookWidget {
-  const InventoryProduct({required this.product, super.key});
+class InventoryProduct extends StatefulWidget {
+  const InventoryProduct({required this.index, required this.product, required this.onDelete, super.key});
+
+  final int index;
+  final Product product;
+  final Future<void> Function() onDelete;
+
+  @override
+  State<InventoryProduct> createState() => _InventoryProductState();
+}
+
+class _InventoryProductState extends State<InventoryProduct> with SingleTickerProviderStateMixin {
   static const double tileHeight = 128.0;
 
-  final Product product;
+  late final behindKey = GlobalKey();
+  late final isOptionsVisible = ValueNotifier(false);
+  late final animationController = AnimationController(vsync: this, duration: 150.ms);
+
+  Future<void> toggleIsOptionsVisible() async {
+    isOptionsVisible.value = !isOptionsVisible.value;
+
+    if (isOptionsVisible.value) {
+      await animationController.forward();
+    } else {
+      await animationController.reverse();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    var behindKey = useMemoized(() => GlobalKey());
-    var isOptionsVisible = useState(false);
-    var animationController = useAnimationController(duration: 150.ms);
-
-    void toggleIsOptionsVisible() {
-      isOptionsVisible.value = !isOptionsVisible.value;
-
-      if (isOptionsVisible.value) {
-        animationController.forward();
-      } else {
-        animationController.reverse();
-      }
-    }
-
     return LayoutBuilder(
       builder: (context, constraints) => AnimatedBuilder(
         animation: animationController,
@@ -255,19 +402,35 @@ class InventoryProduct extends HookWidget {
             Positioned.fill(
               child: Align(
                 alignment: Alignment.bottomCenter,
-                child: Container(
-                  key: behindKey,
-                  padding: const EdgeInsets.all(12.0),
-                  decoration: const BoxDecoration(
-                    color: FigmaColors.pinkAccent,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(8.0),
-                      bottomRight: Radius.circular(8.0),
+                child: ClickableWidget(
+                  onTap: () async {
+                    assert(
+                      isOptionsVisible.value,
+                      "The options should be visible when clicking on the delete button.",
+                    );
+
+                    await toggleIsOptionsVisible();
+                    await widget.onDelete();
+                  },
+                  child: Container(
+                    key: behindKey,
+                    padding: const EdgeInsets.all(12.0),
+                    decoration: const BoxDecoration(
+                      color: FigmaColors.pinkAccent,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(8.0),
+                        bottomRight: Radius.circular(8.0),
+                      ),
                     ),
-                  ),
-                  child: const Text(
-                    "DELETE",
-                    style: TextStyle(fontStyle: FontStyle.italic, color: Colors.white),
+                    child: const Text(
+                      "REMOVE THIS PRODUCT",
+                      style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: "Nunito",
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -284,7 +447,7 @@ class InventoryProduct extends HookWidget {
                     padding: const EdgeInsets.all(12.0),
                     color: isOptionsVisible.value ? Colors.grey[400] : FigmaColors.whiteAccent,
                     child: Text(
-                      "${product.name} - ${product.tags}",
+                      "${widget.product.name} - ${widget.product.tags.map((v) => v.name).join(", ")}",
                       style: const TextStyle(fontStyle: FontStyle.italic),
                     ),
                   ),
@@ -297,3 +460,85 @@ class InventoryProduct extends HookWidget {
     );
   }
 }
+
+// class InventoryProduct extends HookWidget {
+//   const InventoryProduct({required this.product, super.key});
+//   static const double tileHeight = 128.0;
+
+//   final Product product;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     var behindKey = useMemoized(() => GlobalKey());
+//     var isOptionsVisible = useState(false);
+//     var animationController = useAnimationController(duration: 150.ms);
+
+//     void toggleIsOptionsVisible() {
+//       isOptionsVisible.value = !isOptionsVisible.value;
+
+//       if (isOptionsVisible.value) {
+//         animationController.forward();
+//       } else {
+//         animationController.reverse();
+//       }
+//     }
+
+//     return LayoutBuilder(
+//       builder: (context, constraints) => AnimatedBuilder(
+//         animation: animationController,
+//         builder: (context, child) {
+//           var height = behindKey.currentContext?.findRenderObject()?.as<RenderBox>().size.height ?? 0.0;
+//           var curve = Curves.easeOut.transform(animationController.value);
+
+//           return SizedBox(
+//             height: tileHeight + curve * height,
+//             child: child,
+//           );
+//         },
+//         child: Stack(
+//           children: [
+//             Positioned.fill(
+//               child: Align(
+//                 alignment: Alignment.bottomCenter,
+//                 child: Container(
+//                   key: behindKey,
+//                   padding: const EdgeInsets.all(12.0),
+//                   decoration: const BoxDecoration(
+//                     color: FigmaColors.pinkAccent,
+//                     borderRadius: BorderRadius.only(
+//                       bottomLeft: Radius.circular(8.0),
+//                       bottomRight: Radius.circular(8.0),
+//                     ),
+//                   ),
+//                   child: const Text(
+//                     "DELETE",
+//                     style: TextStyle(fontStyle: FontStyle.italic, color: Colors.white),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//             SizedBox(
+//               width: constraints.maxWidth,
+//               child: GestureDetector(
+//                 onLongPress: toggleIsOptionsVisible,
+//                 onSecondaryTap: toggleIsOptionsVisible,
+//                 child: ClipRRect(
+//                   borderRadius: BorderRadius.circular(8.0),
+//                   child: Container(
+//                     height: tileHeight,
+//                     padding: const EdgeInsets.all(12.0),
+//                     color: isOptionsVisible.value ? Colors.grey[400] : FigmaColors.whiteAccent,
+//                     child: Text(
+//                       "${product.name} - ${product.tags}",
+//                       style: const TextStyle(fontStyle: FontStyle.italic),
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
