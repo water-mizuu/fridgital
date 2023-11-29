@@ -55,7 +55,7 @@ class Inventory extends HookWidget {
   }
 }
 
-class InventoryTitle extends StatelessWidget {
+class InventoryTitle extends HookWidget {
   const InventoryTitle({super.key});
 
   @override
@@ -77,7 +77,7 @@ class InventoryTitle extends StatelessWidget {
   }
 }
 
-class InventoryTags extends StatelessWidget {
+class InventoryTags extends HookWidget {
   const InventoryTags({super.key});
 
   @override
@@ -89,24 +89,16 @@ class InventoryTags extends StatelessWidget {
   }
 }
 
-class InventoryTabs extends StatefulWidget {
+class InventoryTabs extends HookWidget {
   const InventoryTabs({super.key});
 
   @override
-  State<InventoryTabs> createState() => _InventoryTabsState();
-}
+  Widget build(BuildContext context) {
+    var tabController = useTabController(initialLength: 3, vsync: useSingleTickerProvider());
+    var debounce = useState<Future<void>?>(null);
 
-class _InventoryTabsState extends State<InventoryTabs> with TickerProviderStateMixin {
-  late final TabController tabController;
-
-  late Future<void>? debounce;
-
-  @override
-  void initState() {
-    super.initState();
-
-    tabController = TabController(length: 3, vsync: this)
-      ..addListener(() {
+    useEffect(() {
+      tabController.addListener(() {
         if (tabController.indexIsChanging) {
           return;
         }
@@ -118,8 +110,9 @@ class _InventoryTabsState extends State<InventoryTabs> with TickerProviderStateM
         var index = tabController.index;
         late Future<void> debounced;
         unawaited(
-          debounce = debounced = Future.delayed(200.ms, () async {
-            if (debounce != debounced) {
+          debounce.value = debounced = Future.delayed(200.ms, () async {
+            /// If we are not the active debounce anymore, then do nothing.
+            if (debounce.value != debounced) {
               return;
             }
 
@@ -131,18 +124,11 @@ class _InventoryTabsState extends State<InventoryTabs> with TickerProviderStateM
             await sharedPreferences.setInt(SharedPreferencesKeys.inventoryLocation, index);
           }),
         );
+
+        return;
       });
-  }
+    });
 
-  @override
-  void dispose() {
-    tabController.dispose();
-
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -174,26 +160,29 @@ class _InventoryTabsState extends State<InventoryTabs> with TickerProviderStateM
         /// This is where the tabs are.
         // [TabBarView] needs to be constrained.
         Expanded(
-          child: TabBarView(
-            controller: tabController,
-            children: [
-              for (var location in StorageLocation.values)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0) + const EdgeInsets.only(top: 16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      InventoryTabLocation(location: location),
-                      TextButton(
-                        child: Text("Add a product to ${location.name}"),
-                        onPressed: () {
-                          RouteState.of(context).toggleCreatingNewProduct();
-                        },
-                      ),
-                    ],
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (n) => n.depth <= 0,
+            child: TabBarView(
+              controller: tabController,
+              children: [
+                for (var location in StorageLocation.values)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0) + const EdgeInsets.only(top: 16.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        InventoryTabLocation(location: location),
+                        TextButton(
+                          child: Text("Add a product to ${location.name}"),
+                          onPressed: () {
+                            RouteState.of(context).toggleCreatingNewProduct();
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
@@ -201,7 +190,7 @@ class _InventoryTabsState extends State<InventoryTabs> with TickerProviderStateM
   }
 }
 
-class InventoryTabLocation extends StatelessWidget {
+class InventoryTabLocation extends HookWidget {
   const InventoryTabLocation({required this.location, super.key});
 
   final StorageLocation location;
@@ -219,7 +208,7 @@ class InventoryTabLocation extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               for (var product in productData.products.where((p) => p.storageLocation == location))
-                if (tagData.activeTags.isEmpty || tagData.activeTags.any((tag) => product.tags.contains(tag)))
+                if (tagData.activeTags.isEmpty || tagData.activeTags.every((tag) => product.tags.contains(tag)))
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: InventoryProduct(product: product),
@@ -232,48 +221,28 @@ class InventoryTabLocation extends StatelessWidget {
   }
 }
 
-class InventoryProduct extends StatefulWidget {
-  const InventoryProduct({
-    required this.product,
-    super.key,
-  });
+class InventoryProduct extends HookWidget {
+  const InventoryProduct({required this.product, super.key});
+  static const double tileHeight = 128.0;
 
   final Product product;
 
   @override
-  State<InventoryProduct> createState() => _InventoryProductState();
-}
-
-class _InventoryProductState extends State<InventoryProduct> with TickerProviderStateMixin {
-  static const double tileHeight = 128.0;
-
-  final GlobalKey behindKey = GlobalKey();
-
-  late final ValueNotifier<bool> isOptionsVisible;
-  late final AnimationController animationController;
-
-  void toggleIsOptionsVisible() {
-    setState(() {
-      isOptionsVisible.value = !isOptionsVisible.value;
-    });
-
-    if (isOptionsVisible.value) {
-      animationController.forward();
-    } else {
-      animationController.reverse();
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    isOptionsVisible = ValueNotifier<bool>(false);
-    animationController = AnimationController(vsync: this, duration: 150.ms);
-  }
-
-  @override
   Widget build(BuildContext context) {
+    var behindKey = useMemoized(() => GlobalKey());
+    var isOptionsVisible = useState(false);
+    var animationController = useAnimationController(duration: 150.ms);
+
+    void toggleIsOptionsVisible() {
+      isOptionsVisible.value = !isOptionsVisible.value;
+
+      if (isOptionsVisible.value) {
+        animationController.forward();
+      } else {
+        animationController.reverse();
+      }
+    }
+
     return LayoutBuilder(
       builder: (context, constraints) => AnimatedBuilder(
         animation: animationController,
@@ -294,7 +263,13 @@ class _InventoryProductState extends State<InventoryProduct> with TickerProvider
                 child: Container(
                   key: behindKey,
                   padding: const EdgeInsets.all(12.0),
-                  color: FigmaColors.pinkAccent,
+                  decoration: const BoxDecoration(
+                    color: FigmaColors.pinkAccent,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(8.0),
+                      bottomRight: Radius.circular(8.0),
+                    ),
+                  ),
                   child: const Text(
                     "DELETE",
                     style: TextStyle(fontStyle: FontStyle.italic, color: Colors.white),
@@ -314,7 +289,7 @@ class _InventoryProductState extends State<InventoryProduct> with TickerProvider
                     padding: const EdgeInsets.all(12.0),
                     color: isOptionsVisible.value ? Colors.grey[400] : FigmaColors.whiteAccent,
                     child: Text(
-                      "${widget.product.name} - ${widget.product.tags}",
+                      "${product.name} - ${product.tags}",
                       style: const TextStyle(fontStyle: FontStyle.italic),
                     ),
                   ),

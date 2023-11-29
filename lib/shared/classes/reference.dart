@@ -1,3 +1,6 @@
+/// Holds a reference to an object that can be passed around as function arguments,
+///   allowing mutation of variables outside of the current scope.
+/// This is dangerous, and should be used sparingly.
 final class Reference<T> {
   Reference(this._object);
 
