@@ -4,6 +4,7 @@ A new Flutter project.
 
 ## Getting Started
 
+### SQLite
 
 #### Linux
 
@@ -21,3 +22,7 @@ Should work without any installations.
 #### Windows
 
 Add the `sqlite3.dll` in the same folder as the executable.
+
+### build_runner
+
+When developing, run the command `flutter pub run build_runner watch` to run build_runner in the background.

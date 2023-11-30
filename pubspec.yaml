@@ -34,7 +34,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flutter_hooks: ^0.20.3
+  flutter_hooks:
+  functional_widget_annotation:
   mouse_scroll:
     git:
       url: https://github.com/water-mizuu/mouse_scroll.git
@@ -53,6 +54,7 @@ dependencies:
   window_manager:
 
 dev_dependencies:
+  build_runner:
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -61,6 +63,8 @@ dev_dependencies:
   flutter_lints:
   flutter_test:
     sdk: flutter
+
+  functional_widget:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
