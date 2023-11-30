@@ -216,7 +216,7 @@ class InventoryTabLocation extends HookWidget {
             .where((product) => activeTags.isEmpty || activeTags.every(product.tags.contains));
 
         var productPairs = [for (var product in shownProducts) (product, new GlobalKey())];
-        var isBeingDeleted = {for (var (_, key) in productPairs) key: false};
+        var isBeingDeleted = Set<GlobalKey>.identity();
 
         return (productPairs, isBeingDeleted);
       },
@@ -229,7 +229,7 @@ class InventoryTabLocation extends HookWidget {
       /// First, we make the item disappear.
       ///   Update the state to rebuild the widget.
       ///  We do this by marking the GlobalKey as being deleted.
-      isBeingDeleted[key] = true;
+      isBeingDeleted.add(key);
 
       /// Then, We replace it with a [SizedBox] of the same size.
       ///   We do this by creating an animation. Get the size of the box.
@@ -253,7 +253,7 @@ class InventoryTabLocation extends HookWidget {
 
       /// Lastly, we un mark the GlobalKey as being deleted.
       ///   We do this by marking the GlobalKey as being deleted.
-      isBeingDeleted[key] = false;
+      isBeingDeleted.remove(key);
 
       ///   We also remove the GlobalKey from the list.
       productPairs.removeAt(index);
@@ -273,7 +273,7 @@ class InventoryTabLocation extends HookWidget {
               children: [
                 /// Iteration
                 for (var (index, (product, key)) in productPairs.indexed)
-                  if (heightAnimationReference.value case var heightAnimation? when isBeingDeleted[key] ?? false)
+                  if (heightAnimationReference.value case var heightAnimation? when isBeingDeleted.contains(key))
                     SizedBox(height: heightAnimation.value)
                   else
                     Padding(
