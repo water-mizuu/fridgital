@@ -1,7 +1,6 @@
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:fridgital/shared/constants.dart";
-import "package:fridgital/shared/mixins/empty_tag_data_mixin.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/checkbox_tile.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
