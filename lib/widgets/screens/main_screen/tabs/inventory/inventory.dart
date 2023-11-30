@@ -215,7 +215,7 @@ class InventoryTabLocation extends HookWidget {
             .where((product) => product.storageLocation == location)
             .where((product) => activeTags.isEmpty || activeTags.every(product.tags.contains));
 
-        var productPairs = [for (var product in shownProducts) (product, new GlobalKey())];
+        var productPairs = shownProducts.map((p) => (p, GlobalKey())).toList();
         var isBeingDeleted = Set<GlobalKey>.identity();
 
         return (productPairs, isBeingDeleted);
