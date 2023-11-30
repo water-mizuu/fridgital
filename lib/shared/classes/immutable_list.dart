@@ -4,6 +4,7 @@ import "package:flutter/foundation.dart";
 @immutable
 class ImmutableList<E> extends Iterable<E> {
   const ImmutableList(this.values);
+  ImmutableList.copyFrom(List<E> values) : values = values.toList(growable: false);
 
   final List<E> values;
 

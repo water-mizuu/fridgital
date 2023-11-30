@@ -30,12 +30,12 @@ class TagData extends ChangeNotifier {
   /// These are the tags that can be added.
   final List<Tag> _addableTags;
 
-  ImmutableList<Tag> get addableTags => ImmutableList(_addableTags);
+  ImmutableList<Tag> get addableTags => ImmutableList.copyFrom(_addableTags);
 
   /// These are the tags that are currently active.
   final List<Tag> _activeTags;
 
-  ImmutableList<Tag> get activeTags => ImmutableList(_activeTags);
+  ImmutableList<Tag> get activeTags => ImmutableList.copyFrom(_activeTags);
 
   void addTag(Tag tag) {
     if (!_activeTags.contains(tag)) {

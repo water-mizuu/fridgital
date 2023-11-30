@@ -18,7 +18,7 @@ class ProductData extends ChangeNotifier {
   final List<Product> _products;
 
   @pragma("vm:prefer-inline")
-  ImmutableList<Product> get products => ImmutableList<Product>(_products);
+  ImmutableList<Product> get products => ImmutableList.copyFrom(_products);
 
   Future<void> addProduct({
     required String name,
