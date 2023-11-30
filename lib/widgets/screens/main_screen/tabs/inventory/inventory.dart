@@ -3,6 +3,7 @@ import "dart:math";
 
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:fridgital/back_end/product_data.dart";
 import "package:fridgital/back_end/tag_data.dart";
@@ -231,7 +232,7 @@ Widget inventoryTabLocation({required StorageLocation location}) {
     heightAnimationReference.value = null;
 
     /// Lastly, we un mark the GlobalKey as being deleted.
-    ///   We do this by marking the GlobalKey as being deleted.
+    ///   We do this by un marking the GlobalKey as being deleted.
     isBeingDeleted.remove(key);
 
     ///   We also remove the GlobalKey from the list.
@@ -290,8 +291,10 @@ Widget inventoryProduct({required Product product, required Future<void> Functio
     isOptionsVisible.value = !isOptionsVisible.value;
 
     if (isOptionsVisible.value) {
+      await HapticFeedback.heavyImpact();
       await animationController.forward();
     } else {
+      await HapticFeedback.heavyImpact();
       await animationController.reverse();
     }
   }
