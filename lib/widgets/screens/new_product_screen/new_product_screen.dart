@@ -26,6 +26,19 @@ class _NewProductScreenState extends State<NewProductScreen> {
   late final Reference<DateTime?> expiryDate;
   late final Reference<String> notes;
 
+  T unwrap<T>(Reference<T> reference, String name, {bool isEmptyAllowed = false}) {
+    var value = reference.value;
+    if (!isEmptyAllowed && ((value == null) || (value is String && value.isEmpty))) {
+      var message = "Field '$name' should not be empty!";
+      var snackbar = SnackBar(content: Text(message));
+
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      throw const FormValidationFailure();
+    }
+
+    return value;
+  }
+
   Future<void> submit(TagData tagData) async {
     var tags = tagData.activeTags.toList();
 
@@ -33,35 +46,46 @@ class _NewProductScreenState extends State<NewProductScreen> {
       return;
     }
 
-    late var today = DateTime.now().copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
-    var productData = context.read<ProductData>();
-    var location = context.read<StorageLocation>();
-    await productData.addProduct(
-      name: name.value,
-      addedDate: addedDate.value ?? today,
-      storageUnits: storageUnits.value,
-      storageLocation: location,
-      expiryDate: expiryDate.value,
-      notes: notes.value,
-      tags: tags,
-      imageUrl: null,
-    );
-    if (!context.mounted) {
+    try {
+      late var today = DateTime.now().copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
+
+      var name = unwrap(this.name, "Name");
+      var addedDate = unwrap(this.addedDate, "Date Added");
+      var storageUnits = unwrap(this.storageUnits, "Storage Units");
+      var expiryDate = unwrap(this.expiryDate, "Expiry Date");
+      var notes = unwrap(this.notes, "Notes", isEmptyAllowed: true);
+
+      var productData = context.read<ProductData>();
+
+      await productData.addProduct(
+        name: name,
+        addedDate: addedDate ?? today,
+        storageUnits: storageUnits,
+        storageLocation: context.read<StorageLocation>(),
+        expiryDate: expiryDate,
+        notes: notes,
+        tags: tags,
+        imageUrl: null,
+      );
+      if (!context.mounted) {
+        return;
+      }
+      RouteState.of(context).isCreatingNewProduct = false;
+    } on FormValidationFailure {
       return;
     }
-    RouteState.of(context).isCreatingNewProduct = false;
   }
 
   @override
   void initState() {
     super.initState();
 
-    name = Reference<String>("");
-    imageUrl = Reference<String?>(null);
-    addedDate = Reference<DateTime?>(null);
-    storageUnits = Reference<String>("Pounds");
-    expiryDate = Reference<DateTime?>(null);
-    notes = Reference<String>("");
+    name = Reference("");
+    imageUrl = Reference(null as String?);
+    addedDate = Reference(null as DateTime?);
+    storageUnits = Reference("Pounds");
+    expiryDate = Reference(null);
+    notes = Reference("");
   }
 
   @override
@@ -215,6 +239,7 @@ class _ProductTextFieldState<T, VT extends Reference<T>> extends State<ProductTe
               child: Text(widget.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20.0)),
             ),
             TextField(
+              textAlign: TextAlign.right,
               controller: textEditingController,
             ),
           ],
@@ -348,4 +373,8 @@ class _ProductDateFieldState extends State<ProductDateField> {
       ),
     );
   }
+}
+
+class FormValidationFailure implements Exception {
+  const FormValidationFailure();
 }
