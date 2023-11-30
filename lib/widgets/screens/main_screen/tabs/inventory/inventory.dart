@@ -8,7 +8,6 @@ import "package:fridgital/back_end/product_data.dart";
 import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/main.dart";
 import "package:fridgital/shared/constants.dart";
-import "package:fridgital/shared/extensions/as_extension.dart";
 import "package:fridgital/shared/extensions/time.dart";
 import "package:fridgital/shared/hooks/use_reference.dart";
 import "package:fridgital/shared/hooks/use_tag_data_future.dart";
@@ -168,9 +167,12 @@ class InventoryTabs extends HookWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        InventoryTabLocation(location: location),
+                        Expanded(child: InventoryTabLocation(location: location)),
                         TextButton(
-                          child: Text("Add a product to ${location.name}"),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Text("Add a product to ${location.name}"),
+                          ),
                           onPressed: () {
                             var addableTags = context.read<TagData>().addableTags;
                             var tagCount = Random().nextInt(addableTags.length);
@@ -193,146 +195,91 @@ class InventoryTabs extends HookWidget {
   }
 }
 
-class InventoryTabLocation extends StatefulHookWidget {
+class InventoryTabLocation extends HookWidget {
   const InventoryTabLocation({required this.location, super.key});
 
   final StorageLocation location;
 
   @override
-  State<InventoryTabLocation> createState() => _InventoryTabLocationState();
-}
-
-class _InventoryTabLocationState extends State<InventoryTabLocation> with TickerProviderStateMixin {
-  late final ScrollController scrollController;
-  late final AnimationController animationController;
-
-  late final List<Product> products;
-  late final List<GlobalKey> globalKeys;
-  late final Map<GlobalKey, bool> isBeingDeleted;
-  Animation<double>? heightAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-
-    scrollController = ScrollController();
-    animationController = AnimationController(vsync: this, duration: 325.ms);
-
-    products = [];
-    globalKeys = [];
-    isBeingDeleted = {};
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    /// We compute the products to show here.
-    ///
-    /// ESSAY:
-    /// Why here, and why not in [build]?
-    ///
-    /// Well the answer is, we need this to run every time our [watch] method gets updated.
-    ///  Therefore, we can control whether or not this updates our UI.
-    ///
-    /// Basically, I don't like putting this in [build], so I put it here.
-    var tags = context.watch<TagData>().activeTags;
-    var shownProducts = context //
-        .watch<ProductData>()
-        .products
-        .where((product) => product.storageLocation == widget.location)
-        .where((product) => !tags.isNotEmpty || tags.every(product.tags.contains));
-
-    products
-      ..clear()
-      ..addAll(shownProducts);
-
-    globalKeys
-      ..clear()
-      ..addAll(shownProducts.map((product) => new GlobalKey()));
-
-    isBeingDeleted
-      ..clear()
-      ..addAll(Map.fromIterable(globalKeys, value: (_) => false));
-  }
-
-  @override
-  void dispose() {
-    scrollController.dispose();
-    animationController.dispose();
-
-    super.dispose();
-  }
-
-  Future<void> deleteItemAt(int index) async {
-    var globalKey = globalKeys[index];
-    var size = globalKey.currentContext?.findRenderObject()?.as<RenderBox>().size ?? Size.zero;
-
-    /// First, we make the item disappear.
-    ///   Update the state to rebuild the widget.
-    setState(() {
-      ///  e do this by marking the GlobalKey as being deleted.
-      isBeingDeleted[globalKey] = true;
-    });
-
-    /// Then, We replace it with a [SizedBox] of the same size.
-    ///   We do this by creating an animation. Get the size of the box.
-    ///   Since we marked the GlobalKey as being deleted, then the [build]
-    ///   method will handle the replacement for us.
-
-    heightAnimation = Tween<double>(begin: size.height, end: 0.0)
-        .animate(CurvedAnimation(curve: Curves.fastOutSlowIn, parent: animationController));
-
-    /// Then, we link the height of the [SizedBox] to the animation.
-    ///  We do this by using an [AnimatedBuilder] in the build method.
-
-    /// Then, we start to shrink the [SizedBox] to zero.
-    ///   We do this by calling forward on the animation controller.
-
-    await animationController.forward();
-
-    /// Then, we reset the animation controller, and set [heightAnimation] to null.
-
-    animationController.reset();
-    heightAnimation = null;
-
-    /// Lastly, we un mark the GlobalKey as being deleted.
-    setState(() {
-      /// We do this by marking the GlobalKey as being deleted.
-      isBeingDeleted[globalKey] = false;
-
-      /// We also remove the GlobalKey from the list.
-      products.removeAt(index);
-      globalKeys.removeAt(index);
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8.0),
-        child: Scrollbar(
-          thumbVisibility: true,
+    var scrollController = useScrollController();
+    var animationController = useAnimationController(duration: 380.ms);
+    var heightAnimationReference = useReference(null as Animation<double>?);
+
+    var activeTags = context.select((TagData data) => data.activeTags);
+    var products = context.select((ProductData data) => data.products);
+
+    var (productPairs, isBeingDeleted) = useMemoized(
+      () {
+        var shownProducts = products
+            .where((product) => product.storageLocation == location)
+            .where((product) => activeTags.isEmpty || activeTags.every(product.tags.contains));
+
+        var productPairs = [for (var product in shownProducts) (product, new GlobalKey())];
+        var isBeingDeleted = {for (var (_, key) in productPairs) key: false};
+
+        return (productPairs, isBeingDeleted);
+      },
+      [activeTags, products],
+    );
+
+    Future<void> deleteItemAt(int index) async {
+      var (_, key) = productPairs[index];
+
+      /// First, we make the item disappear.
+      ///   Update the state to rebuild the widget.
+      ///  We do this by marking the GlobalKey as being deleted.
+      isBeingDeleted[key] = true;
+
+      /// Then, We replace it with a [SizedBox] of the same size.
+      ///   We do this by creating an animation. Get the size of the box.
+      ///   Since we marked the GlobalKey as being deleted, then the [build]
+      ///   method will handle the replacement for us.
+
+      var renderBox = key.currentContext?.findRenderObject() as RenderBox?;
+      var size = renderBox?.size ?? Size.zero;
+      heightAnimationReference.value = Tween<double>(begin: size.height, end: 0.0)
+          .animate(CurvedAnimation(curve: Curves.fastOutSlowIn, parent: animationController));
+
+      /// Then, we start to shrink the [SizedBox] to zero.
+      ///   We do this by calling forward on the animation controller.
+
+      await animationController.forward();
+
+      /// Then, we reset the animation controller, and set [heightAnimation] to null.
+
+      animationController.reset();
+      heightAnimationReference.value = null;
+
+      /// Lastly, we un mark the GlobalKey as being deleted.
+      ///   We do this by marking the GlobalKey as being deleted.
+      isBeingDeleted[key] = false;
+
+      ///   We also remove the GlobalKey from the list.
+      productPairs.removeAt(index);
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8.0),
+      child: Scrollbar(
+        thumbVisibility: true,
+        controller: scrollController,
+        child: MouseSingleChildScrollView(
           controller: scrollController,
-          child: MouseSingleChildScrollView(
-            controller: scrollController,
-            child: Column(
+          child: AnimatedBuilder(
+            animation: animationController,
+            builder: (context, _) => Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 /// Iteration
-                for (var (index, product) in products.indexed.take(globalKeys.length))
-                  if (isBeingDeleted[globalKeys[index]] case true)
-                    AnimatedBuilder(
-                      animation: animationController,
-                      builder: (context, child) => SizedBox(height: heightAnimation!.value),
-                    )
+                for (var (index, (product, key)) in productPairs.indexed)
+                  if (heightAnimationReference.value case var heightAnimation? when isBeingDeleted[key] ?? false)
+                    SizedBox(height: heightAnimation.value)
                   else
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
-                      key: globalKeys[index],
+                      key: key,
                       child: InventoryProduct(
-                        index: index,
                         product: product,
                         parentDelete: () async {
                           await deleteItemAt(index);
@@ -354,11 +301,10 @@ class _InventoryTabLocationState extends State<InventoryTabLocation> with Ticker
 }
 
 class InventoryProduct extends HookWidget {
-  const InventoryProduct({required this.index, required this.product, required this.parentDelete, super.key});
+  const InventoryProduct({required this.product, required this.parentDelete, super.key});
 
   static const double tileHeight = 128.0;
 
-  final int index;
   final Product product;
   final Future<void> Function() parentDelete;
 
@@ -382,11 +328,12 @@ class InventoryProduct extends HookWidget {
       builder: (context, constraints) => AnimatedBuilder(
         animation: animationController,
         builder: (context, child) {
-          var height = behindKey.currentContext?.findRenderObject()?.as<RenderBox>().size.height ?? 0.0;
-          var curve = Curves.easeOut.transform(animationController.value);
+          var renderBox = behindKey.currentContext?.findRenderObject() as RenderBox?;
+          var targetHeight = renderBox?.size.height ?? 0.0;
+          var progression = Curves.easeOut.transform(animationController.value);
 
           return SizedBox(
-            height: tileHeight + curve * height,
+            height: tileHeight + progression * targetHeight,
             child: child,
           );
         },
