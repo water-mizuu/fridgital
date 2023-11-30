@@ -10,11 +10,11 @@ import "package:fridgital/main.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/extensions/time.dart";
 import "package:fridgital/shared/hooks/use_reference.dart";
-import "package:fridgital/shared/hooks/use_tag_data_future.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
 import "package:fridgital/widgets/shared/miscellaneous/shrinking_navigation.dart";
+import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tag_data_provider.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart";
 import "package:functional_widget_annotation/functional_widget_annotation.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
@@ -26,30 +26,20 @@ part "inventory.g.dart";
 Widget inventory() {
   useAutomaticKeepAlive();
 
-  // ignore: discarded_futures
-  var tagDataFuture = useTagDataFuture();
-
   return BasicScreenWidget(
-    child: FutureBuilder(
-      future: tagDataFuture,
-      builder: (_, snapshot) => switch (snapshot) {
-        AsyncSnapshot(connectionState: ConnectionState.done, hasData: true, :var data!) => ChangeNotifierProvider.value(
-            value: data,
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                InventoryTitle(),
-                SizedBox(height: 16.0),
-                InventoryTags(),
-                SizedBox(height: 16.0),
-                Expanded(child: InventoryTabs()),
-                shrinkingNavigationOffset,
-              ],
-            ),
-          ),
-        AsyncSnapshot(connectionState: ConnectionState.done, hasError: true, :var error!) =>
-          Center(child: Text(error.toString())),
-        _ => const Center(child: CircularProgressIndicator()),
+    child: TagDataProvider(
+      builder: (context, tagData) {
+        return const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            InventoryTitle(),
+            SizedBox(height: 16.0),
+            InventoryTags(),
+            SizedBox(height: 16.0),
+            Expanded(child: InventoryTabs()),
+            shrinkingNavigationOffset,
+          ],
+        );
       },
     ),
   );
