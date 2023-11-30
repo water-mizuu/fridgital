@@ -6,9 +6,9 @@ import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/checkbox_tile.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
 import "package:fridgital/widgets/shared/miscellaneous/shrinking_navigation.dart";
+import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tag_data_provider.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
-import "package:provider/provider.dart";
 
 class ToBuy extends StatefulWidget {
   const ToBuy({super.key});
@@ -17,36 +17,26 @@ class ToBuy extends StatefulWidget {
   State<ToBuy> createState() => _ToBuyState();
 }
 
-class _ToBuyState extends State<ToBuy> with AutomaticKeepAliveClientMixin, EmptyTagDataMixin {
+class _ToBuyState extends State<ToBuy> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
     return BasicScreenWidget(
-      child: FutureBuilder(
-        future: tagDataFuture,
-        builder: (context, snapshot) => switch (snapshot) {
-          AsyncSnapshot(connectionState: ConnectionState.done, hasData: true, :var data!) =>
-            ChangeNotifierProvider.value(
-              value: data,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const ToBuyTitle(),
-                  const SizedBox(height: 16.0),
-                  const ToBuyTags(),
-                  const SizedBox(height: 16.0),
-                  Expanded(child: ToBuyBody(onChanged: (v) {})),
+      child: TagDataProvider(
+        builder: (context, tagData) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const ToBuyTitle(),
+            const SizedBox(height: 16.0),
+            const ToBuyTags(),
+            const SizedBox(height: 16.0),
+            Expanded(child: ToBuyBody(onChanged: (v) {})),
 
-                  /// Insets for the navbar.
-                  shrinkingNavigationOffset,
-                ],
-              ),
-            ),
-          AsyncSnapshot(connectionState: ConnectionState.done, hasError: true, :var error!) =>
-            Center(child: Text(error.toString())),
-          AsyncSnapshot() => const Center(child: CircularProgressIndicator()),
-        },
+            /// Insets for the navbar.
+            shrinkingNavigationOffset,
+          ],
+        ),
       ),
     );
   }

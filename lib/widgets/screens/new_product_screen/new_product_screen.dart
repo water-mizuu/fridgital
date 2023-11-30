@@ -1,11 +1,12 @@
 import "package:flutter/material.dart";
 import "package:fridgital/back_end/product_data.dart";
+import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/shared/classes/reference.dart";
 import "package:fridgital/shared/constants.dart";
-import "package:fridgital/shared/mixins/empty_tag_data_mixin.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
+import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tag_data_provider.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
 import "package:provider/provider.dart";
@@ -17,7 +18,7 @@ class NewProductScreen extends StatefulWidget {
   State<NewProductScreen> createState() => _NewProductScreenState();
 }
 
-class _NewProductScreenState extends State<NewProductScreen> with EmptyTagDataMixin {
+class _NewProductScreenState extends State<NewProductScreen> {
   late final Reference<String> name;
   late final Reference<String?> imageUrl;
   late final Reference<DateTime?> addedDate;
@@ -25,8 +26,7 @@ class _NewProductScreenState extends State<NewProductScreen> with EmptyTagDataMi
   late final Reference<DateTime?> expiryDate;
   late final Reference<String> notes;
 
-  Future<void> submit() async {
-    var tagData = await tagDataFuture;
+  Future<void> submit(TagData tagData) async {
     var tags = tagData.activeTags.toList();
 
     if (!context.mounted) {
@@ -82,89 +82,81 @@ class _NewProductScreenState extends State<NewProductScreen> with EmptyTagDataMi
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: BasicScreenWidget(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 32.0),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: IntrinsicHeight(
-                child: Row(
-                  children: [
-                    Center(
-                      child: ClickableWidget(
-                        onTap: () {
-                          RouteState.of(context).toggleCreatingNewProduct();
-                        },
-                        child: const Icon(Icons.arrow_back_ios_rounded),
-                      ),
+      body: TagDataProvider(
+        builder: (context, tagData) {
+          return BasicScreenWidget(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 32.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: IntrinsicHeight(
+                    child: Row(
+                      children: [
+                        Center(
+                          child: ClickableWidget(
+                            onTap: () {
+                              RouteState.of(context).toggleCreatingNewProduct();
+                            },
+                            child: const Icon(Icons.arrow_back_ios_rounded),
+                          ),
+                        ),
+                        const SizedBox(width: 8.0),
+                        Text("Inventory".toUpperCase(), style: theme.textTheme.titleLarge),
+                      ],
                     ),
-                    const SizedBox(width: 8.0),
-                    Text("Inventory".toUpperCase(), style: theme.textTheme.titleLarge),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0),
-              child: FutureBuilder(
-                future: tagDataFuture,
-                builder: (context, snapshot) => switch (snapshot) {
-                  AsyncSnapshot(connectionState: ConnectionState.done, hasData: true, :var data!) =>
-                    ChangeNotifierProvider.value(
-                      value: data,
-                      child: const TagsView(),
-                    ),
-                  AsyncSnapshot(connectionState: ConnectionState.done, hasError: true, :var error!) =>
-                    Text(error.toString()),
-                  AsyncSnapshot() => const CircularProgressIndicator.adaptive(),
-                },
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            Expanded(
-              child: MouseSingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ProductTextField(
-                        title: "Name",
-                        reference: name,
-                        mapper: (name) => name,
-                      ),
-                      ProductDateField(
-                        title: "Date Added",
-                        reference: addedDate,
-                      ),
-                      ProductTextField(
-                        title: "Storage Units",
-                        reference: storageUnits,
-                        mapper: (units) => units,
-                      ),
-                      ProductDateField(
-                        title: "Expiry Date",
-                        reference: expiryDate,
-                      ),
-                      ProductTextField(
-                        title: "Notes",
-                        reference: notes,
-                        mapper: (name) => name,
-                      ),
-                      TextButton(
-                        onPressed: submit,
-                        child: const Text("Add"),
-                      ),
-                    ],
                   ),
                 ),
-              ),
+                const SizedBox(height: 16.0),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 32.0),
+                  child: TagsView(),
+                ),
+                const SizedBox(height: 16.0),
+                Expanded(
+                  child: MouseSingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          ProductTextField(
+                            title: "Name",
+                            reference: name,
+                            mapper: (name) => name,
+                          ),
+                          ProductDateField(
+                            title: "Date Added",
+                            reference: addedDate,
+                          ),
+                          ProductTextField(
+                            title: "Storage Units",
+                            reference: storageUnits,
+                            mapper: (units) => units,
+                          ),
+                          ProductDateField(
+                            title: "Expiry Date",
+                            reference: expiryDate,
+                          ),
+                          ProductTextField(
+                            title: "Notes",
+                            reference: notes,
+                            mapper: (name) => name,
+                          ),
+                          TextButton(
+                            onPressed: () async => submit(tagData),
+                            child: const Text("Add"),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

@@ -138,7 +138,7 @@ final class ProductTable extends DatabaseTable {
     ]);
 
     if (kDebugMode) {
-      print("Successfully added '$name' with id $id");
+      print("Successfully added '$name' with id $id in location $storageLocation");
     }
 
     return Product(

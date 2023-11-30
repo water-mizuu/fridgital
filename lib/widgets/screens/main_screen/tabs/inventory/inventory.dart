@@ -107,6 +107,7 @@ Widget inventoryTabs() {
     tabController.addListener(listener);
     return () {
       tabController.removeListener(listener);
+      tabController.dispose();
     };
   });
 
@@ -156,7 +157,7 @@ Widget inventoryTabs() {
                       TextButton(
                         child: Padding(
                           padding: const EdgeInsets.all(8),
-                          child: Text("Add a product to ${location.name}"),
+                          child: Text("Add a random product to ${location.name}"),
                         ),
                         onPressed: () {
                           var addableTags = context.read<TagData>().addableTags;
@@ -166,6 +167,15 @@ Widget inventoryTabs() {
                               .toList();
 
                           RouteState.of(context).createDummyProduct(tags);
+                        },
+                      ),
+                      TextButton(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Text("Add a product to ${location.name}"),
+                        ),
+                        onPressed: () {
+                          RouteState.of(context).toggleCreatingNewProduct();
                         },
                       ),
                     ],
