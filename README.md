@@ -11,10 +11,7 @@ A new Flutter project.
 
 One time setup for Ubuntu (to run as root):
 
-dart tool/linux_setup.dart
-or
-
-sudo apt-get -y install libsqlite3-0 libsqlite3-dev
+`sudo apt-get -y install libsqlite3-0 libsqlite3-dev`
 
 
 #### MacOS
