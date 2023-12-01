@@ -89,3 +89,21 @@ class InventoryProductCounter extends HookWidget {
   Widget build(BuildContext _context) =>
       inventoryProductCounter(product: product);
 }
+
+class InventoryCounterButton extends HookWidget {
+  const InventoryCounterButton({
+    Key? key,
+    required this.icon,
+    required this.onTap,
+  }) : super(key: key);
+
+  final IconData icon;
+
+  final void Function() onTap;
+
+  @override
+  Widget build(BuildContext _context) => inventoryCounterButton(
+        icon: icon,
+        onTap: onTap,
+      );
+}

@@ -318,101 +318,104 @@ Widget inventoryProduct({required Product product, required Future<void> Functio
     }
   }
 
-  return LayoutBuilder(
-    builder: (context, constraints) => AnimatedBuilder(
-      animation: animationController,
-      builder: (context, child) {
-        var renderBox = behindKey.currentContext?.findRenderObject() as RenderBox?;
-        var targetHeight = renderBox?.size.height ?? 0.0;
-        var progression = Curves.easeOut.transform(animationController.value);
+  return ChangeNotifierProvider.value(
+    value: product,
+    child: LayoutBuilder(
+      builder: (context, constraints) => AnimatedBuilder(
+        animation: animationController,
+        builder: (context, child) {
+          var renderBox = behindKey.currentContext?.findRenderObject() as RenderBox?;
+          var targetHeight = renderBox?.size.height ?? 0.0;
+          var progression = Curves.easeOut.transform(animationController.value);
 
-        return SizedBox(
-          height: tileHeight + progression * targetHeight,
-          child: child,
-        );
-      },
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: ClickableWidget(
-                onTap: parentDelete,
-                child: Container(
-                  key: behindKey,
-                  padding: const EdgeInsets.all(12.0),
-                  decoration: const BoxDecoration(
-                    color: FigmaColors.pinkAccent,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(8.0),
-                      bottomRight: Radius.circular(8.0),
+          return SizedBox(
+            height: tileHeight + progression * targetHeight,
+            child: child,
+          );
+        },
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: ClickableWidget(
+                  onTap: parentDelete,
+                  child: Container(
+                    key: behindKey,
+                    padding: const EdgeInsets.all(12.0),
+                    decoration: const BoxDecoration(
+                      color: FigmaColors.pinkAccent,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(8.0),
+                        bottomRight: Radius.circular(8.0),
+                      ),
                     ),
-                  ),
-                  child: const Text(
-                    "REMOVE THIS PRODUCT",
-                    style: TextStyle(
-                      fontStyle: FontStyle.italic,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: "Nunito",
+                    child: const Text(
+                      "REMOVE THIS PRODUCT",
+                      style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: "Nunito",
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-          SizedBox(
-            width: constraints.maxWidth,
-            child: GestureDetector(
-              onLongPress: toggleIsOptionsVisible,
-              onSecondaryTap: toggleIsOptionsVisible,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Container(
-                  height: tileHeight,
-                  padding: const EdgeInsets.all(12.0),
-                  color: isOptionsVisible.value ? Colors.grey[400] : FigmaColors.whiteAccent,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Center(
-                            child: Text(
-                              product.name.toUpperCase(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 18.0,
+            SizedBox(
+              width: constraints.maxWidth,
+              child: GestureDetector(
+                onLongPress: toggleIsOptionsVisible,
+                onSecondaryTap: toggleIsOptionsVisible,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Container(
+                    height: tileHeight,
+                    padding: const EdgeInsets.all(12.0),
+                    color: isOptionsVisible.value ? Colors.grey[400] : FigmaColors.whiteAccent,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Center(
+                              child: Text(
+                                product.name.toUpperCase(),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 18.0,
+                                ),
                               ),
                             ),
-                          ),
-                          Center(
-                            child: Text(
-                              "${DateTime.now().difference(product.addedDate).inDays} days",
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xff807171),
+                            Center(
+                              child: Text(
+                                "${DateTime.now().difference(product.addedDate).inDays} days",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xff807171),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(child: InventoryProductTags(product: product)),
-                          const SizedBox(width: 16.0),
-                          InventoryProductCounter(product: product),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(child: InventoryProductTags(product: product)),
+                            const SizedBox(width: 16.0),
+                            InventoryProductCounter(product: product),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     ),
   );
@@ -539,38 +542,59 @@ Widget inventoryProductTags({required Product product}) {
 
 @hwidget
 Widget inventoryProductCounter({required Product product}) {
+  var context = useContext();
+  var quantity = context.select((Product product) => product.quantity);
+
   return Container(
     height: 36.0,
-    color: FigmaColors.lightGreyAccent,
+    color: const Color(0xffECDCDC),
     child: Row(
       children: [
-        TextButton(
-          onPressed: () {},
-          style: TextButton.styleFrom(
-            minimumSize: Size.zero,
-            padding: const EdgeInsets.all(8),
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          child: const Icon(Icons.keyboard_arrow_down),
+        InventoryCounterButton(
+          icon: Icons.keyboard_arrow_down,
+          onTap: () async {
+            await context.read<ProductData>().decrementProductQuantity(id: product.id);
+          },
         ),
-        FittedBox(
-          child: Column(
-            children: [
-              Text(product.quantity.toString()),
-              Text(product.storageUnits),
-            ],
+        const VerticalDivider(width: 1),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: FittedBox(
+            child: Column(
+              children: [
+                Text(
+                  quantity.toString(),
+                  style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xff807171)),
+                ),
+                Text(
+                  product.storageUnits,
+                  style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xff807171)),
+                ),
+              ],
+            ),
           ),
         ),
-        TextButton(
-          onPressed: () {},
-          style: TextButton.styleFrom(
-            minimumSize: Size.zero,
-            padding: const EdgeInsets.all(8),
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          child: const Icon(Icons.keyboard_arrow_up),
+        const VerticalDivider(width: 1),
+        InventoryCounterButton(
+          icon: Icons.keyboard_arrow_up,
+          onTap: () async {
+            await context.read<ProductData>().incrementProductQuantity(id: product.id);
+          },
         ),
       ],
+    ),
+  );
+}
+
+@hwidget
+Widget inventoryCounterButton({required IconData icon, required VoidCallback onTap}) {
+  return Container(
+    height: 36.0,
+    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+    color: const Color(0xffECDCDC),
+    child: ClickableWidget(
+      onTap: onTap,
+      child: Icon(icon, color: const Color(0xff807171)),
     ),
   );
 }

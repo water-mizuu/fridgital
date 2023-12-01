@@ -51,7 +51,7 @@ class ProductData extends ChangeNotifier {
 
   Future<void> removeProduct({required int id}) async {
     if (_products.any((product) => product.id == id)) {
-      await ProductTable.instance.removeProduct(id);
+      await ProductTable.instance.removeProduct(id: id);
       _products.removeWhere((product) => product.id == id);
       notifyListeners();
     }
@@ -59,9 +59,53 @@ class ProductData extends ChangeNotifier {
 
   Future<void> removeProductWithoutNotifying({required int id}) async {
     if (_products.any((product) => product.id == id)) {
-      await ProductTable.instance.removeProduct(id);
+      await ProductTable.instance.removeProduct(id: id);
       _products.removeWhere((product) => product.id == id);
     }
+  }
+
+  Future<void> incrementProductQuantity({required int id}) async {
+    var product = _products.firstWhere((product) => product.id == id);
+
+    await ProductTable.instance.updateProduct(
+      id: id,
+      name: product.name,
+      addedDate: product.addedDate,
+      tags: product.tags.toList(),
+      storageLocation: product.storageLocation,
+      storageUnits: product.storageUnits,
+      notes: product.notes,
+      quantity: product.quantity + 1,
+      expiryDate: product.expiryDate,
+      image: product.imageUrl,
+    );
+
+    product.quantity++;
+    notifyListeners();
+  }
+
+  Future<void> decrementProductQuantity({required int id}) async {
+    var product = _products.firstWhere((product) => product.id == id);
+
+    if (product.quantity <= 0) {
+      return;
+    }
+
+    await ProductTable.instance.updateProduct(
+      id: id,
+      name: product.name,
+      addedDate: product.addedDate,
+      tags: product.tags.toList(),
+      storageLocation: product.storageLocation,
+      storageUnits: product.storageUnits,
+      notes: product.notes,
+      quantity: product.quantity - 1,
+      expiryDate: product.expiryDate,
+      image: product.imageUrl,
+    );
+
+    product.quantity--;
+    notifyListeners();
   }
 }
 

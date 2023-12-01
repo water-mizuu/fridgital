@@ -163,15 +163,84 @@ final class ProductTable extends DatabaseTable {
     );
   }
 
-  Future<void> removeProduct(int productId) async {
+  Future<void> updateProduct({
+    required int id,
+    required String name,
+    required DateTime addedDate,
+    required List<Tag> tags,
+    required StorageLocation storageLocation,
+    required String storageUnits,
+    required int quantity,
+    required Uint8List? image,
+    required DateTime? expiryDate,
+    required String notes,
+  }) async {
     await Future.wait([
-      database.delete(tableName, where: "id = ?", whereArgs: [productId]),
-      ProductCustomTagsTable.instance.unregisterProduct(productId: productId),
-      ProductBuiltInTagsTable.instance.unregisterProduct(productId: productId),
+      database.update(
+        tableName,
+        {
+          "name": name,
+          "addedDate": addedDate.toIso8601String(),
+          "storageLocation": storageLocation.index,
+          "storageUnits": storageUnits,
+          "notes": notes,
+          "quantity": quantity,
+          "expiryDate": expiryDate?.toIso8601String(),
+          "image": await Isolate.run(() => image == null ? null : base64Encode(image)),
+        },
+        where: "id = ?",
+        whereArgs: [id],
+      ),
+      ProductCustomTagsTable.instance.unregisterProduct(productId: id),
+      ProductBuiltInTagsTable.instance.unregisterProduct(productId: id),
+    ]);
+
+    /// Insert each tag to their respective tables.
+    var ids = await Future.wait([
+      for (var tag in tags)
+        switch (tag) {
+          CustomTag(:var name) => database.query(
+              CustomTagsTable.instance.tableName,
+              where: "name = ?",
+              whereArgs: [name],
+            ).then((rows) => (name, rows[0]["id"]! as int)),
+          BuiltInTag(:var name) => database.query(
+              BuiltInTagsTable.instance.tableName,
+              where: "name = ?",
+              whereArgs: [name],
+            ).then((rows) => (name, rows[0]["id"]! as int))
+        },
+    ]);
+
+    /// Register each tag to their respective product.
+    await Future.wait([
+      for (var tag in tags)
+        switch (tag) {
+          CustomTag(:var name) => ProductCustomTagsTable.instance.register(
+              productId: id,
+              tagId: ids.firstWhere((pair) => pair.$1 == name).$2,
+            ),
+          BuiltInTag(:var name) => ProductBuiltInTagsTable.instance.register(
+              productId: id,
+              tagId: ids.firstWhere((pair) => pair.$1 == name).$2,
+            ),
+        },
     ]);
 
     if (kDebugMode) {
-      print("Removed product with id $productId");
+      print("Successfully modified '$name' with id $id in location $storageLocation");
+    }
+  }
+
+  Future<void> removeProduct({required int id}) async {
+    await Future.wait([
+      database.delete(tableName, where: "id = ?", whereArgs: [id]),
+      ProductCustomTagsTable.instance.unregisterProduct(productId: id),
+      ProductBuiltInTagsTable.instance.unregisterProduct(productId: id),
+    ]);
+
+    if (kDebugMode) {
+      print("Removed product with id $id");
     }
   }
 }
