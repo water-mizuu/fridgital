@@ -83,6 +83,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
         storageLocation: context.read<StorageLocation>(),
         expiryDate: expiryDate,
         notes: notes,
+        quantity: 0,
         tags: tags,
         image: image,
       );

@@ -33,6 +33,7 @@ final class ProductTable extends DatabaseTable {
         storageLocation INTEGER NOT NULL,
         storageUnits TEXT NOT NULL,
         notes TEXT NOT NULL,
+        quantity INT NOT NULL,
 
         expiryDate TEXT,
         image BLOB
@@ -55,6 +56,7 @@ final class ProductTable extends DatabaseTable {
             "storageLocation": int storageLocation,
             "storageUnits": String units,
             "notes": String notes,
+            "quantity": int quantity,
             "expiryDate": String? expiryDate,
             "image": String? imageBase64,
           }) {
@@ -71,6 +73,7 @@ final class ProductTable extends DatabaseTable {
           storageUnits: units,
           tags: [...custom, ...builtIn],
           notes: notes,
+          quantity: quantity,
           expiryDate: expiryDate != null ? DateTime.parse(expiryDate) : null,
           image: imageBase64 == null ? null : await Isolate.run(() => base64Decode(imageBase64)),
         );
@@ -90,6 +93,7 @@ final class ProductTable extends DatabaseTable {
     required List<Tag> tags,
     required StorageLocation storageLocation,
     required String storageUnits,
+    required int quantity,
     required Uint8List? image,
     required DateTime? expiryDate,
     required String notes,
@@ -102,6 +106,7 @@ final class ProductTable extends DatabaseTable {
         "storageLocation": storageLocation.index,
         "storageUnits": storageUnits,
         "notes": notes,
+        "quantity": quantity,
         "expiryDate": expiryDate?.toIso8601String(),
         "image": await Isolate.run(() => image == null ? null : base64Encode(image)),
       },
@@ -151,6 +156,7 @@ final class ProductTable extends DatabaseTable {
       tags: tags,
       storageLocation: storageLocation,
       storageUnits: storageUnits,
+      quantity: quantity,
       image: image,
       expiryDate: expiryDate,
       notes: notes,

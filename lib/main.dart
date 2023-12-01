@@ -179,6 +179,7 @@ class _MyAppState extends State<MyApp> {
           storageUnits: "kg", // The superior unit of measurement.
           storageLocation: workingLocation,
           expiryDate: DateTime.now().add(30.days),
+          quantity: Random().nextInt(20),
           notes: "",
           tags: tags,
           image: null,

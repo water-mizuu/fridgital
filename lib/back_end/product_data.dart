@@ -28,9 +28,10 @@ class ProductData extends ChangeNotifier {
     required List<Tag> tags,
     required StorageLocation storageLocation,
     required String storageUnits,
+    required String notes,
+    required int quantity,
     required Uint8List? image,
     required DateTime? expiryDate,
-    required String notes,
   }) async {
     var product = await ProductTable.instance.addProduct(
       name: name,
@@ -38,9 +39,10 @@ class ProductData extends ChangeNotifier {
       tags: tags,
       storageLocation: storageLocation,
       storageUnits: storageUnits,
+      notes: notes,
+      quantity: quantity,
       expiryDate: expiryDate,
       image: image,
-      notes: notes,
     );
 
     _products.add(product);
@@ -71,6 +73,7 @@ class Product extends ChangeNotifier {
     required List<Tag> tags,
     required StorageLocation storageLocation,
     required String storageUnits,
+    required int quantity,
     Uint8List? image,
     DateTime? expiryDate,
     String notes = "",
@@ -80,6 +83,7 @@ class Product extends ChangeNotifier {
         _tags = tags,
         _storageLocation = storageLocation,
         _storageUnits = storageUnits,
+        _quantity = quantity,
         _expiryDate = expiryDate,
         _notes = notes;
 
@@ -135,6 +139,15 @@ class Product extends ChangeNotifier {
   set storageUnits(String storageUnits) {
     if (_storageUnits != storageUnits) {
       _storageUnits = storageUnits;
+      notifyListeners();
+    }
+  }
+
+  int _quantity;
+  int get quantity => _quantity;
+  set quantity(int quantity) {
+    if (_quantity != quantity) {
+      _quantity = quantity;
       notifyListeners();
     }
   }
