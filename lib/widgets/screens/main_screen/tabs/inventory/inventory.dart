@@ -8,13 +8,17 @@ import "package:flutter_hooks/flutter_hooks.dart";
 import "package:fridgital/back_end/product_data.dart";
 import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/main.dart";
+import "package:fridgital/shared/classes/immutable_list.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/extensions/time.dart";
+import "package:fridgital/shared/hooks/use_global_key.dart";
 import "package:fridgital/shared/hooks/use_reference.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
+import "package:fridgital/widgets/shared/helper/invisible.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
 import "package:fridgital/widgets/shared/miscellaneous/shrinking_navigation.dart";
+import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/shared/tag_widget.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tag_data_provider.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart";
 import "package:functional_widget_annotation/functional_widget_annotation.dart";
@@ -76,7 +80,10 @@ Widget inventoryTags() {
 @hwidget
 Widget inventoryTabs() {
   var context = useContext();
-  var tabController = useTabController(initialLength: 3);
+  var tabController = useTabController(
+    initialLength: 3,
+    initialIndex: sharedPreferences.getInt(SharedPreferencesKeys.inventoryLocation) ?? 0,
+  );
   var debounce = useReference(null as Future<void>?);
 
   useEffect(() {
@@ -277,7 +284,7 @@ Widget inventoryTabLocation({required StorageLocation location}) {
                           return;
                         }
 
-                        await context.read<ProductData>().removeProduct(id: product.id);
+                        await context.read<ProductData>().removeProductWithoutNotifying(id: product.id);
                       },
                     ),
                   ),
@@ -293,7 +300,7 @@ const double tileHeight = 128.0;
 
 @hwidget
 Widget inventoryProduct({required Product product, required Future<void> Function() parentDelete}) {
-  var behindKey = useMemoized(() => GlobalKey());
+  var behindKey = useGlobalKey();
   var isOptionsVisible = useState(false);
   var animationController = useAnimationController(duration: 150.ms);
 
@@ -363,9 +370,41 @@ Widget inventoryProduct({required Product product, required Future<void> Functio
                   height: tileHeight,
                   padding: const EdgeInsets.all(12.0),
                   color: isOptionsVisible.value ? Colors.grey[400] : FigmaColors.whiteAccent,
-                  child: Text(
-                    "${product.name} - ${product.tags.map((v) => v.name).join(", ")}",
-                    style: const TextStyle(fontStyle: FontStyle.italic),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Center(
+                            child: Text(
+                              product.name.toUpperCase(),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 18.0,
+                              ),
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              "${DateTime.now().difference(product.addedDate).inDays} days",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xff807171),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(child: InventoryProductTabs(product: product)),
+                          const SizedBox(width: 16.0),
+                          const Text("Counter Area"),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -374,5 +413,115 @@ Widget inventoryProduct({required Product product, required Future<void> Functio
         ],
       ),
     ),
+  );
+}
+
+enum ProductTabsRender { computing, rendering }
+
+@hwidget
+Widget inventoryProductTabs({required Product product}) {
+  var status = useReference(ProductTabsRender.computing);
+  var isExtraShown = useState(false);
+
+  var extraCounterKey = useGlobalKey();
+  var tagContainerKey = useGlobalKey();
+
+  var renderedTags = useState(product.tags);
+  var tagWidgetKeys = useMemoized(
+    () => [for (var tag in renderedTags.value) (tag, GlobalKey())],
+    [renderedTags.value],
+  );
+
+  useEffect(() {
+    /// We compute for the overflow.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      var renderBox = tagContainerKey.currentContext?.findRenderObject() as RenderBox?;
+      var containerSize = renderBox?.size ?? Size.zero;
+
+      var productsThatCanBeFitted = <(Tag, GlobalKey)>[];
+
+      var extraRenderBox = extraCounterKey.currentContext?.findRenderObject() as RenderBox?;
+      var accumulativeWidth = switch (extraRenderBox?.size.width) {
+        var width? => width + 2.0,
+        null => 0.0,
+      };
+
+      for (var (index, (tag, key)) in tagWidgetKeys.indexed) {
+        var renderBox = key.currentContext?.findRenderObject() as RenderBox?;
+        var size = renderBox?.size ?? Size.zero;
+
+        if (size == Size.zero || accumulativeWidth + 2.0 + size.width >= containerSize.width) {
+          break;
+        }
+
+        productsThatCanBeFitted.add((tag, key));
+        accumulativeWidth += size.width;
+        accumulativeWidth += index > 0 ? 2.0 : 0.0; // Account for the spacing between the tags.
+      }
+
+      var shouldAddFiller = productsThatCanBeFitted.length < product.tags.length;
+      if (!shouldAddFiller) {
+        return;
+      }
+
+      /// Since it overflows, we need to do some extra work.
+      isExtraShown.value = true;
+      renderedTags.value = ImmutableList.copyFrom([for (var (tag, _) in productsThatCanBeFitted) tag]);
+      status.value = ProductTabsRender.rendering;
+    });
+  });
+
+  return Stack(
+    alignment: Alignment.topLeft,
+    children: [
+      SizedBox(
+        height: 24.0,
+        child: OverflowBox(
+          key: tagContainerKey,
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Wrap(
+              clipBehavior: Clip.hardEdge,
+              spacing: 2.0,
+              children: [
+                for (var (tag, key) in tagWidgetKeys)
+                  SizedBox(
+                    key: key,
+                    height: 24.0,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: TagWidget(tag: tag, icon: null),
+                    ),
+                  ),
+                if (isExtraShown.value)
+                  SizedBox(
+                    height: 24.0,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: TagWidget(
+                        tag: CustomTag(-1, "...", TagColors.selectable[0]),
+                        icon: null,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      if (status.value == ProductTabsRender.computing)
+        Invisible(
+          child: SizedBox(
+            key: extraCounterKey,
+            height: 24.0,
+            child: FittedBox(
+              child: TagWidget(
+                tag: CustomTag(-1, "...", TagColors.selectable[0]),
+                icon: null,
+              ),
+            ),
+          ),
+        ),
+    ],
   );
 }

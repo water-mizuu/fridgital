@@ -64,3 +64,15 @@ class InventoryProduct extends HookWidget {
         parentDelete: parentDelete,
       );
 }
+
+class InventoryProductTabs extends HookWidget {
+  const InventoryProductTabs({
+    Key? key,
+    required this.product,
+  }) : super(key: key);
+
+  final Product product;
+
+  @override
+  Widget build(BuildContext _context) => inventoryProductTabs(product: product);
+}
