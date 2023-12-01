@@ -198,6 +198,8 @@ Widget inventoryTabs() {
 
 @hwidget
 Widget inventoryTabLocation({required StorageLocation location}) {
+  useAutomaticKeepAlive();
+
   var context = useContext();
   var scrollController = useScrollController();
   var animationController = useAnimationController(duration: 380.ms);
@@ -399,9 +401,9 @@ Widget inventoryProduct({required Product product, required Future<void> Functio
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(child: InventoryProductTabs(product: product)),
+                          Expanded(child: InventoryProductTags(product: product)),
                           const SizedBox(width: 16.0),
-                          const Text("Counter Area"),
+                          InventoryProductCounter(product: product),
                         ],
                       ),
                     ],
@@ -419,26 +421,34 @@ Widget inventoryProduct({required Product product, required Future<void> Functio
 enum ProductTabsRender { computing, rendering }
 
 @hwidget
-Widget inventoryProductTabs({required Product product}) {
-  var status = useReference(ProductTabsRender.computing);
+Widget inventoryProductTags({required Product product}) {
   var isExtraShown = useState(false);
+  var isComputing = useState(true);
 
   var extraCounterKey = useGlobalKey();
   var tagContainerKey = useGlobalKey();
 
   var renderedTags = useState(product.tags);
-  var tagWidgetKeys = useMemoized(
+  var renderedTagKeyPairs = useMemoized(
     () => [for (var tag in renderedTags.value) (tag, GlobalKey())],
     [renderedTags.value],
+  );
+  var hiddenTags = useMemoized(
+    () => product.tags.skip(renderedTags.value.length).toList(),
+    [product.tags, renderedTags.value],
   );
 
   useEffect(() {
     /// We compute for the overflow.
+
+    if (renderedTags.value.isEmpty) {
+      return;
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var renderBox = tagContainerKey.currentContext?.findRenderObject() as RenderBox?;
       var containerSize = renderBox?.size ?? Size.zero;
-
-      var productsThatCanBeFitted = <(Tag, GlobalKey)>[];
+      var productsThatCanBeFitted = <Tag>[];
 
       var extraRenderBox = extraCounterKey.currentContext?.findRenderObject() as RenderBox?;
       var accumulativeWidth = switch (extraRenderBox?.size.width) {
@@ -446,28 +456,24 @@ Widget inventoryProductTabs({required Product product}) {
         null => 0.0,
       };
 
-      for (var (index, (tag, key)) in tagWidgetKeys.indexed) {
+      for (var (index, (tag, key)) in renderedTagKeyPairs.indexed) {
         var renderBox = key.currentContext?.findRenderObject() as RenderBox?;
         var size = renderBox?.size ?? Size.zero;
+        var addedWidth = 2.0 + size.width;
 
-        if (size == Size.zero || accumulativeWidth + 2.0 + size.width >= containerSize.width) {
+        if (size == Size.zero || accumulativeWidth + addedWidth >= containerSize.width) {
           break;
         }
 
-        productsThatCanBeFitted.add((tag, key));
+        productsThatCanBeFitted.add(tag);
         accumulativeWidth += size.width;
         accumulativeWidth += index > 0 ? 2.0 : 0.0; // Account for the spacing between the tags.
       }
 
-      var shouldAddFiller = productsThatCanBeFitted.length < product.tags.length;
-      if (!shouldAddFiller) {
-        return;
-      }
-
       /// Since it overflows, we need to do some extra work.
-      isExtraShown.value = true;
-      renderedTags.value = ImmutableList.copyFrom([for (var (tag, _) in productsThatCanBeFitted) tag]);
-      status.value = ProductTabsRender.rendering;
+      isExtraShown.value = productsThatCanBeFitted.length < product.tags.length;
+      renderedTags.value = ImmutableList.copyFrom([for (var tag in productsThatCanBeFitted) tag]);
+      isComputing.value = false;
     });
   });
 
@@ -480,48 +486,91 @@ Widget inventoryProductTabs({required Product product}) {
           key: tagContainerKey,
           child: Align(
             alignment: Alignment.topLeft,
-            child: Wrap(
-              clipBehavior: Clip.hardEdge,
-              spacing: 2.0,
-              children: [
-                for (var (tag, key) in tagWidgetKeys)
-                  SizedBox(
-                    key: key,
-                    height: 24.0,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: TagWidget(tag: tag, icon: null),
-                    ),
-                  ),
-                if (isExtraShown.value)
-                  SizedBox(
-                    height: 24.0,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: TagWidget(
-                        tag: CustomTag(-1, "...", TagColors.selectable[0]),
-                        icon: null,
+            child: Opacity(
+              opacity: isComputing.value ? 0.0 : 1.0,
+              child: Wrap(
+                clipBehavior: Clip.hardEdge,
+                spacing: 2.0,
+                children: [
+                  for (var (tag, key) in renderedTagKeyPairs)
+                    SizedBox(
+                      key: key,
+                      height: 24.0,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: TagWidget(tag: tag, icon: null),
                       ),
                     ),
-                  ),
-              ],
+
+                  /// We only show this extra counter if the status is [ProductTabsRender.rendering].
+                  if (isExtraShown.value)
+                    SizedBox(
+                      height: 24.0,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: TagWidget(
+                          tag: CustomTag(-1, "+ ${hiddenTags.length}", TagColors.selectable[0]),
+                          icon: null,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         ),
       ),
-      if (status.value == ProductTabsRender.computing)
+      if (isComputing.value)
         Invisible(
           child: SizedBox(
             key: extraCounterKey,
             height: 24.0,
             child: FittedBox(
               child: TagWidget(
-                tag: CustomTag(-1, "...", TagColors.selectable[0]),
+                tag: CustomTag(-1, "+ 1", TagColors.selectable[0]),
                 icon: null,
               ),
             ),
           ),
-        ),
+        )
     ],
+  );
+}
+
+@hwidget
+Widget inventoryProductCounter({required Product product}) {
+  return Container(
+    height: 36.0,
+    color: FigmaColors.lightGreyAccent,
+    child: Row(
+      children: [
+        TextButton(
+          onPressed: () {},
+          style: TextButton.styleFrom(
+            minimumSize: Size.zero,
+            padding: const EdgeInsets.all(8),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          child: const Icon(Icons.keyboard_arrow_down),
+        ),
+        FittedBox(
+          child: Column(
+            children: [
+              Text(product.quantity.toString()),
+              Text(product.storageUnits),
+            ],
+          ),
+        ),
+        TextButton(
+          onPressed: () {},
+          style: TextButton.styleFrom(
+            minimumSize: Size.zero,
+            padding: const EdgeInsets.all(8),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          child: const Icon(Icons.keyboard_arrow_up),
+        ),
+      ],
+    ),
   );
 }

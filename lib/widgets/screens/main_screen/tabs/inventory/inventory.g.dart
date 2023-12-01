@@ -65,8 +65,8 @@ class InventoryProduct extends HookWidget {
       );
 }
 
-class InventoryProductTabs extends HookWidget {
-  const InventoryProductTabs({
+class InventoryProductTags extends HookWidget {
+  const InventoryProductTags({
     Key? key,
     required this.product,
   }) : super(key: key);
@@ -74,5 +74,18 @@ class InventoryProductTabs extends HookWidget {
   final Product product;
 
   @override
-  Widget build(BuildContext _context) => inventoryProductTabs(product: product);
+  Widget build(BuildContext _context) => inventoryProductTags(product: product);
+}
+
+class InventoryProductCounter extends HookWidget {
+  const InventoryProductCounter({
+    Key? key,
+    required this.product,
+  }) : super(key: key);
+
+  final Product product;
+
+  @override
+  Widget build(BuildContext _context) =>
+      inventoryProductCounter(product: product);
 }
