@@ -1,15 +1,23 @@
+import "dart:typed_data";
+
 import "package:flutter/material.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
 import "package:fridgital/back_end/product_data.dart";
 import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/shared/classes/reference.dart";
 import "package:fridgital/shared/constants.dart";
+import "package:fridgital/shared/utils.dart" as utils;
+import "package:fridgital/shared/utils.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tag_data_provider.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart";
+import "package:functional_widget_annotation/functional_widget_annotation.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
 import "package:provider/provider.dart";
+
+part "new_product_screen.g.dart";
 
 class NewProductScreen extends StatefulWidget {
   const NewProductScreen({super.key});
@@ -20,11 +28,11 @@ class NewProductScreen extends StatefulWidget {
 
 class _NewProductScreenState extends State<NewProductScreen> {
   late final Reference<String> name;
-  late final Reference<String?> imageUrl;
   late final Reference<DateTime?> addedDate;
   late final Reference<String> storageUnits;
   late final Reference<DateTime?> expiryDate;
   late final Reference<String> notes;
+  late final Reference<Uint8List?> image;
 
   T unwrap<T>(Reference<T> reference, String name, {bool isEmptyAllowed = false}) {
     var value = reference.value;
@@ -37,6 +45,16 @@ class _NewProductScreenState extends State<NewProductScreen> {
     }
 
     return value;
+  }
+
+  void pickImage() async {
+    var image = await utils.pickImage();
+
+    if (!context.mounted || image == null) {
+      return;
+    }
+
+    this.image.value = image;
   }
 
   Future<void> submit(TagData tagData) async {
@@ -54,6 +72,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
       var storageUnits = unwrap(this.storageUnits, "Storage Units");
       var expiryDate = unwrap(this.expiryDate, "Expiry Date");
       var notes = unwrap(this.notes, "Notes", isEmptyAllowed: true);
+      var image = unwrap(this.image, "Image URL", isEmptyAllowed: true);
 
       var productData = context.read<ProductData>();
 
@@ -65,7 +84,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
         expiryDate: expiryDate,
         notes: notes,
         tags: tags,
-        imageUrl: null,
+        image: image,
       );
       if (!context.mounted) {
         return;
@@ -81,7 +100,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
     super.initState();
 
     name = Reference("");
-    imageUrl = Reference(null as String?);
+    image = Reference(null as Uint8List?);
     addedDate = Reference(null as DateTime?);
     storageUnits = Reference("Pounds");
     expiryDate = Reference(null);
@@ -91,7 +110,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
   @override
   void dispose() {
     name.dispose();
-    imageUrl.dispose();
+    image.dispose();
     addedDate.dispose();
     storageUnits.dispose();
     expiryDate.dispose();
@@ -145,6 +164,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
+                          const ProductImageField(title: "Image"),
                           ProductTextField(
                             title: "Name",
                             reference: name,
@@ -184,6 +204,64 @@ class _NewProductScreenState extends State<NewProductScreen> {
       ),
     );
   }
+}
+
+@hwidget
+Widget productImageField(BuildContext context, {required String title}) {
+  var bytes = useState(null as Uint8List?);
+
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 16.0),
+    child: Container(
+      padding: const EdgeInsets.all(12.0),
+      decoration: const BoxDecoration(
+        color: FigmaColors.whiteAccent,
+        borderRadius: BorderRadius.all(Radius.circular(8.0)), // For the outer box.
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Align(
+            alignment: Alignment.topLeft,
+            child: Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20.0)),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ClickableWidget(
+              onTap: () async {
+                var image = await pickImage();
+                if (!context.mounted) {
+                  return;
+                }
+
+                bytes.value = image;
+              },
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border.all(color: FigmaColors.expiryWidgetBackground2, width: 2),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 32.0),
+                  child: Column(
+                    children: [
+                      if (bytes.value case var bytes?) ...[
+                        Image.memory(bytes, fit: BoxFit.cover, width: 128.0),
+                        const Text("CHANGE PHOTO", style: TextStyle(color: FigmaColors.expiryWidgetBackground2)),
+                      ] else ...[
+                        const Icon(Icons.camera_alt, size: 48.0, color: FigmaColors.expiryWidgetBackground2),
+                        const Text("ADD A PHOTO", style: TextStyle(color: FigmaColors.expiryWidgetBackground2)),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 class ProductTextField<T, VT extends Reference<T>> extends StatefulWidget {
@@ -227,7 +305,7 @@ class _ProductTextFieldState<T, VT extends Reference<T>> extends State<ProductTe
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Container(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(12.0),
         decoration: const BoxDecoration(
           color: FigmaColors.whiteAccent,
           borderRadius: BorderRadius.all(Radius.circular(8.0)),

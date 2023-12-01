@@ -59,7 +59,7 @@ final class CustomTagsTable extends DatabaseTable {
 
   Future<CustomTag> addAddableTag({required String name, required TagColor color}) async {
     var id = await database.insert(
-      name,
+      tableName,
       {"name": name, "color": TagColors.selectable.indexOf(color)},
     );
 

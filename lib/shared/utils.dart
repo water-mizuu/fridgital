@@ -1,4 +1,7 @@
 import "dart:math" as math;
+import "dart:typed_data";
+
+import "package:image_picker/image_picker.dart";
 
 /// Returns the Levenshtein distance between two strings.
 /// The Levenshtein distance is the minimum number of single-character
@@ -31,4 +34,16 @@ int levenshtein(String left, String right) {
 
       return previousRow[rightLength];
   }
+}
+
+/// Gets an image using an image picker.
+Future<Uint8List?> pickImage() async {
+  var picker = ImagePicker();
+  var image = await picker.pickImage(source: ImageSource.gallery);
+
+  if (image == null) {
+    return null;
+  }
+
+  return image.readAsBytes();
 }

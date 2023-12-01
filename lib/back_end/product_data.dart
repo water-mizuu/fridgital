@@ -1,3 +1,5 @@
+import "dart:typed_data";
+
 import "package:flutter/material.dart";
 import "package:fridgital/back_end/database/tables/values/product.dart";
 import "package:fridgital/back_end/tag_data.dart";
@@ -26,7 +28,7 @@ class ProductData extends ChangeNotifier {
     required List<Tag> tags,
     required StorageLocation storageLocation,
     required String storageUnits,
-    required String? imageUrl,
+    required Uint8List? image,
     required DateTime? expiryDate,
     required String notes,
   }) async {
@@ -36,8 +38,8 @@ class ProductData extends ChangeNotifier {
       tags: tags,
       storageLocation: storageLocation,
       storageUnits: storageUnits,
-      imageUrl: imageUrl,
       expiryDate: expiryDate,
+      image: image,
       notes: notes,
     );
 
@@ -62,12 +64,12 @@ class Product extends ChangeNotifier {
     required List<Tag> tags,
     required StorageLocation storageLocation,
     required String storageUnits,
-    String? imageUrl,
+    Uint8List? image,
     DateTime? expiryDate,
     String notes = "",
   })  : _name = name,
         _addedDate = addedDate,
-        _imageUrl = imageUrl,
+        _image = image,
         _tags = tags,
         _storageLocation = storageLocation,
         _storageUnits = storageUnits,
@@ -85,11 +87,11 @@ class Product extends ChangeNotifier {
     }
   }
 
-  String? _imageUrl;
-  String? get imageUrl => _imageUrl;
-  set imageUrl(String? imageUrl) {
-    if (_imageUrl != imageUrl) {
-      _imageUrl = imageUrl;
+  Uint8List? _image;
+  Uint8List? get imageUrl => _image;
+  set imageUrl(Uint8List? imageUrl) {
+    if (_image != imageUrl) {
+      _image = imageUrl;
       notifyListeners();
     }
   }

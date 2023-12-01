@@ -1,3 +1,6 @@
+import "dart:convert";
+import "dart:isolate";
+
 import "package:flutter/foundation.dart";
 import "package:fridgital/back_end/database/tables/pools/product_built_in_tags.dart";
 import "package:fridgital/back_end/database/tables/pools/product_custom_tags.dart";
@@ -32,7 +35,7 @@ final class ProductTable extends DatabaseTable {
         notes TEXT NOT NULL,
 
         expiryDate TEXT,
-        imageUrl TEXT
+        image BLOB
       )
       """,
     );
@@ -53,7 +56,7 @@ final class ProductTable extends DatabaseTable {
             "storageUnits": String units,
             "notes": String notes,
             "expiryDate": String? expiryDate,
-            "imageUrl": String? imageUrl,
+            "image": String? imageBase64,
           }) {
         var <List<Tag>>[custom, builtIn] = await Future.wait([
           ProductCustomTagsTable.instance.fetchCustomTags(productId: id),
@@ -69,7 +72,7 @@ final class ProductTable extends DatabaseTable {
           tags: [...custom, ...builtIn],
           notes: notes,
           expiryDate: expiryDate != null ? DateTime.parse(expiryDate) : null,
-          imageUrl: imageUrl,
+          image: imageBase64 == null ? null : await Isolate.run(() => base64Decode(imageBase64)),
         );
 
         products.add(product);
@@ -87,12 +90,12 @@ final class ProductTable extends DatabaseTable {
     required List<Tag> tags,
     required StorageLocation storageLocation,
     required String storageUnits,
-    required String? imageUrl,
+    required Uint8List? image,
     required DateTime? expiryDate,
     required String notes,
   }) async {
     var id = await database.insert(
-      this.tableName,
+      tableName,
       {
         "name": name,
         "addedDate": addedDate.toIso8601String(),
@@ -100,7 +103,7 @@ final class ProductTable extends DatabaseTable {
         "storageUnits": storageUnits,
         "notes": notes,
         "expiryDate": expiryDate?.toIso8601String(),
-        "imageUrl": imageUrl,
+        "image": await Isolate.run(() => image == null ? null : base64Encode(image)),
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
@@ -148,7 +151,7 @@ final class ProductTable extends DatabaseTable {
       tags: tags,
       storageLocation: storageLocation,
       storageUnits: storageUnits,
-      imageUrl: imageUrl,
+      image: image,
       expiryDate: expiryDate,
       notes: notes,
     );

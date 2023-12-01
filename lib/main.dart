@@ -181,7 +181,7 @@ class _MyAppState extends State<MyApp> {
           expiryDate: DateTime.now().add(30.days),
           notes: "",
           tags: tags,
-          imageUrl: null,
+          image: null,
         );
       },
       popNotifier: popNotifier,
