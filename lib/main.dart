@@ -53,19 +53,19 @@ Future<void> main() async {
   if (isDesktop) {
     await windowManager.ensureInitialized();
 
-    const size = Size(430, 768);
-    const windowOptions = WindowOptions(
-      size: size,
-      center: true,
-      backgroundColor: Colors.transparent,
-      skipTaskbar: false,
-      titleBarStyle: TitleBarStyle.normal,
-    );
+    // const size = Size(430, 768);
+    // const windowOptions = WindowOptions(
+    //   size: size,
+    //   center: true,
+    //   backgroundColor: Colors.transparent,
+    //   skipTaskbar: false,
+    //   titleBarStyle: TitleBarStyle.normal,
+    // );
 
-    await windowManager.waitUntilReadyToShow(windowOptions, () async {
-      await windowManager.show();
-      await windowManager.focus();
-    });
+    // await windowManager.waitUntilReadyToShow(windowOptions, () async {
+    //   await windowManager.show();
+    //   await windowManager.focus();
+    // });
   }
 
   runApp(const MyApp());
