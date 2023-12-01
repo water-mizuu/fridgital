@@ -51,9 +51,9 @@ class TagData extends ChangeNotifier {
   }
 
   Future<void> replaceAddableTag(CustomTag target, CustomTag tag) async {
-    if (_addableTags.indexWhere((id) => tag.id == target.id) case >= 0 && var addableIndex) {
+    if (_addableTags.indexWhere((tag) => tag is CustomTag && tag.id == target.id) case >= 0 && var addableIndex) {
       _addableTags[addableIndex] = tag;
-      if (_activeTags.indexWhere((id) => tag.id == target.id) case >= 0 && var activeIndex) {
+      if (_activeTags.indexWhere((tag) => tag is CustomTag && tag.id == target.id) case >= 0 && var activeIndex) {
         _activeTags[activeIndex] = tag;
       }
 
