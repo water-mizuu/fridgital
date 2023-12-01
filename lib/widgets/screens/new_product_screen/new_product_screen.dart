@@ -103,7 +103,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
     image = Reference(null as Uint8List?);
     addedDate = Reference(null as DateTime?);
     storageUnits = Reference("Pounds");
-    expiryDate = Reference(null);
+    expiryDate = Reference(null as DateTime?);
     notes = Reference("");
   }
 
@@ -164,20 +164,22 @@ class _NewProductScreenState extends State<NewProductScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const ProductImageField(title: "Image"),
+                          ProductImageField(
+                            title: "Image",
+                            reference: image,
+                          ),
                           ProductTextField(
                             title: "Name",
                             reference: name,
-                            mapper: (name) => name,
                           ),
                           ProductDateField(
                             title: "Date Added",
                             reference: addedDate,
+                            initialDate: DateTime.now(),
                           ),
                           ProductTextField(
                             title: "Storage Units",
                             reference: storageUnits,
-                            mapper: (units) => units,
                           ),
                           ProductDateField(
                             title: "Expiry Date",
@@ -186,12 +188,12 @@ class _NewProductScreenState extends State<NewProductScreen> {
                           ProductTextField(
                             title: "Notes",
                             reference: notes,
-                            mapper: (name) => name,
                           ),
                           TextButton(
                             onPressed: () async => submit(tagData),
                             child: const Text("Add"),
                           ),
+                          const SizedBox(height: 64.0),
                         ],
                       ),
                     ),
@@ -207,7 +209,8 @@ class _NewProductScreenState extends State<NewProductScreen> {
 }
 
 @hwidget
-Widget productImageField(BuildContext context, {required String title}) {
+Widget productImageField({required String title, required Reference<Uint8List?> reference}) {
+  var context = useContext();
   var bytes = useState(null as Uint8List?);
 
   return Padding(
@@ -234,7 +237,7 @@ Widget productImageField(BuildContext context, {required String title}) {
                   return;
                 }
 
-                bytes.value = image;
+                reference.value = bytes.value = image;
               },
               child: DecoratedBox(
                 decoration: BoxDecoration(
@@ -246,7 +249,8 @@ Widget productImageField(BuildContext context, {required String title}) {
                   child: Column(
                     children: [
                       if (bytes.value case var bytes?) ...[
-                        Image.memory(bytes, fit: BoxFit.cover, width: 128.0),
+                        Image.memory(bytes, fit: BoxFit.cover, width: 256.0),
+                        const SizedBox(height: 16.0),
                         const Text("CHANGE PHOTO", style: TextStyle(color: FigmaColors.expiryWidgetBackground2)),
                       ] else ...[
                         const Icon(Icons.camera_alt, size: 48.0, color: FigmaColors.expiryWidgetBackground2),
@@ -264,23 +268,21 @@ Widget productImageField(BuildContext context, {required String title}) {
   );
 }
 
-class ProductTextField<T, VT extends Reference<T>> extends StatefulWidget {
+class ProductTextField extends StatefulWidget {
   const ProductTextField({
     required this.title,
     required this.reference,
-    required this.mapper,
     super.key,
   });
 
   final String title;
-  final VT reference;
-  final T Function(String) mapper;
+  final Reference<String> reference;
 
   @override
-  State<ProductTextField<T, VT>> createState() => _ProductTextFieldState<T, VT>();
+  State createState() => _ProductTextFieldState();
 }
 
-class _ProductTextFieldState<T, VT extends Reference<T>> extends State<ProductTextField<T, VT>> {
+class _ProductTextFieldState extends State<ProductTextField> {
   late final TextEditingController textEditingController;
 
   @override
@@ -289,7 +291,7 @@ class _ProductTextFieldState<T, VT extends Reference<T>> extends State<ProductTe
 
     textEditingController = TextEditingController()
       ..addListener(() {
-        widget.reference.value = widget.mapper(textEditingController.text);
+        widget.reference.value = textEditingController.text;
       });
   }
 
@@ -328,9 +330,10 @@ class _ProductTextFieldState<T, VT extends Reference<T>> extends State<ProductTe
 }
 
 class ProductDateField extends StatefulWidget {
-  const ProductDateField({required this.title, required this.reference, super.key});
+  const ProductDateField({required this.title, required this.reference, this.initialDate, super.key});
 
   final Reference<DateTime?> reference;
+  final DateTime? initialDate;
   final String title;
 
   @override
@@ -344,7 +347,8 @@ class _ProductDateFieldState extends State<ProductDateField> {
   void initState() {
     super.initState();
 
-    dateTime = ValueNotifier<DateTime?>(null)
+    widget.reference.value = widget.initialDate;
+    dateTime = ValueNotifier<DateTime?>(widget.initialDate)
       ..addListener(() {
         widget.reference.value = dateTime.value;
       });
@@ -384,7 +388,7 @@ class _ProductDateFieldState extends State<ProductDateField> {
                     onTap: () async {
                       var date = await showDatePicker(
                         context: context,
-                        initialDate: DateTime.now(),
+                        initialDate: dateTime.value ?? DateTime.now(),
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2100),
                       );

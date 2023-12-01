@@ -10,13 +10,16 @@ class ProductImageField extends HookWidget {
   const ProductImageField({
     Key? key,
     required this.title,
+    required this.reference,
   }) : super(key: key);
 
   final String title;
 
+  final Reference<Uint8List?> reference;
+
   @override
   Widget build(BuildContext _context) => productImageField(
-        _context,
         title: title,
+        reference: reference,
       );
 }
