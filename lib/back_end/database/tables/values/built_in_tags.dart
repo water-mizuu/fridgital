@@ -40,7 +40,14 @@ final class BuiltInTagsTable extends DatabaseTable {
     assert(rows.length == 1, "Ids should be unique!");
 
     var row = rows.first;
-    if (row case {"id": int _, "name": String name, "red": int red, "blue": int blue, "green": int green}) {
+    if (row
+        case {
+          "id": int _,
+          "name": String name,
+          "red": int red,
+          "blue": int blue,
+          "green": int green
+        }) {
       return BuiltInTag(name, Color.fromARGB(255, red, green, blue));
     } else if (kDebugMode) {
       print("Row was not matched! The data was: $row");
@@ -55,7 +62,14 @@ final class BuiltInTagsTable extends DatabaseTable {
     var tags = <BuiltInTag>[];
 
     for (var row in rows) {
-      if (row case {"id": _, "name": String name, "red": int red, "blue": int blue, "green": int green}) {
+      if (row
+          case {
+            "id": _,
+            "name": String name,
+            "red": int red,
+            "blue": int blue,
+            "green": int green
+          }) {
         tags.add(BuiltInTag(name, Color.fromARGB(255, red, green, blue)));
       } else if (kDebugMode) {
         print("Row was not matched! The data was: $row");

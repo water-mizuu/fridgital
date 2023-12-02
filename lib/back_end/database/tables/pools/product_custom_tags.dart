@@ -56,6 +56,7 @@ final class ProductCustomTagsTable extends DatabaseTable {
 
   Future<void> removeTagFromProduct({required int productId, required int tagId}) async {
     await ensureInitialized();
-    await database.delete(tableName, where: "productId = ? AND tagId = ?", whereArgs: [productId, tagId]);
+    await database
+        .delete(tableName, where: "productId = ? AND tagId = ?", whereArgs: [productId, tagId]);
   }
 }

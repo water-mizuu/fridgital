@@ -16,7 +16,9 @@ class _OnePotPestoState extends State<OnePotPesto> {
 
   late final ScrollController scrollController;
 
-  late double scrollPercentage = scrollController.hasClients ? scrollController.offset / _threshold : 0.0;
+  late double scrollPercentage = scrollController.hasClients //
+      ? scrollController.offset / _threshold
+      : 0.0;
 
   @override
   void initState() {

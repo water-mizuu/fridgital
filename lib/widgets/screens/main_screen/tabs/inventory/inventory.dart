@@ -157,7 +157,8 @@ Widget inventoryTabs() {
             children: [
               for (var location in StorageLocation.values)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0) + const EdgeInsets.only(top: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0) +
+                      const EdgeInsets.only(top: 16.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -272,7 +273,8 @@ Widget inventoryTabLocation({required StorageLocation location}) {
             children: [
               /// Iteration
               for (var (index, (product, key)) in productPairs.indexed)
-                if (heightAnimationReference.value case var heightAnimation? when isBeingDeleted.contains(key))
+                if (heightAnimationReference.value case var heightAnimation?
+                    when isBeingDeleted.contains(key))
                   SizedBox(height: heightAnimation.value)
                 else
                   Padding(
@@ -286,7 +288,9 @@ Widget inventoryTabLocation({required StorageLocation location}) {
                           return;
                         }
 
-                        await context.read<ProductData>().removeProductWithoutNotifying(id: product.id);
+                        await context
+                            .read<ProductData>()
+                            .removeProductWithoutNotifying(id: product.id);
                       },
                     ),
                   ),
