@@ -344,7 +344,7 @@ Widget inventoryProduct({required Product product, required Future<void> Functio
                     key: behindKey,
                     padding: const EdgeInsets.all(12.0),
                     decoration: const BoxDecoration(
-                      color: FigmaColors.pinkAccent,
+                      color: Color(0x4085100D),
                       borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(8.0),
                         bottomRight: Radius.circular(8.0),
@@ -547,7 +547,10 @@ Widget inventoryProductCounter({required Product product}) {
 
   return Container(
     height: 36.0,
-    color: const Color(0xffECDCDC),
+    decoration: BoxDecoration(
+      color: const Color(0xffECDCDC),
+      borderRadius: BorderRadius.circular(4.0),
+    ),
     child: Row(
       children: [
         InventoryCounterButton(
@@ -588,10 +591,8 @@ Widget inventoryProductCounter({required Product product}) {
 
 @hwidget
 Widget inventoryCounterButton({required IconData icon, required VoidCallback onTap}) {
-  return Container(
-    height: 36.0,
+  return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-    color: const Color(0xffECDCDC),
     child: ClickableWidget(
       onTap: onTap,
       child: Icon(icon, color: const Color(0xff807171)),
