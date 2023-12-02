@@ -10,6 +10,7 @@ import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/main.dart";
 import "package:fridgital/shared/classes/immutable_list.dart";
 import "package:fridgital/shared/constants.dart";
+import "package:fridgital/shared/extensions/find_box.dart";
 import "package:fridgital/shared/extensions/time.dart";
 import "package:fridgital/shared/hooks/use_global_key.dart";
 import "package:fridgital/shared/hooks/use_reference.dart";
@@ -235,8 +236,7 @@ Widget inventoryTabLocation({required StorageLocation location}) {
     ///   Since we marked the GlobalKey as being deleted, then the [build]
     ///   method will handle the replacement for us.
 
-    var renderBox = key.currentContext?.findRenderObject() as RenderBox?;
-    var size = renderBox?.size ?? Size.zero;
+    var size = key.renderBoxNullable?.size ?? Size.zero;
     heightAnimationReference.value = Tween<double>(begin: size.height, end: 0.0)
         .animate(CurvedAnimation(curve: Curves.fastOutSlowIn, parent: animationController));
 
@@ -324,8 +324,7 @@ Widget inventoryProduct({required Product product, required Future<void> Functio
       builder: (context, constraints) => AnimatedBuilder(
         animation: animationController,
         builder: (context, child) {
-          var renderBox = behindKey.currentContext?.findRenderObject() as RenderBox?;
-          var targetHeight = renderBox?.size.height ?? 0.0;
+          var targetHeight = behindKey.renderBoxNullable?.size.height ?? 0.0;
           var progression = Curves.easeOut.transform(animationController.value);
 
           return SizedBox(
@@ -449,19 +448,16 @@ Widget inventoryProductTags({required Product product}) {
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      var renderBox = tagContainerKey.currentContext?.findRenderObject() as RenderBox?;
-      var containerSize = renderBox?.size ?? Size.zero;
+      var containerSize = tagContainerKey.renderBoxNullable?.size ?? Size.zero;
       var productsThatCanBeFitted = <Tag>[];
 
-      var extraRenderBox = extraCounterKey.currentContext?.findRenderObject() as RenderBox?;
-      var accumulativeWidth = switch (extraRenderBox?.size.width) {
+      var accumulativeWidth = switch (extraCounterKey.renderBoxNullable?.size.width) {
         var width? => width + 2.0,
         null => 0.0,
       };
 
       for (var (index, (tag, key)) in renderedTagKeyPairs.indexed) {
-        var renderBox = key.currentContext?.findRenderObject() as RenderBox?;
-        var size = renderBox?.size ?? Size.zero;
+        var size = key.renderBoxNullable?.size ?? Size.zero;
         var addedWidth = 2.0 + size.width;
 
         if (size == Size.zero || accumulativeWidth + addedWidth >= containerSize.width) {
