@@ -15,20 +15,16 @@ final class ProductBuiltInTagsTable extends DatabaseTable {
   String get tableName => "productBuiltTags";
 
   @override
-  Future<void> create() async {
-    await database.execute(
-      """
-      CREATE TABLE $tableName (
-        id INTEGER PRIMARY KEY,
-        productId INTEGER,
-        tagId INTEGER,
+  String get tableCreationStatement => """
+    CREATE TABLE $tableName (
+      id INTEGER PRIMARY KEY,
+      productId INTEGER,
+      tagId INTEGER,
 
-        FOREIGN KEY (productId) REFERENCES ${ProductTable.instance.tableName} (id),
-        FOREIGN KEY (tagId) REFERENCES ${BuiltInTagsTable.instance.tableName} (id)
-      )
-      """,
-    );
-  }
+      FOREIGN KEY (productId) REFERENCES ${ProductTable.instance.tableName} (id),
+      FOREIGN KEY (tagId) REFERENCES ${BuiltInTagsTable.instance.tableName} (id)
+    )
+    """;
 
   Future<void> register({required int productId, required int tagId}) async {
     await ensureInitialized();

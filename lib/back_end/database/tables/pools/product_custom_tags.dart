@@ -15,9 +15,7 @@ final class ProductCustomTagsTable extends DatabaseTable {
   String get tableName => "productCustomTags";
 
   @override
-  Future<void> create() async {
-    await database.execute(
-      """
+  String get tableCreationStatement => """
       CREATE TABLE $tableName (
         id INTEGER PRIMARY KEY,
         productId INTEGER,
@@ -26,9 +24,7 @@ final class ProductCustomTagsTable extends DatabaseTable {
         FOREIGN KEY (productId) REFERENCES ${ProductTable.instance.tableName} (id),
         FOREIGN KEY (tagId) REFERENCES ${CustomTagsTable.instance.tableName} (id)
       )
-      """,
-    );
-  }
+      """;
 
   Future<void> register({required int productId, required int tagId}) async {
     await ensureInitialized();

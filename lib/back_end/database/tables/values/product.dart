@@ -21,26 +21,21 @@ final class ProductTable extends DatabaseTable {
   String get tableName => "product";
 
   @override
-  Future<void> create() async {
-    /// The image CAN be null.
-    await database.execute(
-      """
-      CREATE TABLE $tableName (
-        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  String get tableCreationStatement => """
+    CREATE TABLE $tableName (
+      id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 
-        name TEXT NOT NULL,
-        addedDate TEXT NOT NULL,
-        storageLocation INTEGER NOT NULL,
-        storageUnits TEXT NOT NULL,
-        notes TEXT NOT NULL,
-        quantity INT NOT NULL,
+      name TEXT NOT NULL,
+      addedDate TEXT NOT NULL,
+      storageLocation INTEGER NOT NULL,
+      storageUnits TEXT NOT NULL,
+      notes TEXT NOT NULL,
+      quantity INT NOT NULL,
 
-        expiryDate TEXT,
-        image BLOB
-      )
-      """,
-    );
-  }
+      expiryDate TEXT,
+      image BLOB
+    )
+    """;
 
   Future<List<Product>> fetchProducts() async {
     await ensureInitialized();

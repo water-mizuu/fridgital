@@ -14,17 +14,13 @@ final class CustomTagsTable extends DatabaseTable {
   String get tableName => "addableTags";
 
   @override
-  Future<void> create() async {
-    await database.execute(
-      """
-      CREATE TABLE $tableName (
-        id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL,
-        color INTEGER NOT NULL
-      )
-      """,
-    );
-  }
+  String get tableCreationStatement => """
+    CREATE TABLE $tableName (
+      id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      color INTEGER NOT NULL
+    )
+    """;
 
   Future<CustomTag> fetchTagWithId(int id) async {
     await ensureInitialized();

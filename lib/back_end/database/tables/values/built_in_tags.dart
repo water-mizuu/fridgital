@@ -13,19 +13,20 @@ final class BuiltInTagsTable extends DatabaseTable {
   String get tableName => "builtInTags";
 
   @override
-  Future<void> create() async {
-    await database.execute(
-      """
-      CREATE TABLE $tableName (
-        id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL,
+  String get tableCreationStatement => """
+    CREATE TABLE $tableName (
+      id INTEGER PRIMARY KEY,
+      name TEXT NOT NULL,
 
-        red INTEGER NOT NULL,
-        green INTEGER NOT NULL,
-        blue INTEGER NOT NULL
-      )
-      """,
-    );
+      red INTEGER NOT NULL,
+      green INTEGER NOT NULL,
+      blue INTEGER NOT NULL
+    )
+    """;
+
+  @override
+  Future<void> create() async {
+    await super.create();
 
     await Future.wait([
       for (var BuiltInTag(:name, color: Color(:red, :green, :blue)) in BuiltInTag.values)
