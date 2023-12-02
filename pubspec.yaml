@@ -19,7 +19,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: ">=3.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -33,41 +33,27 @@ dependencies:
   cupertino_icons:
   flutter:
     sdk: flutter
-
-  flutter_hooks:
-  functional_widget_annotation:
-
-  image_picker:
-
+  flutter_hooks: ^0.20.3
+  functional_widget_annotation: ^0.10.0
+  image_picker: ^1.0.4
   mouse_scroll:
     git:
       url: https://github.com/water-mizuu/mouse_scroll.git
-
-  path:
-  path_provider:
-  provider:
-
-  shared_preferences:
-  # Runtime for SQLite databases, used by sqflite.
-  sqflite:
-  sqflite_common_ffi:
-  sqlite3_flutter_libs:
-
-  # optional, only used while running on desktop.
-  window_manager:
+  path: ^1.8.3
+  path_provider: ^2.1.1
+  provider: ^6.1.1
+  shared_preferences: ^2.2.2
+  sqflite: ^2.3.0
+  sqflite_common_ffi: ^2.3.0+4
+  sqlite3_flutter_libs: ^0.5.18
+  window_manager: ^0.3.7
 
 dev_dependencies:
-  build_runner:
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
-  flutter_lints:
+  build_runner: ^2.4.7
+  flutter_lints: ^3.0.1
   flutter_test:
     sdk: flutter
-
-  functional_widget:
+  functional_widget: ^0.10.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

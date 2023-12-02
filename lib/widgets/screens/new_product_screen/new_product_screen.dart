@@ -1,3 +1,4 @@
+import "dart:isolate";
 import "dart:typed_data";
 
 import "package:flutter/material.dart";
@@ -58,14 +59,15 @@ class _NewProductScreenState extends State<NewProductScreen> {
   }
 
   Future<void> submit(TagData tagData) async {
-    var tags = tagData.activeTags.toList();
-
     if (!context.mounted) {
       return;
     }
 
+    var tags = tagData.activeTags.toList();
+
     try {
-      late var today = DateTime.now().copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
+      late var today = DateTime.now() //
+          .copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
 
       var name = unwrap(this.name, "Name");
       var addedDate = unwrap(this.addedDate, "Date Added");
@@ -127,83 +129,81 @@ class _NewProductScreenState extends State<NewProductScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: TagDataProvider(
-        builder: (context, tagData) {
-          return BasicScreenWidget(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 32.0),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: IntrinsicHeight(
-                    child: Row(
-                      children: [
-                        Center(
-                          child: ClickableWidget(
-                            onTap: () {
-                              RouteState.of(context).toggleCreatingNewProduct();
-                            },
-                            child: const Icon(Icons.arrow_back_ios_rounded),
-                          ),
+        builder: (context, tagData) => BasicScreenWidget(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 32.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: IntrinsicHeight(
+                  child: Row(
+                    children: [
+                      Center(
+                        child: ClickableWidget(
+                          onTap: () {
+                            RouteState.of(context).toggleCreatingNewProduct();
+                          },
+                          child: const Icon(Icons.arrow_back_ios_rounded),
                         ),
-                        const SizedBox(width: 8.0),
-                        Text("Inventory".toUpperCase(), style: theme.textTheme.titleLarge),
+                      ),
+                      const SizedBox(width: 8.0),
+                      Text("Inventory".toUpperCase(), style: theme.textTheme.titleLarge),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 32.0),
+                child: TagsView(),
+              ),
+              const SizedBox(height: 16.0),
+              Expanded(
+                child: MouseSingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ProductImageField(
+                          title: "Image",
+                          reference: image,
+                        ),
+                        ProductTextField(
+                          title: "Name",
+                          reference: name,
+                        ),
+                        ProductDateField(
+                          title: "Date Added",
+                          reference: addedDate,
+                          initialDate: DateTime.now(),
+                        ),
+                        ProductTextField(
+                          title: "Storage Units",
+                          reference: storageUnits,
+                        ),
+                        ProductDateField(
+                          title: "Expiry Date",
+                          reference: expiryDate,
+                        ),
+                        ProductTextField(
+                          title: "Notes",
+                          reference: notes,
+                        ),
+                        TextButton(
+                          onPressed: () async => submit(tagData),
+                          child: const Text("Add"),
+                        ),
+                        const SizedBox(height: 64.0),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 16.0),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 32.0),
-                  child: TagsView(),
-                ),
-                const SizedBox(height: 16.0),
-                Expanded(
-                  child: MouseSingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          ProductImageField(
-                            title: "Image",
-                            reference: image,
-                          ),
-                          ProductTextField(
-                            title: "Name",
-                            reference: name,
-                          ),
-                          ProductDateField(
-                            title: "Date Added",
-                            reference: addedDate,
-                            initialDate: DateTime.now(),
-                          ),
-                          ProductTextField(
-                            title: "Storage Units",
-                            reference: storageUnits,
-                          ),
-                          ProductDateField(
-                            title: "Expiry Date",
-                            reference: expiryDate,
-                          ),
-                          ProductTextField(
-                            title: "Notes",
-                            reference: notes,
-                          ),
-                          TextButton(
-                            onPressed: () async => submit(tagData),
-                            child: const Text("Add"),
-                          ),
-                          const SizedBox(height: 64.0),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -227,13 +227,16 @@ Widget productImageField({required String title, required Reference<Uint8List?> 
         children: [
           Align(
             alignment: Alignment.topLeft,
-            child: Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20.0)),
+            child: Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20.0),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ClickableWidget(
               onTap: () async {
-                var image = await pickImage();
+                var image = await Isolate.run(() => pickImage());
                 if (!context.mounted) {
                   return;
                 }
@@ -242,7 +245,10 @@ Widget productImageField({required String title, required Reference<Uint8List?> 
               },
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  border: Border.all(color: FigmaColors.expiryWidgetBackground2, width: 2),
+                  border: Border.all(
+                    color: FigmaColors.expiryWidgetBackground2,
+                    width: 2,
+                  ),
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Padding(
@@ -252,10 +258,20 @@ Widget productImageField({required String title, required Reference<Uint8List?> 
                       if (bytes.value case var bytes?) ...[
                         Image.memory(bytes, fit: BoxFit.cover, width: 256.0),
                         const SizedBox(height: 16.0),
-                        const Text("CHANGE PHOTO", style: TextStyle(color: FigmaColors.expiryWidgetBackground2)),
+                        const Text(
+                          "CHANGE PHOTO",
+                          style: TextStyle(color: FigmaColors.expiryWidgetBackground2),
+                        ),
                       ] else ...[
-                        const Icon(Icons.camera_alt, size: 48.0, color: FigmaColors.expiryWidgetBackground2),
-                        const Text("ADD A PHOTO", style: TextStyle(color: FigmaColors.expiryWidgetBackground2)),
+                        const Icon(
+                          Icons.camera_alt,
+                          size: 48.0,
+                          color: FigmaColors.expiryWidgetBackground2,
+                        ),
+                        const Text(
+                          "ADD A PHOTO",
+                          style: TextStyle(color: FigmaColors.expiryWidgetBackground2),
+                        ),
                       ],
                     ],
                   ),

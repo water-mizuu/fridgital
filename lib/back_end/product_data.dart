@@ -207,11 +207,4 @@ class Product extends ChangeNotifier {
 
   final List<Tag> _tags;
   ImmutableList<Tag> get tags => ImmutableList<Tag>(_tags);
-
-  void addTag(Tag tag) {
-    if (!_tags.contains(tag)) {
-      _tags.add(tag);
-      notifyListeners();
-    }
-  }
 }
