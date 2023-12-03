@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:fridgital/back_end/tag_data.dart";
+import "package:fridgital/back_end/change_notifiers.dart/tag_data.dart";
 import "package:fridgital/shared/extensions/color_conversion.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart";

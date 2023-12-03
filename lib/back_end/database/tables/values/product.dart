@@ -2,13 +2,13 @@ import "dart:convert";
 import "dart:isolate";
 
 import "package:flutter/foundation.dart";
+import "package:fridgital/back_end/change_notifiers.dart/product_data.dart";
+import "package:fridgital/back_end/change_notifiers.dart/tag_data.dart";
 import "package:fridgital/back_end/database/tables/pools/product_built_in_tags.dart";
 import "package:fridgital/back_end/database/tables/pools/product_custom_tags.dart";
 import "package:fridgital/back_end/database/tables/table.dart";
 import "package:fridgital/back_end/database/tables/values/built_in_tags.dart";
 import "package:fridgital/back_end/database/tables/values/custom_tags.dart";
-import "package:fridgital/back_end/product_data.dart";
-import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/main.dart";
 import "package:sqflite_common_ffi/sqflite_ffi.dart";
 

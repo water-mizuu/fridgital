@@ -1,8 +1,8 @@
 import "dart:typed_data";
 
 import "package:flutter/material.dart";
+import "package:fridgital/back_end/change_notifiers.dart/tag_data.dart";
 import "package:fridgital/back_end/database/tables/values/product.dart";
-import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/shared/classes/immutable_list.dart";
 
 enum StorageLocation { freezer, refrigerator, pantry }

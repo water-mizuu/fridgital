@@ -1,7 +1,7 @@
 import "dart:math" as math;
 
 import "package:flutter/material.dart";
-import "package:fridgital/back_end/tag_data.dart";
+import "package:fridgital/back_end/change_notifiers.dart/tag_data.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/utils.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";

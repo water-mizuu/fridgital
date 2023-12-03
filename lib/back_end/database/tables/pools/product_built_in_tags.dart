@@ -1,8 +1,8 @@
 import "package:flutter/foundation.dart";
+import "package:fridgital/back_end/change_notifiers.dart/tag_data.dart";
 import "package:fridgital/back_end/database/tables/table.dart";
 import "package:fridgital/back_end/database/tables/values/built_in_tags.dart";
 import "package:fridgital/back_end/database/tables/values/product.dart";
-import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/main.dart";
 
 /// This is just a "pointer" class or a class that holds references to values.
@@ -57,7 +57,6 @@ final class ProductBuiltInTagsTable extends DatabaseTable {
 
   Future<void> removeTagFromProduct({required int productId, required int tagId}) async {
     await ensureInitialized();
-    await database
-        .delete(tableName, where: "productId = ? AND tagId = ?", whereArgs: [productId, tagId]);
+    await database.delete(tableName, where: "productId = ? AND tagId = ?", whereArgs: [productId, tagId]);
   }
 }

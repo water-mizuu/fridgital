@@ -5,7 +5,7 @@ import "dart:math";
 import "package:flutter/foundation.dart";
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
-import "package:fridgital/back_end/product_data.dart";
+import "package:fridgital/back_end/change_notifiers.dart/product_data.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/enums.dart";
 import "package:fridgital/shared/extensions/time.dart";

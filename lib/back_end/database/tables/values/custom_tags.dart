@@ -1,6 +1,6 @@
 import "package:flutter/foundation.dart";
+import "package:fridgital/back_end/change_notifiers.dart/tag_data.dart";
 import "package:fridgital/back_end/database/tables/table.dart";
-import "package:fridgital/back_end/tag_data.dart";
 import "package:fridgital/main.dart";
 import "package:fridgital/shared/classes/selected_color.dart";
 import "package:fridgital/shared/constants.dart";
