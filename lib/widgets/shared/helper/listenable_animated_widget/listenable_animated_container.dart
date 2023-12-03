@@ -124,17 +124,16 @@ class ListenableAnimatedContainer extends ListenableImplicitlyAnimatedWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<AlignmentGeometry>("alignment", alignment, showName: false, defaultValue: null));
-    properties.add(DiagnosticsProperty<EdgeInsetsGeometry>("padding", padding, defaultValue: null));
-    properties.add(DiagnosticsProperty<Decoration>("bg", decoration, defaultValue: null));
-    properties.add(DiagnosticsProperty<Decoration>("fg", foregroundDecoration, defaultValue: null));
     properties
-        .add(DiagnosticsProperty<BoxConstraints>("constraints", constraints, defaultValue: null, showName: false));
-    properties.add(DiagnosticsProperty<EdgeInsetsGeometry>("margin", margin, defaultValue: null));
-    properties.add(ObjectFlagProperty<Matrix4>.has("transform", transform));
-    properties
-        .add(DiagnosticsProperty<AlignmentGeometry>("transformAlignment", transformAlignment, defaultValue: null));
-    properties.add(DiagnosticsProperty<Clip>("clipBehavior", clipBehavior));
+      ..add(DiagnosticsProperty<AlignmentGeometry>("alignment", alignment, showName: false, defaultValue: null))
+      ..add(DiagnosticsProperty<EdgeInsetsGeometry>("padding", padding, defaultValue: null))
+      ..add(DiagnosticsProperty<Decoration>("bg", decoration, defaultValue: null))
+      ..add(DiagnosticsProperty<Decoration>("fg", foregroundDecoration, defaultValue: null))
+      ..add(DiagnosticsProperty<BoxConstraints>("constraints", constraints, defaultValue: null, showName: false))
+      ..add(DiagnosticsProperty<EdgeInsetsGeometry>("margin", margin, defaultValue: null))
+      ..add(ObjectFlagProperty<Matrix4>.has("transform", transform))
+      ..add(DiagnosticsProperty<AlignmentGeometry>("transformAlignment", transformAlignment, defaultValue: null))
+      ..add(DiagnosticsProperty<Clip>("clipBehavior", clipBehavior));
   }
 }
 
@@ -153,35 +152,33 @@ class _ListenableAnimatedContainerState extends ListenableAnimatedWidgetBaseStat
     _alignment = visitor(
       _alignment,
       widget.alignment,
-      (dynamic value) => AlignmentGeometryTween(begin: value as AlignmentGeometry),
+      (value) => AlignmentGeometryTween(begin: value as AlignmentGeometry),
     ) as AlignmentGeometryTween?;
     _padding = visitor(
       _padding,
       widget.padding,
-      (dynamic value) => EdgeInsetsGeometryTween(begin: value as EdgeInsetsGeometry),
+      (value) => EdgeInsetsGeometryTween(begin: value as EdgeInsetsGeometry),
     ) as EdgeInsetsGeometryTween?;
-    _decoration =
-        visitor(_decoration, widget.decoration, (dynamic value) => DecorationTween(begin: value as Decoration))
-            as DecorationTween?;
+    _decoration = visitor(_decoration, widget.decoration, (value) => DecorationTween(begin: value as Decoration))
+        as DecorationTween?;
     _foregroundDecoration = visitor(
       _foregroundDecoration,
       widget.foregroundDecoration,
-      (dynamic value) => DecorationTween(begin: value as Decoration),
+      (value) => DecorationTween(begin: value as Decoration),
     ) as DecorationTween?;
     _constraints = visitor(
       _constraints,
       widget.constraints,
-      (dynamic value) => BoxConstraintsTween(begin: value as BoxConstraints),
+      (value) => BoxConstraintsTween(begin: value as BoxConstraints),
     ) as BoxConstraintsTween?;
-    _margin =
-        visitor(_margin, widget.margin, (dynamic value) => EdgeInsetsGeometryTween(begin: value as EdgeInsetsGeometry))
-            as EdgeInsetsGeometryTween?;
-    _transform = visitor(_transform, widget.transform, (dynamic value) => Matrix4Tween(begin: value as Matrix4))
-        as Matrix4Tween?;
+    _margin = visitor(_margin, widget.margin, (value) => EdgeInsetsGeometryTween(begin: value as EdgeInsetsGeometry))
+        as EdgeInsetsGeometryTween?;
+    _transform =
+        visitor(_transform, widget.transform, (value) => Matrix4Tween(begin: value as Matrix4)) as Matrix4Tween?;
     _transformAlignment = visitor(
       _transformAlignment,
       widget.transformAlignment,
-      (dynamic value) => AlignmentGeometryTween(begin: value as AlignmentGeometry),
+      (value) => AlignmentGeometryTween(begin: value as AlignmentGeometry),
     ) as AlignmentGeometryTween?;
   }
 
@@ -206,17 +203,17 @@ class _ListenableAnimatedContainerState extends ListenableAnimatedWidgetBaseStat
   void debugFillProperties(DiagnosticPropertiesBuilder description) {
     super.debugFillProperties(description);
     description
-        .add(DiagnosticsProperty<AlignmentGeometryTween>("alignment", _alignment, showName: false, defaultValue: null));
-    description.add(DiagnosticsProperty<EdgeInsetsGeometryTween>("padding", _padding, defaultValue: null));
-    description.add(DiagnosticsProperty<DecorationTween>("bg", _decoration, defaultValue: null));
-    description.add(DiagnosticsProperty<DecorationTween>("fg", _foregroundDecoration, defaultValue: null));
-    description.add(
-      DiagnosticsProperty<BoxConstraintsTween>("constraints", _constraints, showName: false, defaultValue: null),
-    );
-    description.add(DiagnosticsProperty<EdgeInsetsGeometryTween>("margin", _margin, defaultValue: null));
-    description.add(ObjectFlagProperty<Matrix4Tween>.has("transform", _transform));
-    description.add(
-      DiagnosticsProperty<AlignmentGeometryTween>("transformAlignment", _transformAlignment, defaultValue: null),
-    );
+      ..add(DiagnosticsProperty<AlignmentGeometryTween>("alignment", _alignment, showName: false, defaultValue: null))
+      ..add(DiagnosticsProperty<EdgeInsetsGeometryTween>("padding", _padding, defaultValue: null))
+      ..add(DiagnosticsProperty<DecorationTween>("bg", _decoration, defaultValue: null))
+      ..add(DiagnosticsProperty<DecorationTween>("fg", _foregroundDecoration, defaultValue: null))
+      ..add(
+        DiagnosticsProperty<BoxConstraintsTween>("constraints", _constraints, showName: false, defaultValue: null),
+      )
+      ..add(DiagnosticsProperty<EdgeInsetsGeometryTween>("margin", _margin, defaultValue: null))
+      ..add(ObjectFlagProperty<Matrix4Tween>.has("transform", _transform))
+      ..add(
+        DiagnosticsProperty<AlignmentGeometryTween>("transformAlignment", _transformAlignment, defaultValue: null),
+      );
   }
 }

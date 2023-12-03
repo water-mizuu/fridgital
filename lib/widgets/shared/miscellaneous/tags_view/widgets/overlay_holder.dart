@@ -31,7 +31,7 @@ class _OverlayHolderState extends State<OverlayHolder> with TickerProviderStateM
     await animationController.forward(from: 0.0);
   }
 
-  void handleNotification(OverlayNotification notification) async {
+  Future<void> handleNotification(OverlayNotification notification) async {
     var tagData = context.read<TagData>();
 
     switch (notification) {
@@ -98,7 +98,7 @@ class _OverlayHolderState extends State<OverlayHolder> with TickerProviderStateM
 
     return NotificationListener<OverlayNotification>(
       onNotification: (notification) {
-        handleNotification(notification);
+        unawaited(handleNotification(notification));
 
         return true;
       },

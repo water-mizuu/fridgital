@@ -114,7 +114,7 @@ class _MyAppState extends State<MyApp> {
   late final Future<ProductData> productData;
 
   late StorageLocation workingLocation;
-  final ValueNotifier<int> popNotifier = ValueNotifier<int>(0);
+  final ValueNotifier<bool> popNotifier = ValueNotifier<bool>(false);
   bool isSecondLayerEnabled = false;
   bool isCreatingNewProduct = false;
   Pages activePage = Pages.home;
@@ -126,7 +126,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void toggleSecondLayer() {
-    ++popNotifier.value;
+    popNotifier.value ^= true;
     setState(() {
       isSecondLayerEnabled = !isSecondLayerEnabled;
     });
@@ -189,9 +189,6 @@ class _MyAppState extends State<MyApp> {
       child: NotificationListener(
         onNotification: (notification) {
           if (notification case ChangeWorkingStorageLocationNotification(:var location)) {
-            if (kDebugMode) {
-              print("Working location changed to $location");
-            }
             setState(() {
               workingLocation = location;
             });
@@ -219,7 +216,7 @@ class _MyAppState extends State<MyApp> {
                     // const MaterialPage(child: ItemInfo()),
                   ],
                   onPopPage: (route, result) {
-                    --popNotifier.value;
+                    popNotifier.value ^= true;
 
                     return route.didPop(result);
                   },

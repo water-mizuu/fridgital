@@ -35,6 +35,7 @@ dependencies:
     sdk: flutter
   flutter_hooks: ^0.20.3
   functional_widget_annotation: ^0.10.0
+  http: ^1.1.2
   image_picker: ^1.0.4
   mouse_scroll:
     git:

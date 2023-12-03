@@ -45,3 +45,5 @@ app.*.map.json
 # water-mizuu files
 .lh/
 .vscode/
+
+secrets

@@ -64,7 +64,7 @@ Widget inventoryTitle() {
       children: [
         Text("Inventory".toUpperCase(), style: theme.textTheme.titleLarge),
         const SizedBox(height: 8.0),
-        Text("What's currently in your pantry.", style: theme.textTheme.displayLarge),
+        Text("What's currently stocked.", style: theme.textTheme.displayLarge),
       ],
     ),
   );
@@ -115,7 +115,6 @@ Widget inventoryTabs() {
     tabController.addListener(listener);
     return () {
       tabController.removeListener(listener);
-      tabController.dispose();
     };
   });
 
@@ -309,11 +308,10 @@ Widget inventoryProduct({required Product product, required Future<void> Functio
   Future<void> toggleIsOptionsVisible() async {
     isOptionsVisible.value = !isOptionsVisible.value;
 
+    await HapticFeedback.heavyImpact();
     if (isOptionsVisible.value) {
-      await HapticFeedback.heavyImpact();
       await animationController.forward();
     } else {
-      await HapticFeedback.heavyImpact();
       await animationController.reverse();
     }
   }
@@ -531,7 +529,7 @@ Widget inventoryProductTags({required Product product}) {
               ),
             ),
           ),
-        )
+        ),
     ],
   );
 }

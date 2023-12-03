@@ -24,7 +24,7 @@ class RouteState extends InheritedWidget {
   final void Function() toggleSecondLayer;
   final void Function() toggleCreatingNewProduct;
   final void Function(List<Tag>) createDummyProduct;
-  final ValueNotifier<int> popNotifier;
+  final ValueNotifier<bool> popNotifier;
 
   final bool _isCreatingNewProduct;
   final void Function({required bool value}) _setCreatingNewProduct;

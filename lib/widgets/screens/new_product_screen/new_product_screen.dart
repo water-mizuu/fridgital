@@ -48,7 +48,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
     return value;
   }
 
-  void pickImage() async {
+  Future<void> pickImage() async {
     var image = await utils.pickImage();
 
     if (!context.mounted || image == null) {
@@ -236,7 +236,7 @@ Widget productImageField({required String title, required Reference<Uint8List?> 
             padding: const EdgeInsets.all(8.0),
             child: ClickableWidget(
               onTap: () async {
-                var image = await Isolate.run(() => pickImage());
+                var image = await Isolate.run(pickImage);
                 if (!context.mounted) {
                   return;
                 }
