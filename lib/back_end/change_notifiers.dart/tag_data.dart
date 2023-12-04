@@ -18,8 +18,8 @@ class TagData extends ChangeNotifier {
     var addableTags = <Tag>[];
     var activeTags = <Tag>[];
 
-    var <List<Tag>>[loadedBuiltInTags, loadedCustomTags] = await Future.wait([
-      BuiltInTagsTable.instance.fetchAddableBuiltInTags(),
+    var [loadedBuiltInTags, loadedCustomTags] = await Future.wait([
+      BuiltInTagsTable.instance.fetchAddableBuiltInTags() as Future<List<Tag>>,
       CustomTagsTable.instance.fetchAddableCustomTags(),
     ]);
     addableTags.addAll([...loadedBuiltInTags, ...loadedCustomTags]);

@@ -25,6 +25,9 @@ final class CustomTagsTable extends DatabaseTable {
   Future<CustomTag> fetchTagWithId(int id) async {
     await ensureInitialized();
     var rows = await database.query(tableName, where: "id = ?", whereArgs: [id]);
+    if (rows.isEmpty) {
+      throw Exception("There was no tag with the id $id!");
+    }
     assert(rows.length == 1, "Ids should be unique!");
 
     var row = rows.first;
