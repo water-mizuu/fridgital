@@ -1,8 +1,8 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:fridgital/main.dart";
 import "package:fridgital/shared/constants.dart";
+import "package:fridgital/shared/globals.dart";
 import "package:fridgital/widgets/screens/main_screen/tabs/home/home.dart";
 import "package:fridgital/widgets/screens/main_screen/tabs/inventory/inventory.dart";
 import "package:fridgital/widgets/screens/main_screen/tabs/recipes/recipes.dart";

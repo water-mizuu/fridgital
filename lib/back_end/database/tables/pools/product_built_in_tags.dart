@@ -3,7 +3,7 @@ import "package:fridgital/back_end/change_notifiers/tag_data.dart";
 import "package:fridgital/back_end/database/tables/table.dart";
 import "package:fridgital/back_end/database/tables/values/built_in_tags.dart";
 import "package:fridgital/back_end/database/tables/values/product.dart";
-import "package:fridgital/main.dart";
+import "package:fridgital/shared/globals.dart";
 
 /// This is just a "pointer" class or a class that holds references to values.
 final class ProductBuiltInTagsTable extends DatabaseTable {

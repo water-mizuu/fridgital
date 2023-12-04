@@ -1,5 +1,5 @@
 import "package:flutter/foundation.dart";
-import "package:fridgital/main.dart";
+import "package:fridgital/shared/globals.dart";
 
 abstract base class DatabaseTable {
   const DatabaseTable();

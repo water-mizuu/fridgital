@@ -2,7 +2,7 @@ import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:fridgital/back_end/change_notifiers/tag_data.dart";
 import "package:fridgital/back_end/database/tables/table.dart";
-import "package:fridgital/main.dart";
+import "package:fridgital/shared/globals.dart";
 
 final class BuiltInTagsTable extends DatabaseTable {
   const BuiltInTagsTable._();

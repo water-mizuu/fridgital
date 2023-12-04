@@ -9,45 +9,26 @@ import "package:fridgital/back_end/change_notifiers/product_data.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/enums.dart";
 import "package:fridgital/shared/extensions/time.dart";
+import "package:fridgital/shared/globals.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/screens/main_screen/main_screen.dart";
 import "package:fridgital/widgets/screens/new_product_screen/new_product_screen.dart";
-import "package:path/path.dart";
 import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
-import "package:sqflite_common_ffi/sqflite_ffi.dart";
 import "package:window_manager/window_manager.dart";
-
-late final Database database;
-late final SharedPreferences sharedPreferences;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   var isWeb = kIsWeb;
   var isDesktop = !isWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
-  var isMobile = !isWeb && (Platform.isAndroid || Platform.isIOS || Platform.isFuchsia);
 
   /// Load the shared preferences.
   sharedPreferences = await SharedPreferences.getInstance(); // well that's simple.
 
   /// Load the sqflite database.
-  if (isDesktop) {
-    if (Platform.isWindows || Platform.isLinux) {
-      sqfliteFfiInit();
-    }
-
-    databaseFactory = databaseFactoryFfi;
-
-    var path = await getDatabasesPath();
-    database = await databaseFactory.openDatabase(path);
-    // database = await databaseFactory.openDatabase(inMemoryDatabasePath);
-  } else if (isMobile) {
-    var path = join(await getDatabasesPath(), "fridgital.db");
-    database = await databaseFactory.openDatabase(path);
-  } else {
-    database = await databaseFactory.openDatabase(inMemoryDatabasePath);
-  }
+  // ignore: deprecated_member_use_from_same_package
+  database = await fetchDatabase();
 
   /// Set up the window manager if in desktop.
   if (isDesktop) {

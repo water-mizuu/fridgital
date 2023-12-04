@@ -9,7 +9,7 @@ import "package:fridgital/back_end/database/tables/pools/product_custom_tags.dar
 import "package:fridgital/back_end/database/tables/table.dart";
 import "package:fridgital/back_end/database/tables/values/built_in_tags.dart";
 import "package:fridgital/back_end/database/tables/values/custom_tags.dart";
-import "package:fridgital/main.dart";
+import "package:fridgital/shared/globals.dart";
 import "package:sqflite_common_ffi/sqflite_ffi.dart";
 
 final class ProductTable extends DatabaseTable {
