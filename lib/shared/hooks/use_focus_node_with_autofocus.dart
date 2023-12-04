@@ -18,9 +18,8 @@ FocusNode useFocusNodeWithAutoFocus({
     descendantsAreFocusable: descendantsAreFocusable,
   );
 
-  useState(() {
-    // ignore: discarded_futures
-    WidgetsBinding.instance.endOfFrame.whenComplete(() {
+  useEffect(() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       focusNode.requestFocus();
     });
   });
