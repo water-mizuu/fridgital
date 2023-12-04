@@ -48,7 +48,7 @@ class InventoryProduct extends HookWidget {
         builder: (context, constraints) => AnimatedBuilder(
           animation: animationController,
           builder: (context, child) {
-            var targetHeight = behindKey.renderBoxNullable?.size.height ?? 0.0;
+            var targetHeight = behindKey.renderBox?.size.height ?? 0.0;
             var progression = Curves.easeOut.transform(animationController.value);
 
             return SizedBox(
@@ -93,10 +93,12 @@ class InventoryProduct extends HookWidget {
                   onSecondaryTap: toggleIsOptionsVisible,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8.0),
-                    child: Container(
+                    child: AnimatedContainer(
                       height: tileHeight,
                       padding: const EdgeInsets.all(12.0),
-                      color: isOptionsVisible.value ? Colors.grey[400] : FigmaColors.whiteAccent,
+                      color: isOptionsVisible.value ? Colors.grey[300] : FigmaColors.whiteAccent,
+                      duration: 380.ms,
+                      curve: Curves.fastEaseInToSlowEaseOut,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
