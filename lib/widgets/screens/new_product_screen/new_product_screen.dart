@@ -14,11 +14,8 @@ import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tag_data_provider.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart";
-import "package:functional_widget_annotation/functional_widget_annotation.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
 import "package:provider/provider.dart";
-
-part "new_product_screen.g.dart";
 
 class NewProductScreen extends StatefulWidget {
   const NewProductScreen({super.key});
@@ -209,80 +206,87 @@ class _NewProductScreenState extends State<NewProductScreen> {
   }
 }
 
-@hwidget
-Widget productImageField({required String title, required Reference<Uint8List?> reference}) {
-  var context = useContext();
-  var bytes = useState(null as Uint8List?);
+class ProductImageField extends HookWidget {
+  const ProductImageField({required this.title, required this.reference, super.key});
 
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 16.0),
-    child: Container(
-      padding: const EdgeInsets.all(12.0),
-      decoration: const BoxDecoration(
-        color: FigmaColors.whiteAccent,
-        borderRadius: BorderRadius.all(Radius.circular(8.0)), // For the outer box.
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20.0),
+  final String title;
+  final Reference<Uint8List?> reference;
+
+  @override
+  Widget build(BuildContext context) {
+    var context = useContext();
+    var bytes = useState(null as Uint8List?);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Container(
+        padding: const EdgeInsets.all(12.0),
+        decoration: const BoxDecoration(
+          color: FigmaColors.whiteAccent,
+          borderRadius: BorderRadius.all(Radius.circular(8.0)), // For the outer box.
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: Text(
+                title,
+                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20.0),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ClickableWidget(
-              onTap: () async {
-                var image = await Isolate.run(pickImage);
-                if (!context.mounted) {
-                  return;
-                }
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ClickableWidget(
+                onTap: () async {
+                  var image = await Isolate.run(pickImage);
+                  if (!context.mounted) {
+                    return;
+                  }
 
-                reference.value = bytes.value = image;
-              },
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: FigmaColors.expiryWidgetBackground2,
-                    width: 2,
+                  reference.value = bytes.value = image;
+                },
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: FigmaColors.expiryWidgetBackground2,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 32.0),
-                  child: Column(
-                    children: [
-                      if (bytes.value case var bytes?) ...[
-                        Image.memory(bytes, fit: BoxFit.cover, width: 256.0),
-                        const SizedBox(height: 16.0),
-                        const Text(
-                          "CHANGE PHOTO",
-                          style: TextStyle(color: FigmaColors.expiryWidgetBackground2),
-                        ),
-                      ] else ...[
-                        const Icon(
-                          Icons.camera_alt,
-                          size: 48.0,
-                          color: FigmaColors.expiryWidgetBackground2,
-                        ),
-                        const Text(
-                          "ADD A PHOTO",
-                          style: TextStyle(color: FigmaColors.expiryWidgetBackground2),
-                        ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 32.0),
+                    child: Column(
+                      children: [
+                        if (bytes.value case var bytes?) ...[
+                          Image.memory(bytes, fit: BoxFit.cover, width: 256.0),
+                          const SizedBox(height: 16.0),
+                          const Text(
+                            "CHANGE PHOTO",
+                            style: TextStyle(color: FigmaColors.expiryWidgetBackground2),
+                          ),
+                        ] else ...[
+                          const Icon(
+                            Icons.camera_alt,
+                            size: 48.0,
+                            color: FigmaColors.expiryWidgetBackground2,
+                          ),
+                          const Text(
+                            "ADD A PHOTO",
+                            style: TextStyle(color: FigmaColors.expiryWidgetBackground2),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class ProductTextField extends StatefulWidget {
