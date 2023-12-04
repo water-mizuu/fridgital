@@ -2,8 +2,8 @@ import "dart:convert";
 import "dart:isolate";
 
 import "package:flutter/foundation.dart";
-import "package:fridgital/back_end/change_notifiers.dart/product_data.dart";
-import "package:fridgital/back_end/change_notifiers.dart/tag_data.dart";
+import "package:fridgital/back_end/change_notifiers/product_data.dart";
+import "package:fridgital/back_end/change_notifiers/tag_data.dart";
 import "package:fridgital/back_end/database/tables/pools/product_built_in_tags.dart";
 import "package:fridgital/back_end/database/tables/pools/product_custom_tags.dart";
 import "package:fridgital/back_end/database/tables/table.dart";

@@ -1,5 +1,5 @@
 import "package:flutter/foundation.dart";
-import "package:fridgital/back_end/change_notifiers.dart/tag_data.dart";
+import "package:fridgital/back_end/change_notifiers/tag_data.dart";
 import "package:fridgital/back_end/database/tables/table.dart";
 import "package:fridgital/back_end/database/tables/values/custom_tags.dart";
 import "package:fridgital/back_end/database/tables/values/product.dart";

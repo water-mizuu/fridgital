@@ -1,5 +1,5 @@
 import "package:flutter/widgets.dart";
-import "package:fridgital/back_end/change_notifiers.dart/tag_data.dart";
+import "package:fridgital/back_end/change_notifiers/tag_data.dart";
 import "package:fridgital/shared/enums.dart";
 
 class RouteState extends InheritedWidget {

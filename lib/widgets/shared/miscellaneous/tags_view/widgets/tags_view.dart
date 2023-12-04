@@ -1,6 +1,6 @@
 
 import "package:flutter/material.dart";
-import "package:fridgital/back_end/change_notifiers.dart/tag_data.dart";
+import "package:fridgital/back_end/change_notifiers/tag_data.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/shared/tag_widget.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tag_selector.dart";
 import "package:provider/provider.dart";

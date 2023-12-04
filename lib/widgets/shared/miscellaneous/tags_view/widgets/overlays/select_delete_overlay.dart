@@ -1,7 +1,7 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:fridgital/back_end/change_notifiers.dart/tag_data.dart";
+import "package:fridgital/back_end/change_notifiers/tag_data.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/shared/enums/overlay_mode.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/shared/notifications.dart";

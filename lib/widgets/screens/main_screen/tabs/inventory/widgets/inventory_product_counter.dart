@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
-import "package:fridgital/back_end/change_notifiers.dart/product_data.dart";
+import "package:fridgital/back_end/change_notifiers/product_data.dart";
 import "package:fridgital/widgets/screens/main_screen/tabs/inventory/widgets/inventory_counter_button.dart";
 import "package:provider/provider.dart";
 

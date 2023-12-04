@@ -3,7 +3,7 @@ import "dart:async";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
-import "package:fridgital/back_end/change_notifiers.dart/product_data.dart";
+import "package:fridgital/back_end/change_notifiers/product_data.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/extensions/find_box.dart";
 import "package:fridgital/shared/extensions/time.dart";
