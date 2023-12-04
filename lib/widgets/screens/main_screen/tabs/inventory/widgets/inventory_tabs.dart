@@ -10,7 +10,7 @@ import "package:fridgital/back_end/change_notifiers.dart/tag_data.dart";
 import "package:fridgital/main.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/extensions/time.dart";
-import "package:fridgital/shared/hooks/use_focus_node_with_autofocus.dart";
+import "package:fridgital/shared/hooks.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/screens/main_screen/tabs/inventory/widgets/inventory_tab_location.dart";
 import "package:provider/provider.dart";
@@ -43,7 +43,6 @@ class InventoryTabs extends HookWidget {
           debounce
             ..value?.cancel()
             ..value = Timer(200.ms, () async {
-              /// If we are not the active debounce anymore, then do nothing.
               if (kDebugMode) {
                 print("Saved tab as $index");
               }

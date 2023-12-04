@@ -7,7 +7,7 @@ import "package:fridgital/back_end/change_notifiers.dart/product_data.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/extensions/find_box.dart";
 import "package:fridgital/shared/extensions/time.dart";
-import "package:fridgital/shared/hooks/use_global_key.dart";
+import "package:fridgital/shared/hooks.dart";
 import "package:fridgital/widgets/screens/main_screen/tabs/inventory/widgets/inventory_product_counter.dart";
 import "package:fridgital/widgets/screens/main_screen/tabs/inventory/widgets/inventory_product_tags.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";

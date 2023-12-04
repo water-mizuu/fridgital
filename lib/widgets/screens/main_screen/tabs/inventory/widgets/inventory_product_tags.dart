@@ -5,7 +5,7 @@ import "package:fridgital/back_end/change_notifiers.dart/tag_data.dart";
 import "package:fridgital/shared/classes/immutable_list.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/extensions/find_box.dart";
-import "package:fridgital/shared/hooks/use_global_key.dart";
+import "package:fridgital/shared/hooks.dart";
 import "package:fridgital/widgets/shared/helper/invisible.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/shared/tag_widget.dart";
 
