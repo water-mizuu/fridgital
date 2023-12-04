@@ -40,16 +40,16 @@ class InventoryProductTags extends HookWidget {
       }
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        var containerSize = tagContainerKey.renderBoxNullable?.size ?? Size.zero;
+        var containerSize = tagContainerKey.renderBox?.size ?? Size.zero;
         var productsThatCanBeFitted = <Tag>[];
 
-        var accumulativeWidth = switch (extraCounterKey.renderBoxNullable?.size.width) {
+        var accumulativeWidth = switch (extraCounterKey.renderBox?.size.width) {
           var width? => width + 2.0,
           null => 0.0,
         };
 
         for (var (index, (tag, key)) in renderedTagKeyPairs.indexed) {
-          var size = key.renderBoxNullable?.size ?? Size.zero;
+          var size = key.renderBox?.size ?? Size.zero;
           var addedWidth = 2.0 + size.width;
 
           if (size == Size.zero || accumulativeWidth + addedWidth >= containerSize.width) {

@@ -205,8 +205,8 @@ class _NavigationBarBodyState extends State<_NavigationBarBody> with TickerProvi
               child: AnimatedBuilder(
                 animation: retractionController,
                 builder: (context, child) {
-                  var expanded = widget.expandedKey.renderBoxNullable?.offset;
-                  var retracted = widget.retractedKey.renderBoxNullable?.offset;
+                  var expanded = widget.expandedKey.renderBox?.offset;
+                  var retracted = widget.retractedKey.renderBox?.offset;
 
                   if (expanded != null && retracted != null) {
                     child = Transform.translate(
@@ -248,10 +248,10 @@ class _NavigationBarBodyState extends State<_NavigationBarBody> with TickerProvi
                 valueListenable: animation,
                 builder: (context, value, child) {
                   var TabController(:index, :previousIndex) = widget.controller;
-                  var parentBox = widget.parentKey.renderBox;
+                  var parentBox = widget.parentKey.renderBox!;
                   var offset = Offset.lerp(
-                    widget.indicatorKeys[previousIndex].renderBox.offsetFrom(parentBox),
-                    widget.indicatorKeys[index].renderBox.offsetFrom(parentBox),
+                    widget.indicatorKeys[previousIndex].renderBox!.offsetFrom(parentBox),
+                    widget.indicatorKeys[index].renderBox!.offsetFrom(parentBox),
                     value.normalize(between: previousIndex, and: index),
                   );
 

@@ -54,7 +54,7 @@ class InventoryTabLocation extends HookWidget {
       ///   Since we marked the GlobalKey as being deleted, then the [build]
       ///   method will handle the replacement for us.
 
-      var size = key.renderBoxNullable?.size ?? Size.zero;
+      var size = key.renderBox?.size ?? Size.zero;
       heightAnimationReference.value = Tween<double>(begin: size.height, end: 0.0)
           .animate(CurvedAnimation(curve: Curves.fastOutSlowIn, parent: animationController));
 

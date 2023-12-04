@@ -1,8 +1,7 @@
 import "package:flutter/material.dart";
 
 extension FindBoxExtension on GlobalKey {
-  RenderBox? get renderBoxNullable => currentContext?.findRenderObject() as RenderBox?;
-  RenderBox get renderBox => currentContext!.findRenderObject()! as RenderBox;
+  RenderBox? get renderBox => currentContext?.findRenderObject() as RenderBox?;
 }
 
 extension OffsetFromExtension on RenderBox {
