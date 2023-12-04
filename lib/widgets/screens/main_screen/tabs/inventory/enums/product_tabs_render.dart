@@ -1,0 +1,1 @@
+enum ProductTabsRender { computing, rendering }

@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:fridgital/shared/constants.dart";
+import "package:fridgital/shared/extensions/join_and.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
 
@@ -8,10 +9,19 @@ class Recipes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const BasicScreenWidget(
+    return BasicScreenWidget(
       child: MouseSingleChildScrollView(
         child: Column(
-          children: [RecipeTitle(), SizedBox(height: 16.0), RecipeTile()],
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const RecipeTitle(),
+            const SizedBox(height: 16.0),
+            RecipeTile(
+              title: "One-pot pesto",
+              ingredients: [for (int i = 0; i < 5; ++i) "ingredient-$i"],
+              imageUrl: "assets/images/pesto.jpg",
+            ),
+          ],
         ),
       ),
     );
@@ -41,7 +51,16 @@ class RecipeTitle extends StatelessWidget {
 }
 
 class RecipeTile extends StatelessWidget {
-  const RecipeTile({super.key});
+  const RecipeTile({
+    required this.title,
+    required this.ingredients,
+    required this.imageUrl,
+    super.key,
+  });
+
+  final String title;
+  final List<String> ingredients;
+  final String imageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -49,84 +68,92 @@ class RecipeTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 32.0),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(10)),
-        child: SizedBox(
+        child: Container(
           height: 175,
-          child: ColoredBox(
-            color: FigmaColors.whiteAccent,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          color: FigmaColors.whiteAccent,
+          child: LayoutBuilder(
+            builder: (context, constraints) => Stack(
               children: [
-                const SizedBox(
-                  width: 150,
+                Align(
+                  alignment: Alignment.centerLeft,
                   child: Padding(
-                    padding: EdgeInsets.only(left: 10.0),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(top: 20.0),
-                          child: Text(
-                            "Title",
-                            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 37),
+                    padding: const EdgeInsets.only(left: 10.0) + const EdgeInsets.symmetric(vertical: 12.0),
+                    child: SizedBox(
+                      width: (constraints.maxWidth * 0.50).clamp(150, double.infinity),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 28,
+                            ),
                           ),
-                        ),
-                        Text(
-                          "Difficulty",
-                          style:
-                              TextStyle(color: FigmaColors.darkGreyAccent, fontWeight: FontWeight.w700, fontSize: 16),
-                        ),
-                        Text(
-                          "Contains [ingredient1], [ingredient2], and [ingredient3]",
-                          overflow: TextOverflow.ellipsis,
-                          style:
-                              TextStyle(color: FigmaColors.darkGreyAccent, fontWeight: FontWeight.w700, fontSize: 16),
-                        ),
-                        Text(
-                          "view recipe...",
-                          style: TextStyle(
-                            color: FigmaColors.darkGreyAccent,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 16,
-                            decoration: TextDecoration.underline,
+                          Text(
+                            "Contains ${ingredients.joinAnd()}",
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 3,
+                            style: const TextStyle(
+                              color: FigmaColors.darkGreyAccent,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                            ),
                           ),
-                        ),
-                      ],
+                          const Expanded(child: SizedBox()),
+                          const Text(
+                            "view recipe...",
+                            style: TextStyle(
+                              color: FigmaColors.darkGreyAccent,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                Builder(
-                  builder: (context) {
-                    var widget = AspectRatio(
-                      aspectRatio: 1.0,
-                      child: Image.asset("assets/images/pesto.jpg", width: 200, fit: BoxFit.cover),
-                    ) as Widget;
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Builder(
+                    builder: (context) {
+                      var widget = AspectRatio(
+                        aspectRatio: 1.0,
+                        child: Image.asset(imageUrl, width: 200, fit: BoxFit.cover),
+                      ) as Widget;
 
-                    // widget = ShaderMask(
-                    //   shaderCallback: (rect) => const LinearGradient(
-                    //     colors: [
-                    //       FigmaColors.whiteAccent,
-                    //       FigmaColors.whiteAccent,
-                    //     ],
-                    //   ).createShader(Offset.zero & rect.size),
-                    //   blendMode: BlendMode.dstIn,
-                    //   child: widget,
-                    // );
+                      // widget = ShaderMask(
+                      //   shaderCallback: (rect) => const LinearGradient(
+                      //     colors: [
+                      //       FigmaColors.whiteAccent,
+                      //       FigmaColors.whiteAccent,
+                      //     ],
+                      //   ).createShader(Offset.zero & rect.size),
+                      //   blendMode: BlendMode.dstIn,
+                      //   child: widget,
+                      // );
 
-                    // Uncomment the line above to remove the color of the image
+                      // Uncomment the line above to remove the color of the image
 
-                    // ignore: join_return_with_assignment
-                    widget = ShaderMask(
-                      shaderCallback: (rect) => LinearGradient(
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withAlpha(127),
-                        ],
-                      ).createShader(Offset.zero & rect.size),
-                      blendMode: BlendMode.dstIn,
-                      child: widget,
-                    );
+                      // ignore: join_return_with_assignment
+                      widget = ShaderMask(
+                        shaderCallback: (rect) => LinearGradient(
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withAlpha(127),
+                          ],
+                        ).createShader(Offset.zero & rect.size),
+                        blendMode: BlendMode.dstIn,
+                        child: widget,
+                      );
 
-                    return widget;
-                  },
+                      return widget;
+                    },
+                  ),
                 ),
               ],
             ),
