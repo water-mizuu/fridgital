@@ -9,7 +9,11 @@ abstract final class FigmaColors {
   static const Color pinkAccent = Color(0xFFB18887);
   static const Color lightGreyAccent = Color(0xFFC3B2B2);
   static const Color darkGreyAccent = Color(0xFF807171);
+
+  static const Color expiryWidgetBackground = Color(0xff92A8D1);
   static const Color expiryWidgetBackground2 = Color(0xffD0D0D8);
+
+  static const Color recipeWidgetBackground = Color(0xffAD8496);
 }
 
 abstract final class TagColors {

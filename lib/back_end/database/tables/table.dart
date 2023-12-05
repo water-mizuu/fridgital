@@ -13,7 +13,7 @@ abstract base class DatabaseTable {
   }
 
   Future<void> drop() async {
-    await database.execute("DROP TABLE IF EXISTS $tableName");
+    await database.execute("DROP TABLE IF EXISTS ?", [tableName]);
   }
 
   Future<void> ensureInitialized() async {
