@@ -5,31 +5,31 @@ import "package:fridgital/shared/enums.dart";
 class RouteState extends InheritedWidget {
   const RouteState({
     required this.activePage,
-    required this.isSecondLayerEnabled,
-    required this.moveTo,
-    required this.toggleSecondLayer,
     required this.popNotifier,
-    required bool isCreatingNewProduct,
+    required bool Function() getIsCreatingNewProduct,
     required void Function({required bool value}) setIsCreatingNewProduct,
     required this.toggleCreatingNewProduct,
     required this.createDummyProduct,
     required super.child,
     super.key,
-  })  : _isCreatingNewProduct = isCreatingNewProduct,
+  })  : _getIsCreatingNewProduct = getIsCreatingNewProduct,
         _setCreatingNewProduct = setIsCreatingNewProduct;
 
-  final bool isSecondLayerEnabled;
   final Pages activePage;
-  final void Function(Pages) moveTo;
-  final void Function() toggleSecondLayer;
+
+  /// A function that toggles the value of [isCreatingNewProduct].
   final void Function() toggleCreatingNewProduct;
+
+  /// A function that creates a dummy product with the given tags.
   final void Function(List<Tag>) createDummyProduct;
-  final ValueNotifier<bool> popNotifier;
 
-  final bool _isCreatingNewProduct;
+  /// A notifier that can be listened to, letting descendants know that the navigator has popped.
+  final ValueNotifier<void> popNotifier;
+
+  final bool Function() _getIsCreatingNewProduct;
+  bool get isCreatingNewProduct => _getIsCreatingNewProduct();
+
   final void Function({required bool value}) _setCreatingNewProduct;
-
-  bool get isCreatingNewProduct => _isCreatingNewProduct;
   set isCreatingNewProduct(bool value) => _setCreatingNewProduct(value: value);
 
   static RouteState? maybeOf(BuildContext context) {
@@ -45,5 +45,10 @@ class RouteState extends InheritedWidget {
 
   @override
   bool updateShouldNotify(covariant RouteState oldWidget) =>
-      oldWidget.activePage != activePage || oldWidget.isSecondLayerEnabled != isSecondLayerEnabled;
+      oldWidget.activePage != activePage ||
+      oldWidget.toggleCreatingNewProduct != toggleCreatingNewProduct ||
+      oldWidget.createDummyProduct != createDummyProduct ||
+      oldWidget.popNotifier != popNotifier ||
+      oldWidget._getIsCreatingNewProduct != _getIsCreatingNewProduct ||
+      oldWidget._setCreatingNewProduct != _setCreatingNewProduct;
 }

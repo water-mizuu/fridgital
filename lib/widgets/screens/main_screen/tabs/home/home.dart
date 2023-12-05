@@ -4,7 +4,6 @@ import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:fridgital/shared/classes/constant_gradient.dart";
 import "package:fridgital/shared/extensions/time.dart";
-import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/side_button.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
@@ -80,9 +79,7 @@ class NearingExpiry extends HookWidget {
                 const SizedBox(width: 8.0),
                 SideButton(
                   onTap: () {
-                    var tabInformation = RouteState.of(context);
-
-                    tabInformation.toggleSecondLayer();
+                    // TODO(water-mizuu): Add button logic.
                   },
                 ),
               ],

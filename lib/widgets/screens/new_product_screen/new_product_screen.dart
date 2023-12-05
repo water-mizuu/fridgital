@@ -7,8 +7,8 @@ import "package:fridgital/back_end/change_notifiers/product_data.dart";
 import "package:fridgital/back_end/change_notifiers/tag_data.dart";
 import "package:fridgital/shared/classes/reference.dart";
 import "package:fridgital/shared/constants.dart";
+import "package:fridgital/shared/enums.dart";
 import "package:fridgital/shared/utils.dart" as utils;
-import "package:fridgital/shared/utils.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
@@ -239,7 +239,7 @@ class ProductImageField extends HookWidget {
               padding: const EdgeInsets.all(8.0),
               child: ClickableWidget(
                 onTap: () async {
-                  var image = await Isolate.run(pickImage);
+                  var image = await Isolate.run(utils.pickImage);
                   if (!context.mounted) {
                     return;
                   }

@@ -105,13 +105,6 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  void toggleSecondLayer() {
-    popNotifier.value ^= true;
-    setState(() {
-      isSecondLayerEnabled = !isSecondLayerEnabled;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
@@ -136,10 +129,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return RouteState(
       activePage: activePage,
-      isSecondLayerEnabled: isSecondLayerEnabled,
-      toggleSecondLayer: toggleSecondLayer,
-      moveTo: changePage,
-      isCreatingNewProduct: isCreatingNewProduct,
+      getIsCreatingNewProduct: () => isCreatingNewProduct,
       setIsCreatingNewProduct: ({required bool value}) {
         setState(() {
           isCreatingNewProduct = value;

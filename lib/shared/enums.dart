@@ -1,3 +1,3 @@
 enum Pages { recipes, inventory, home, toBuy }
 
-enum InventoryTab { freezer, refrigerator, pantry }
+enum StorageLocation { freezer, refrigerator, pantry }

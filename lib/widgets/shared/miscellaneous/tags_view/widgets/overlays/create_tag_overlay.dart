@@ -4,7 +4,8 @@ import "package:fridgital/shared/constants.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/shared/enums/overlay_mode.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/shared/notifications.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/shared/icon_widget.dart";
-import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/shared/miscellaneous/modifiable_tag_form_overlay.dart";
+import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/shared/miscellaneous/"
+    "modifiable_tag_form_overlay.dart";
 
 class CreateTagOverlay extends StatelessWidget {
   const CreateTagOverlay({super.key});

@@ -4,8 +4,8 @@ import "package:fridgital/shared/constants.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/shared/enums/overlay_mode.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/shared/notifications.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/shared/icon_widget.dart";
-import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/shared/"
-    "miscellaneous/base_select_tag_overlay.dart";
+import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/shared/miscellaneous/"
+    "base_select_tag_overlay.dart";
 import "package:provider/provider.dart";
 
 class SelectTagOverlay extends StatelessWidget {
