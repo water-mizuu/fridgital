@@ -27,7 +27,6 @@ Future<void> main() async {
   sharedPreferences = await SharedPreferences.getInstance(); // well that's simple.
 
   /// Load the sqflite database.
-  // ignore: deprecated_member_use_from_same_package
   database = await fetchDatabase();
 
   /// Set up the window manager if in desktop.

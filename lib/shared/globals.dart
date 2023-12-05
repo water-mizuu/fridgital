@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_await_in_return
-
 import "dart:io";
 
 import "package:flutter/foundation.dart";
@@ -11,6 +9,8 @@ import "package:sqflite_common_ffi/sqflite_ffi.dart";
 // SQLITE DATABASE
 // *****************************************
 
+bool _ffiHasBeenInitialized = false;
+
 late final Database database;
 
 Future<Database> fetchDatabase() async {
@@ -21,8 +21,9 @@ Future<Database> fetchDatabase() async {
   var isMobile = !isWeb && (Platform.isAndroid || Platform.isIOS || Platform.isFuchsia);
 
   if (isDesktop) {
-    if (Platform.isWindows || Platform.isLinux) {
+    if (!_ffiHasBeenInitialized && (Platform.isWindows || Platform.isLinux)) {
       sqfliteFfiInit();
+      _ffiHasBeenInitialized = true;
     }
 
     databaseFactory = databaseFactoryFfi;
