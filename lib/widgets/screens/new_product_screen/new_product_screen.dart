@@ -214,7 +214,6 @@ class ProductImageField extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    var context = useContext();
     var bytes = useState(null as Uint8List?);
 
     return Padding(

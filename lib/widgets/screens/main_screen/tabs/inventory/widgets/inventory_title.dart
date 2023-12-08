@@ -6,7 +6,6 @@ class InventoryTitle extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    var context = useContext();
     var theme = Theme.of(context);
 
     return Padding(

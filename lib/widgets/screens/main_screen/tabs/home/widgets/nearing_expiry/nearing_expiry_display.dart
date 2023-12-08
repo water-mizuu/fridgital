@@ -15,8 +15,7 @@ class NearingExpiryDisplay extends HookWidget {
   @override
   Widget build(BuildContext context) {
     var pageController = usePageController(initialPage: 1e9.toInt(), viewportFraction: 0.75);
-    // var activePage = useValueNotifier<int?>(null);
-    var activePage = useListenable(useMemoized(() => ValueNotifier<int?>(null)));
+    var activePage = useValueNotifier<int?>(null);
 
     usePostRender(() {
       if (!pageController.hasClients) return;
