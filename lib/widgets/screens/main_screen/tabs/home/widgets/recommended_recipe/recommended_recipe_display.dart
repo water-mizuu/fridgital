@@ -19,7 +19,9 @@ class RecommendedRecipeDisplay extends HookWidget {
     var activePage = useValueNotifier<int?>(null);
 
     usePostRender(() {
-      if (!pageController.hasClients) return;
+      if (!pageController.hasClients) {
+        return;
+      }
 
       activePage.value = pageController.page!.round();
     });
