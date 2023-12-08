@@ -15,7 +15,8 @@ class NearingExpiryDisplay extends HookWidget {
   @override
   Widget build(BuildContext context) {
     var pageController = usePageController(initialPage: 1e9.toInt(), viewportFraction: 0.75);
-    var activePage = useValueNotifier<int?>(null);
+    // var activePage = useValueNotifier<int?>(null);
+    var activePage = useListenable(useMemoized(() => ValueNotifier<int?>(null)));
 
     usePostRender(() {
       if (!pageController.hasClients) return;
@@ -33,7 +34,7 @@ class NearingExpiryDisplay extends HookWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text("nearing expiry", style: theme.textTheme.titleMedium),
+                Text("Nearing Expiry", style: theme.textTheme.titleMedium),
                 const SizedBox(width: 8.0),
                 SideButton(
                   onTap: () {

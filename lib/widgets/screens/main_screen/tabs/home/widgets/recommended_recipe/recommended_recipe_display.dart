@@ -5,7 +5,7 @@ import "package:flutter_hooks/flutter_hooks.dart";
 import "package:fridgital/shared/extensions/time.dart";
 import "package:fridgital/shared/hooks/use_post_render.dart";
 import "package:fridgital/widgets/screens/main_screen/tabs/home/notifications.dart";
-import "package:fridgital/widgets/screens/main_screen/tabs/home/widgets/recommended_recipe.dart/recommended_recipe_tile.dart";
+import "package:fridgital/widgets/screens/main_screen/tabs/home/widgets/recommended_recipe/recommended_recipe_tile.dart";
 import "package:fridgital/widgets/shared/miscellaneous/shrinking_navigation.dart";
 import "package:fridgital/widgets/shared/miscellaneous/side_button.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
