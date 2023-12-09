@@ -15,7 +15,7 @@ class RouteState extends InheritedWidget {
   })  : _getIsCreatingNewProduct = getIsCreatingNewProduct,
         _setCreatingNewProduct = setIsCreatingNewProduct;
 
-  final Pages activePage;
+  final MainTab activePage;
 
   /// A function that toggles the value of [isCreatingNewProduct].
   final void Function() toggleCreatingNewProduct;
