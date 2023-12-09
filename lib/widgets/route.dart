@@ -8,6 +8,7 @@ import "package:fridgital/shared/enums.dart";
 import "package:fridgital/shared/extensions/time.dart";
 import "package:fridgital/shared/globals.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
+import "package:fridgital/widgets/screens/item_info/item_info.dart";
 import "package:fridgital/widgets/screens/main_screen/main_screen.dart";
 import "package:fridgital/widgets/screens/new_product_screen/new_product_screen.dart";
 import "package:provider/provider.dart";
@@ -105,7 +106,7 @@ class _RouteHandlerState extends State<RouteHandler> {
                 pages: [
                   const MaterialPage(child: MainScreen()),
                   if (isCreatingNewProduct) const MaterialPage(child: NewProductScreen()),
-                  // const MaterialPage(child: ItemInfo()),
+                  const MaterialPage(child: ItemInfo()),
                 ],
                 onPopPage: (route, result) {
                   popNotifier.value ^= true;
