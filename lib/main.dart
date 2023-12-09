@@ -4,6 +4,7 @@ import "dart:io";
 import "package:flutter/foundation.dart";
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/globals.dart";
 import "package:fridgital/widgets/route.dart";
@@ -12,6 +13,7 @@ import "package:window_manager/window_manager.dart";
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  BackgroundIsolateBinaryMessenger.ensureInitialized(RootIsolateToken.instance!);
 
   var isWeb = kIsWeb;
   var isDesktop = !isWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
@@ -82,9 +84,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      scrollBehavior: const MaterialScrollBehavior().copyWith(
-        dragDevices: PointerDeviceKind.values.toSet(),
-      ),
+      scrollBehavior: const MaterialScrollBehavior().copyWith(dragDevices: {...PointerDeviceKind.values}),
       theme: themeData,
       home: const RouteHandler(),
     );

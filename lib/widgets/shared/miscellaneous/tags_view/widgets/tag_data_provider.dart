@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:fridgital/back_end/change_notifiers/tag_data.dart";
-import "package:fridgital/shared/hooks.dart";
+import "package:fridgital/shared/hooks/use_tag_data_future.dart";
 import "package:provider/provider.dart";
 
 class TagDataProvider extends HookWidget {

@@ -1,32 +1,10 @@
-import "dart:math";
-
-import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:fridgital/back_end/change_notifiers/recipe_data.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/extensions/join_and.dart";
+import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
-
-L subscribeTo<L extends Listenable>(BuildContext context, L listenable) {
-  void listener() {
-    listenable.removeListener(listener);
-
-    if (!context.mounted) {
-      return;
-    }
-
-    if (kDebugMode) {
-      print("Listenable changed!");
-    }
-
-    (context as Element).markNeedsBuild();
-  }
-
-  listenable.addListener(listener);
-
-  return listenable;
-}
 
 class RecipeTile extends HookWidget {
   const RecipeTile({required this.recipe, super.key});
@@ -35,24 +13,24 @@ class RecipeTile extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    var Recipe(:name, :ingredients, :imageUrl) = subscribeTo(context, recipe);
+    var Recipe(:name, :ingredients, :imageUrl) = useListenable(recipe);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32.0),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(10)),
-        child: Container(
-          height: 175,
-          color: FigmaColors.whiteAccent,
-          child: LayoutBuilder(
-            builder: (context, constraints) => Stack(
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: ClickableWidget(
-                    onTap: () {
-                      this.recipe.name = Random().nextInt(0xffffffff).toString();
-                    },
+        child: ClickableWidget(
+          onTap: () {
+            RouteState.of(context).workingRecipe = recipe;
+          },
+          child: Container(
+            height: 175,
+            color: FigmaColors.whiteAccent,
+            child: LayoutBuilder(
+              builder: (context, constraints) => Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 10.0) + const EdgeInsets.symmetric(vertical: 12.0),
                       child: SizedBox(
@@ -94,46 +72,46 @@ class RecipeTile extends HookWidget {
                       ),
                     ),
                   ),
-                ),
-                if (imageUrl case String imageUrl)
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Builder(
-                      builder: (context) {
-                        var widget = AspectRatio(
-                          aspectRatio: 1.0,
-                          child: Image.asset(imageUrl, width: 200, fit: BoxFit.cover),
-                        ) as Widget;
+                  if (imageUrl case String imageUrl)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Builder(
+                        builder: (context) {
+                          var widget = AspectRatio(
+                            aspectRatio: 1.0,
+                            child: Image.asset(imageUrl, width: 200, fit: BoxFit.cover),
+                          ) as Widget;
 
-                        // widget = ShaderMask(
-                        //   shaderCallback: (rect) => const LinearGradient(
-                        //     colors: [
-                        //       FigmaColors.whiteAccent,
-                        //       FigmaColors.whiteAccent,
-                        //     ],
-                        //   ).createShader(Offset.zero & rect.size),
-                        //   blendMode: BlendMode.color,
-                        //   child: widget,
-                        // );
+                          // widget = ShaderMask(
+                          //   shaderCallback: (rect) => const LinearGradient(
+                          //     colors: [
+                          //       FigmaColors.whiteAccent,
+                          //       FigmaColors.whiteAccent,
+                          //     ],
+                          //   ).createShader(Offset.zero & rect.size),
+                          //   blendMode: BlendMode.color,
+                          //   child: widget,
+                          // );
 
-                        // Uncomment the line above to remove the color of the image
+                          // Uncomment the line above to remove the color of the image
 
-                        widget = ShaderMask(
-                          shaderCallback: (rect) => LinearGradient(
-                            colors: [
-                              Colors.transparent,
-                              Colors.black.withAlpha(127),
-                            ],
-                          ).createShader(Offset.zero & rect.size),
-                          blendMode: BlendMode.dstIn,
-                          child: widget,
-                        );
+                          widget = ShaderMask(
+                            shaderCallback: (rect) => LinearGradient(
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withAlpha(127),
+                              ],
+                            ).createShader(Offset.zero & rect.size),
+                            blendMode: BlendMode.dstIn,
+                            child: widget,
+                          );
 
-                        return widget;
-                      },
+                          return widget;
+                        },
+                      ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

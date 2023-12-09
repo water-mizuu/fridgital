@@ -3,14 +3,15 @@ import "dart:math";
 
 import "package:flutter/material.dart";
 import "package:fridgital/back_end/change_notifiers/product_data.dart";
+import "package:fridgital/back_end/change_notifiers/recipe_data.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/enums.dart";
 import "package:fridgital/shared/extensions/time.dart";
 import "package:fridgital/shared/globals.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
-import "package:fridgital/widgets/screens/item_info/item_info.dart";
 import "package:fridgital/widgets/screens/main_screen/main_screen.dart";
 import "package:fridgital/widgets/screens/new_product_screen/new_product_screen.dart";
+import "package:fridgital/widgets/screens/recipe_info/recipe_info.dart";
 import "package:provider/provider.dart";
 
 class RouteHandler extends StatefulWidget {
@@ -25,7 +26,7 @@ class _RouteHandlerState extends State<RouteHandler> {
   late final ValueNotifier<bool> popNotifier = ValueNotifier<bool>(false);
 
   /// This is the product that is currently being worked on. If there is.
-  Product? workingProduct;
+  Recipe? workingRecipe;
 
   late StorageLocation workingLocation;
   bool isCreatingNewProduct = false;
@@ -68,6 +69,12 @@ class _RouteHandlerState extends State<RouteHandler> {
           isCreatingNewProduct = value;
         });
       },
+      getWorkingRecipe: () => workingRecipe,
+      setWorkingRecipe: ({required Recipe? value}) {
+        setState(() {
+          workingRecipe = value;
+        });
+      },
       createDummyProduct: (tags) async {
         var productData = await this.productData;
 
@@ -106,10 +113,22 @@ class _RouteHandlerState extends State<RouteHandler> {
                 pages: [
                   const MaterialPage(child: MainScreen()),
                   if (isCreatingNewProduct) const MaterialPage(child: NewProductScreen()),
-                  const MaterialPage(child: ItemInfo()),
+                  // const MaterialPage(child: ItemInfo()),
+                  if (workingRecipe case var workingRecipe?) //
+                    MaterialPage(child: RecipeInfo(recipe: workingRecipe)),
                 ],
                 onPopPage: (route, result) {
                   popNotifier.value ^= true;
+
+                  if (isCreatingNewProduct) {
+                    setState(() {
+                      isCreatingNewProduct = false;
+                    });
+                  } else if (workingRecipe case _?) {
+                    setState(() {
+                      workingRecipe = null;
+                    });
+                  }
 
                   return route.didPop(result);
                 },
@@ -121,6 +140,8 @@ class _RouteHandlerState extends State<RouteHandler> {
     );
   }
 }
+
+class ProductInfo {}
 
 class ChangeWorkingStorageLocationNotification extends Notification {
   // ignore: unreachable_from_main

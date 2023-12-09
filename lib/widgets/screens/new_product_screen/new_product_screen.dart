@@ -1,4 +1,3 @@
-import "dart:isolate";
 import "dart:typed_data";
 
 import "package:flutter/material.dart";
@@ -238,7 +237,7 @@ class ProductImageField extends HookWidget {
               padding: const EdgeInsets.all(8.0),
               child: ClickableWidget(
                 onTap: () async {
-                  var image = await Isolate.run(utils.pickImage);
+                  var image = await utils.pickImage();
                   if (!context.mounted) {
                     return;
                   }
