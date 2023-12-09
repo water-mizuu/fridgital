@@ -6,13 +6,13 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:fridgital/back_end/change_notifiers/tag_data.dart";
-import "package:fridgital/main.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/enums.dart";
 import "package:fridgital/shared/extensions/time.dart";
 import "package:fridgital/shared/globals.dart";
 import "package:fridgital/shared/hooks.dart";
 import "package:fridgital/widgets/inherited_widgets/route_state.dart";
+import "package:fridgital/widgets/route.dart";
 import "package:fridgital/widgets/screens/main_screen/tabs/inventory/widgets/inventory_tab_location.dart";
 import "package:provider/provider.dart";
 
@@ -136,7 +136,7 @@ class InventoryTabs extends HookWidget {
                               child: Text("Add a product to ${location.name}"),
                             ),
                             onPressed: () {
-                              RouteState.of(context).toggleCreatingNewProduct();
+                              RouteState.of(context).isCreatingNewProduct = true;
                             },
                           ),
                         ],

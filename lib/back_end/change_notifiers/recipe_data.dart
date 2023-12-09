@@ -8,28 +8,19 @@ class RecipeData extends ChangeNotifier {
 class Recipe extends ChangeNotifier {
   Recipe({
     required String name,
-    required String description,
     required List<String> ingredients,
     required String directions,
+    required String? imageUrl,
   })  : _name = name,
-        _description = description,
         _ingredients = ingredients,
-        _directions = directions;
+        _directions = directions,
+        _imageUrl = imageUrl;
 
   String _name;
   String get name => _name;
   set name(String name) {
     if (name != _name) {
       _name = name;
-      notifyListeners();
-    }
-  }
-
-  String _description;
-  String get description => _description;
-  set description(String description) {
-    if (description != _description) {
-      _description = description;
       notifyListeners();
     }
   }
@@ -42,6 +33,15 @@ class Recipe extends ChangeNotifier {
   set directions(String directions) {
     if (directions != _directions) {
       _directions = directions;
+      notifyListeners();
+    }
+  }
+
+  String? _imageUrl;
+  String? get imageUrl => _imageUrl;
+  set imageUrl(String? imageUrl) {
+    if (imageUrl != _imageUrl) {
+      _imageUrl = imageUrl;
       notifyListeners();
     }
   }

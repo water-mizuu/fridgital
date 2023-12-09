@@ -1,19 +1,12 @@
 import "dart:async";
 import "dart:io";
-import "dart:math";
 
 import "package:flutter/foundation.dart";
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
-import "package:fridgital/back_end/change_notifiers/product_data.dart";
 import "package:fridgital/shared/constants.dart";
-import "package:fridgital/shared/enums.dart";
-import "package:fridgital/shared/extensions/time.dart";
 import "package:fridgital/shared/globals.dart";
-import "package:fridgital/widgets/inherited_widgets/route_state.dart";
-import "package:fridgital/widgets/screens/main_screen/main_screen.dart";
-import "package:fridgital/widgets/screens/new_product_screen/new_product_screen.dart";
-import "package:provider/provider.dart";
+import "package:fridgital/widgets/route.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "package:window_manager/window_manager.dart";
 
@@ -53,14 +46,9 @@ Future<void> main() async {
 
 /// MAIN WIDGETS
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
   static final ThemeData themeData = ThemeData(
     fontFamily: "Nunito",
     colorScheme: ColorScheme.fromSeed(seedColor: FigmaColors.pinkAccent),
@@ -91,118 +79,14 @@ class _MyAppState extends State<MyApp> {
     useMaterial3: true,
   );
 
-  late final Future<ProductData> productData;
-
-  late StorageLocation workingLocation;
-  final ValueNotifier<bool> popNotifier = ValueNotifier<bool>(false);
-  bool isSecondLayerEnabled = false;
-  bool isCreatingNewProduct = false;
-  Pages activePage = Pages.home;
-
-  void changePage(Pages page) {
-    setState(() {
-      activePage = page;
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    unawaited(() async {
-      productData = ProductData.fromDatabase();
-      workingLocation = StorageLocation.values[sharedPreferences.getInt(SharedPreferencesKeys.inventoryLocation) ?? 0];
-    }());
-  }
-
-  @override
-  void dispose() {
-    unawaited(() async {
-      (await productData).dispose();
-    }());
-    popNotifier.dispose();
-
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return RouteState(
-      activePage: activePage,
-      getIsCreatingNewProduct: () => isCreatingNewProduct,
-      setIsCreatingNewProduct: ({required bool value}) {
-        setState(() {
-          isCreatingNewProduct = value;
-        });
-      },
-      toggleCreatingNewProduct: () {
-        setState(() {
-          isCreatingNewProduct = !isCreatingNewProduct;
-        });
-      },
-      createDummyProduct: (tags) async {
-        var productData = await this.productData;
-
-        await productData.addProduct(
-          name: "Product #${Random().nextInt(1111111)}",
-          addedDate: DateTime.now(),
-          storageUnits: "kg", // The superior unit of measurement.
-          storageLocation: workingLocation,
-          expiryDate: DateTime.now().add(30.days),
-          quantity: Random().nextInt(20),
-          notes: "",
-          tags: tags,
-          image: null,
-        );
-      },
-      popNotifier: popNotifier,
-      child: NotificationListener(
-        onNotification: (notification) {
-          if (notification case ChangeWorkingStorageLocationNotification(:var location)) {
-            setState(() {
-              workingLocation = location;
-            });
-            return true;
-          }
-
-          return false;
-        },
-        child: MaterialApp(
-          scrollBehavior: const MaterialScrollBehavior().copyWith(
-            dragDevices: PointerDeviceKind.values.toSet(),
-          ),
-          theme: themeData,
-          home: FutureProvider.value(
-            initialData: ProductData.empty(),
-            value: productData,
-            builder: (context, child) => Provider.value(
-              value: workingLocation,
-              child: ChangeNotifierProvider.value(
-                value: context.watch<ProductData>(),
-                child: Navigator(
-                  pages: [
-                    const MaterialPage(child: MainScreen()),
-                    if (isCreatingNewProduct) const MaterialPage(child: NewProductScreen()),
-                    // const MaterialPage(child: ItemInfo()),
-                  ],
-                  onPopPage: (route, result) {
-                    popNotifier.value ^= true;
-
-                    return route.didPop(result);
-                  },
-                ),
-              ),
-            ),
-          ),
-        ),
+    return MaterialApp(
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        dragDevices: PointerDeviceKind.values.toSet(),
       ),
+      theme: themeData,
+      home: const RouteHandler(),
     );
   }
-}
-
-class ChangeWorkingStorageLocationNotification extends Notification {
-  // ignore: unreachable_from_main
-  const ChangeWorkingStorageLocationNotification(this.location);
-
-  final StorageLocation location;
 }

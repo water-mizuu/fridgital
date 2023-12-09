@@ -8,7 +8,6 @@ class RouteState extends InheritedWidget {
     required this.popNotifier,
     required bool Function() getIsCreatingNewProduct,
     required void Function({required bool value}) setIsCreatingNewProduct,
-    required this.toggleCreatingNewProduct,
     required this.createDummyProduct,
     required super.child,
     super.key,
@@ -16,9 +15,6 @@ class RouteState extends InheritedWidget {
         _setCreatingNewProduct = setIsCreatingNewProduct;
 
   final MainTab activePage;
-
-  /// A function that toggles the value of [isCreatingNewProduct].
-  final void Function() toggleCreatingNewProduct;
 
   /// A function that creates a dummy product with the given tags.
   final void Function(List<Tag>) createDummyProduct;
@@ -46,7 +42,6 @@ class RouteState extends InheritedWidget {
   @override
   bool updateShouldNotify(covariant RouteState oldWidget) =>
       oldWidget.activePage != activePage ||
-      oldWidget.toggleCreatingNewProduct != toggleCreatingNewProduct ||
       oldWidget.createDummyProduct != createDummyProduct ||
       oldWidget.popNotifier != popNotifier ||
       oldWidget._getIsCreatingNewProduct != _getIsCreatingNewProduct ||

@@ -1,21 +1,42 @@
+import "dart:math";
+
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
+import "package:fridgital/back_end/change_notifiers/recipe_data.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/extensions/join_and.dart";
+import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
 
-class RecipeTile extends StatelessWidget {
-  const RecipeTile({
-    required this.title,
-    required this.ingredients,
-    required this.imageUrl,
-    super.key,
-  });
+L subscribeTo<L extends Listenable>(BuildContext context, L listenable) {
+  void listener() {
+    listenable.removeListener(listener);
 
-  final String title;
-  final List<String> ingredients;
-  final String imageUrl;
+    if (!context.mounted) {
+      return;
+    }
+
+    if (kDebugMode) {
+      print("Listenable changed!");
+    }
+
+    (context as Element).markNeedsBuild();
+  }
+
+  listenable.addListener(listener);
+
+  return listenable;
+}
+
+class RecipeTile extends HookWidget {
+  const RecipeTile({required this.recipe, super.key});
+
+  final Recipe recipe;
 
   @override
   Widget build(BuildContext context) {
+    var Recipe(:name, :ingredients, :imageUrl) = subscribeTo(context, recipe);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32.0),
       child: ClipRRect(
@@ -28,85 +49,90 @@ class RecipeTile extends StatelessWidget {
               children: [
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 10.0) + const EdgeInsets.symmetric(vertical: 12.0),
-                    child: SizedBox(
-                      width: (constraints.maxWidth * 0.50).clamp(150, double.infinity),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 28,
+                  child: ClickableWidget(
+                    onTap: () {
+                      this.recipe.name = Random().nextInt(0xffffffff).toString();
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10.0) + const EdgeInsets.symmetric(vertical: 12.0),
+                      child: SizedBox(
+                        width: (constraints.maxWidth * 0.50).clamp(150, double.infinity),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              name,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 28,
+                              ),
                             ),
-                          ),
-                          Text(
-                            "Contains ${ingredients.joinAnd()}",
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 3,
-                            style: const TextStyle(
-                              color: FigmaColors.darkGreyAccent,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
+                            Text(
+                              "Contains ${ingredients.map((v) => "'$v'").toList().joinAnd()}",
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 3,
+                              style: const TextStyle(
+                                color: FigmaColors.darkGreyAccent,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                              ),
                             ),
-                          ),
-                          const Expanded(child: SizedBox()),
-                          const Text(
-                            "view recipe...",
-                            style: TextStyle(
-                              color: FigmaColors.darkGreyAccent,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
-                              decoration: TextDecoration.underline,
+                            const Expanded(child: SizedBox()),
+                            const Text(
+                              "view recipe...",
+                              style: TextStyle(
+                                color: FigmaColors.darkGreyAccent,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                                decoration: TextDecoration.underline,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Builder(
-                    builder: (context) {
-                      var widget = AspectRatio(
-                        aspectRatio: 1.0,
-                        child: Image.asset(imageUrl, width: 200, fit: BoxFit.cover),
-                      ) as Widget;
+                if (imageUrl case String imageUrl)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Builder(
+                      builder: (context) {
+                        var widget = AspectRatio(
+                          aspectRatio: 1.0,
+                          child: Image.asset(imageUrl, width: 200, fit: BoxFit.cover),
+                        ) as Widget;
 
-                      // widget = ShaderMask(
-                      //   shaderCallback: (rect) => const LinearGradient(
-                      //     colors: [
-                      //       FigmaColors.whiteAccent,
-                      //       FigmaColors.whiteAccent,
-                      //     ],
-                      //   ).createShader(Offset.zero & rect.size),
-                      //   blendMode: BlendMode.dstIn,
-                      //   child: widget,
-                      // );
+                        // widget = ShaderMask(
+                        //   shaderCallback: (rect) => const LinearGradient(
+                        //     colors: [
+                        //       FigmaColors.whiteAccent,
+                        //       FigmaColors.whiteAccent,
+                        //     ],
+                        //   ).createShader(Offset.zero & rect.size),
+                        //   blendMode: BlendMode.color,
+                        //   child: widget,
+                        // );
 
-                      // Uncomment the line above to remove the color of the image
+                        // Uncomment the line above to remove the color of the image
 
-                      // ignore: join_return_with_assignment
-                      widget = ShaderMask(
-                        shaderCallback: (rect) => LinearGradient(
-                          colors: [
-                            Colors.transparent,
-                            Colors.black.withAlpha(127),
-                          ],
-                        ).createShader(Offset.zero & rect.size),
-                        blendMode: BlendMode.dstIn,
-                        child: widget,
-                      );
+                        widget = ShaderMask(
+                          shaderCallback: (rect) => LinearGradient(
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withAlpha(127),
+                            ],
+                          ).createShader(Offset.zero & rect.size),
+                          blendMode: BlendMode.dstIn,
+                          child: widget,
+                        );
 
-                      return widget;
-                    },
+                        return widget;
+                      },
+                    ),
                   ),
-                ),
               ],
             ),
           ),

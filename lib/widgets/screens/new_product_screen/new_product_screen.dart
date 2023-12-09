@@ -139,7 +139,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                       Center(
                         child: ClickableWidget(
                           onTap: () {
-                            RouteState.of(context).toggleCreatingNewProduct();
+                            RouteState.of(context).isCreatingNewProduct = false;
                           },
                           child: const Icon(Icons.arrow_back_ios_rounded),
                         ),

@@ -10,8 +10,11 @@ analyzer:
     - bin/*.*.dart
   errors:
     pattern_never_matches_value_type: error
+    invalid_use_of_protected_member: error
+
     invalid_annotation_target: ignore
     body_might_complete_normally_nullable: ignore
+
     unrelated_type_equality_checks: warning
     unnecessary_cast: ignore
 linter:
@@ -96,7 +99,7 @@ linter:
     - implicit_call_tearoffs
     - implicit_reopen
     - invalid_case_patterns
-    - join_return_with_assignment
+    # - join_return_with_assignment
     - leading_newlines_in_multiline_strings
     - library_annotations
     - library_names
