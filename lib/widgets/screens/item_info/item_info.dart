@@ -43,74 +43,73 @@ class _ItemInfoState extends State<ItemInfo> {
                   ),
                 ],
               ),
-              MouseSingleChildScrollView(
-                child: Expanded(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: SizedBox(
-                          width: 375,
-                          height: 345,
-                          child: DecoratedBox(
-                            decoration:
-                                BoxDecoration(color: FigmaColors.whiteAccent, borderRadius: BorderRadius.circular(10)),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                              child: Column(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 20.0),
-                                      child: Image.asset(
-                                        "assets/images/potato.jpeg",
-                                        width: 335,
-                                      ),
-                                    ),
-                                  ),
-                                  const Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.only(left: 15.0, top: 10),
-                                        child: FittedBox(
-                                          child: Text(
-                                            "Potatoes are underground tubers that grow on the roots of the potato plant, Solanum tuberosum.",
-                                            style: TextStyle(
-                                              color: FigmaColors.darkGreyAccent,
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 18,
-                                            ),
-                                          ),
+              const SizedBox(height: 16.0),
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: MouseSingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: SizedBox(
+                            width: 375,
+                            height: 345,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: FigmaColors.whiteAccent,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                                child: Column(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 20.0),
+                                        child: Image.asset(
+                                          "assets/images/potato.jpeg",
+                                          width: 335,
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ],
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.only(left: 15.0, top: 10),
+                                      child: Text(
+                                        "Potatoes are underground tubers that grow on the roots of the potato plant, Solanum tuberosum.",
+                                        maxLines: 4,
+                                        style: TextStyle(
+                                          color: FigmaColors.darkGreyAccent,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      ImmutableProductDateField(
-                        title: "Date Added",
-                        // date: "9/19/2023",
-                        date: DateTime(2023, 9, 19),
-                      ),
-                      const ImmutableProductTextField(
-                        title: "Storage Units",
-                        content: "100 lbs",
-                      ),
-                      ImmutableProductDateField(
-                        title: "Expiry Date",
-                        date: DateTime(2023, 9, 19),
-                      ),
-                      const ImmutableProductTextField(
-                        title: "Notes",
-                        content: "",
-                      ),
-                    ],
+                        ImmutableProductDateField(
+                          title: "Date Added",
+                          date: DateTime(2023, 9, 19),
+                        ),
+                        const ImmutableProductTextField(
+                          title: "Storage Units",
+                          content: "100 lbs",
+                        ),
+                        ImmutableProductDateField(
+                          title: "Expiry Date",
+                          date: DateTime(2023, 9, 19),
+                        ),
+                        const ImmutableProductTextField(
+                          title: "Notes",
+                          content: "",
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

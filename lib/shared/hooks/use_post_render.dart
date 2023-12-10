@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
-import "package:flutter_hooks/flutter_hooks.dart";
+import "package:fridgital/shared/hooks/use_init.dart";
 
 /// Calls [callback] after the widget is rendered.
 void usePostRender(void Function() callback) {
-  useEffect(() {
+  useInit(() {
     WidgetsBinding.instance.addPostFrameCallback((_) => callback());
   });
 }

@@ -36,12 +36,8 @@ int levenshtein(String left, String right) {
   }
 }
 
-final token = RootIsolateToken.instance!;
-
 /// Gets an image using an image picker.
 Future<Uint8List?> pickImage() async {
-  BackgroundIsolateBinaryMessenger.ensureInitialized(token);
-
   var picker = ImagePicker();
   var image = await picker.pickImage(source: ImageSource.gallery);
 

@@ -12,7 +12,7 @@ final class Reference<T> {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hash(T, _object);
+  int get hashCode => throw UnsupportedError("Reference should not be used in a hash map.");
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes

@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
+import "package:fridgital/shared/hooks/use_post_render.dart";
 
 FocusNode useFocusNodeWithAutoFocus({
   String? debugLabel,
@@ -18,10 +19,8 @@ FocusNode useFocusNodeWithAutoFocus({
     descendantsAreFocusable: descendantsAreFocusable,
   );
 
-  useEffect(() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      focusNode.requestFocus();
-    });
+  usePostRender(() {
+    focusNode.requestFocus();
   });
 
   return focusNode;

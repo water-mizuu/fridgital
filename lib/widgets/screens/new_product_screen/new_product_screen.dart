@@ -44,16 +44,6 @@ class _NewProductScreenState extends State<NewProductScreen> {
     return value;
   }
 
-  Future<void> pickImage() async {
-    var image = await utils.pickImage();
-
-    if (!context.mounted || image == null) {
-      return;
-    }
-
-    this.image.value = image;
-  }
-
   Future<void> submit(TagData tagData) async {
     if (!context.mounted) {
       return;
@@ -101,7 +91,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
     name = Reference("");
     image = Reference(null as Uint8List?);
     addedDate = Reference(null as DateTime?);
-    storageUnits = Reference("Pounds");
+    storageUnits = Reference("");
     expiryDate = Reference(null as DateTime?);
     notes = Reference("");
   }

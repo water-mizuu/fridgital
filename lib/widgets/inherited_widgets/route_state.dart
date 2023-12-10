@@ -1,11 +1,9 @@
 import "package:flutter/widgets.dart";
 import "package:fridgital/back_end/change_notifiers/recipe_data.dart";
 import "package:fridgital/back_end/change_notifiers/tag_data.dart";
-import "package:fridgital/shared/enums.dart";
 
 class RouteState extends InheritedWidget {
   const RouteState({
-    required this.activePage,
     required this.popNotifier,
 
     /// isCreatingNewProduct
@@ -22,8 +20,6 @@ class RouteState extends InheritedWidget {
         _setCreatingNewProduct = setIsCreatingNewProduct,
         _getWorkingRecipe = getWorkingRecipe,
         _setWorkingRecipe = setWorkingRecipe;
-
-  final MainTab activePage;
 
   /// A function that creates a dummy product with the given tags.
   final void Function(List<Tag>) createDummyProduct;
@@ -56,9 +52,31 @@ class RouteState extends InheritedWidget {
 
   @override
   bool updateShouldNotify(covariant RouteState oldWidget) =>
-      oldWidget.activePage != activePage ||
+
+      /// Check if the dummy product creator has changed.
       oldWidget.createDummyProduct != createDummyProduct ||
+
+      /// Check if the pop notifier has changed.
       oldWidget.popNotifier != popNotifier ||
+
+      /// Check if the getter for isCreatingNewProduct has changed.
       oldWidget._getIsCreatingNewProduct != _getIsCreatingNewProduct ||
-      oldWidget._setCreatingNewProduct != _setCreatingNewProduct;
+
+      /// Check if [isCreatingNewProduct] has changed.
+      oldWidget._getIsCreatingNewProduct() != _getIsCreatingNewProduct() ||
+
+      /// Check if the setter for isCreatingNewProduct has changed.
+      oldWidget._setCreatingNewProduct != _setCreatingNewProduct ||
+
+      /// Check if the getter for workingRecipe has changed.
+      oldWidget._getWorkingRecipe != _getWorkingRecipe ||
+
+      /// Check if [workingRecipe] has changed.
+      oldWidget._getWorkingRecipe() != _getWorkingRecipe() ||
+
+      /// Check if the setter for workingRecipe has changed.
+      oldWidget._setWorkingRecipe != _setWorkingRecipe ||
+
+      /// Trailing false
+      false;
 }
