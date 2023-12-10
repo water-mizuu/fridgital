@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 
-void useDispose(void Function() callback) {
-  return use(_DisposeHook(onDispose: callback));
+void useDispose(void Function() callback, [List<Object?>? keys]) {
+  return use(_DisposeHook(onDispose: callback, keys: keys));
 }
 
 class _DisposeHook extends Hook<void> {
