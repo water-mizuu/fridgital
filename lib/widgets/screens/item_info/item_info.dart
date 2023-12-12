@@ -1,20 +1,19 @@
 import "dart:typed_data";
 
-import "package:flutter/material.dart";
+import "package:flutter/material.dart" hide BackButton;
+import "package:fridgital/back_end/change_notifiers/product_data.dart";
 import "package:fridgital/shared/constants.dart";
+import "package:fridgital/widgets/shared/miscellaneous/back_button.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tag_data_provider.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
 
-class ItemInfo extends StatefulWidget {
-  const ItemInfo({super.key});
+class ItemInfo extends StatelessWidget {
+  const ItemInfo({required this.product, super.key});
 
-  @override
-  State<ItemInfo> createState() => _ItemInfoState();
-}
+  final Product product;
 
-class _ItemInfoState extends State<ItemInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,16 +22,20 @@ class _ItemInfoState extends State<ItemInfo> {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              const Row(
+              Row(
                 children: [
-                  Icon(
-                    Icons.arrow_back_ios_rounded,
-                    color: FigmaColors.textDark,
-                    size: 50,
+                  BackButton(
+                    isBig: true,
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
                   ),
-                  Text(
-                    "Title",
-                    style: TextStyle(color: FigmaColors.textDark, fontSize: 50, fontWeight: FontWeight.w900),
+                  Expanded(
+                    child: Text(
+                      product.name,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: FigmaColors.textDark, fontSize: 50, fontWeight: FontWeight.w900),
+                    ),
                   ),
                 ],
               ),
@@ -49,48 +52,11 @@ class _ItemInfoState extends State<ItemInfo> {
                   borderRadius: BorderRadius.circular(10),
                   child: MouseSingleChildScrollView(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
-                          child: SizedBox(
-                            width: 375,
-                            height: 345,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                color: FigmaColors.whiteAccent,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                                child: Column(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(top: 20.0),
-                                        child: Image.asset(
-                                          "assets/images/potato.jpeg",
-                                          width: 335,
-                                        ),
-                                      ),
-                                    ),
-                                    const Padding(
-                                      padding: EdgeInsets.only(left: 15.0, top: 10),
-                                      child: Text(
-                                        "Potatoes are underground tubers that grow on the roots of the potato plant, Solanum tuberosum.",
-                                        maxLines: 4,
-                                        style: TextStyle(
-                                          color: FigmaColors.darkGreyAccent,
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
+                        ProductImageField(
+                          bytes: product.imageBytes,
+                          description: product.description ?? "",
                         ),
                         ImmutableProductDateField(
                           title: "Date Added",
@@ -102,11 +68,14 @@ class _ItemInfoState extends State<ItemInfo> {
                         ),
                         ImmutableProductDateField(
                           title: "Expiry Date",
-                          date: DateTime(2023, 9, 19),
+                          date: product.expiryDate,
                         ),
-                        const ImmutableProductTextField(
+                        ImmutableProductTextField(
                           title: "Notes",
-                          content: "",
+                          content: switch (product.notes) {
+                            "" => "No notes",
+                            var notes => notes,
+                          },
                         ),
                       ],
                     ),
@@ -122,10 +91,14 @@ class _ItemInfoState extends State<ItemInfo> {
 }
 
 class ProductImageField extends StatelessWidget {
-  const ProductImageField({required this.title, required this.bytes, super.key});
+  const ProductImageField({
+    required this.bytes,
+    required this.description,
+    super.key,
+  });
 
-  final String title;
   final Uint8List? bytes;
+  final String description;
 
   @override
   Widget build(BuildContext context) {
@@ -140,13 +113,6 @@ class ProductImageField extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Align(
-              alignment: Alignment.topLeft,
-              child: Text(
-                title,
-                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20.0),
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: DecoratedBox(
@@ -184,6 +150,15 @@ class ProductImageField extends StatelessWidget {
                 ),
               ),
             ),
+            Text(
+              description,
+              maxLines: 4,
+              style: const TextStyle(
+                color: FigmaColors.darkGreyAccent,
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+              ),
+            ),
           ],
         ),
       ),
@@ -206,20 +181,28 @@ class ImmutableProductTextField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Container(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(8.0) - const EdgeInsets.only(bottom: 8.0),
         decoration: const BoxDecoration(
           color: FigmaColors.whiteAccent,
           borderRadius: BorderRadius.all(Radius.circular(8.0)),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Align(
               alignment: Alignment.topLeft,
-              child: Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20.0)),
+              child: Text(
+                title,
+                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20.0),
+              ),
             ),
             Text(
               content,
               textAlign: TextAlign.right,
+              style: const TextStyle(
+                fontWeight: FontWeight.w800,
+                fontSize: 20.0,
+              ),
             ),
           ],
         ),
@@ -250,23 +233,43 @@ class ImmutableProductDateField extends StatelessWidget {
               alignment: Alignment.topLeft,
               child: Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20.0)),
             ),
-            const Align(
+            Align(
               alignment: Alignment.bottomRight,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.calendar_today_rounded, size: 20.0, color: FigmaColors.lightGreyAccent),
-                  SizedBox(width: 12.0),
+                  const Icon(Icons.calendar_today_rounded, size: 20.0, color: FigmaColors.lightGreyAccent),
+                  const SizedBox(width: 12.0),
                   Text.rich(
                     TextSpan(
                       children: [
-                        TextSpan(text: "00", style: TextStyle(color: Colors.transparent)),
-                        TextSpan(text: "/", style: TextStyle(color: FigmaColors.textDark)),
-                        TextSpan(text: "00", style: TextStyle(color: Colors.transparent)),
-                        TextSpan(text: "/", style: TextStyle(color: FigmaColors.textDark)),
-                        TextSpan(text: "0000", style: TextStyle(color: Colors.transparent)),
+                        ...switch (date?.toLocal()) {
+                          var date? => [
+                              TextSpan(
+                                text: date.month.toString().padLeft(2, "0"),
+                                style: const TextStyle(color: FigmaColors.textDark),
+                              ),
+                              const TextSpan(text: "/", style: TextStyle(color: FigmaColors.textDark)),
+                              TextSpan(
+                                text: date.day.toString().padLeft(2, "0"),
+                                style: const TextStyle(color: FigmaColors.textDark),
+                              ),
+                              const TextSpan(text: "/", style: TextStyle(color: FigmaColors.textDark)),
+                              TextSpan(
+                                text: date.year.toString().padLeft(4, "0"),
+                                style: const TextStyle(color: FigmaColors.textDark),
+                              ),
+                            ],
+                          null => [
+                              const TextSpan(text: "00", style: TextStyle(color: Colors.transparent)),
+                              const TextSpan(text: "/", style: TextStyle(color: FigmaColors.textDark)),
+                              const TextSpan(text: "00", style: TextStyle(color: Colors.transparent)),
+                              const TextSpan(text: "/", style: TextStyle(color: FigmaColors.textDark)),
+                              const TextSpan(text: "0000", style: TextStyle(color: Colors.transparent)),
+                            ],
+                        },
                       ],
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 20.0,
                         decoration: TextDecoration.underline,

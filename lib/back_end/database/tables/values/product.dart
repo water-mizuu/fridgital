@@ -34,7 +34,8 @@ final class ProductTable extends DatabaseTable {
       quantity INT NOT NULL,
 
       expiryDate TEXT,
-      image BLOB
+      image BLOB,
+      description TEXT
     )
     """;
 
@@ -55,6 +56,7 @@ final class ProductTable extends DatabaseTable {
             "quantity": int quantity,
             "expiryDate": String? expiryDate,
             "image": String? imageBase64,
+            "description": String? description,
           }) {
         var <List<Tag>>[custom, builtIn] = await Future.wait([
           ProductCustomTagsTable.instance.fetchCustomTags(productId: id),
@@ -72,11 +74,17 @@ final class ProductTable extends DatabaseTable {
           quantity: quantity,
           expiryDate: expiryDate != null ? DateTime.parse(expiryDate) : null,
           image: imageBase64 == null ? null : await Isolate.run(() => base64Decode(imageBase64)),
+          description: description,
         );
 
         products.add(product);
       } else if (kDebugMode) {
-        print("Failed to parse product with id ${row["id"]}. The row info is: \n $row");
+        var truncated = switch (row["image"]) {
+          String value => {...row, "image": value.substring(0, 20)},
+          _ => row,
+        };
+
+        print("Failed to parse product with id ${row["id"]}. The row info is: \n $truncated");
       }
     }
 
@@ -91,6 +99,7 @@ final class ProductTable extends DatabaseTable {
     required String storageUnits,
     required int quantity,
     required Uint8List? image,
+    required String? description,
     required DateTime? expiryDate,
     required String notes,
   }) async {
@@ -154,6 +163,7 @@ final class ProductTable extends DatabaseTable {
       storageUnits: storageUnits,
       quantity: quantity,
       image: image,
+      description: description,
       expiryDate: expiryDate,
       notes: notes,
     );

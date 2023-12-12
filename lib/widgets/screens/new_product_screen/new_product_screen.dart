@@ -30,6 +30,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
   late final Reference<DateTime?> expiryDate;
   late final Reference<String> notes;
   late final Reference<Uint8List?> image;
+  late final Reference<String?> description;
 
   T unwrap<T>(Reference<T> reference, String name, {bool isEmptyAllowed = false}) {
     var value = reference.value;
@@ -61,6 +62,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
       var expiryDate = unwrap(this.expiryDate, "Expiry Date");
       var notes = unwrap(this.notes, "Notes", isEmptyAllowed: true);
       var image = unwrap(this.image, "Image URL", isEmptyAllowed: true);
+      var description = unwrap(this.description, "Description", isEmptyAllowed: true);
 
       var productData = context.read<ProductData>();
 
@@ -74,6 +76,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
         quantity: 0,
         tags: tags,
         image: image,
+        description: description,
       );
       if (!context.mounted) {
         return;
@@ -445,14 +448,6 @@ class _ProductDateFieldState extends State<ProductDateField> {
                             decoration: TextDecoration.underline,
                           ),
                         );
-                        // return Text(
-                        //   style: const TextStyle(
-                        //     fontWeight: FontWeight.w800,
-                        //     fontSize: 20.0,
-                        //     decoration: TextDecoration.underline,
-                        //     fontFamily: "Operator Mono",
-                        //   ),
-                        // );
                       },
                     ),
                   ),

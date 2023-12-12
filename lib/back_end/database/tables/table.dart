@@ -17,7 +17,7 @@ abstract base class DatabaseTable {
 
   /// Drops the table. This method is called whenever the table is remade.
   Future<void> drop() async {
-    await database.execute("DROP TABLE IF EXISTS ?", [tableName]);
+    await database.execute("DROP TABLE IF EXISTS $tableName");
   }
 
   @protected

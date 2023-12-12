@@ -1,4 +1,5 @@
 import "package:flutter/widgets.dart";
+import "package:fridgital/back_end/change_notifiers/product_data.dart";
 import "package:fridgital/back_end/change_notifiers/recipe_data.dart";
 import "package:fridgital/back_end/change_notifiers/tag_data.dart";
 
@@ -13,13 +14,21 @@ class RouteState extends InheritedWidget {
     /// workingRecipe
     required Recipe? Function() getWorkingRecipe,
     required void Function({required Recipe? value}) setWorkingRecipe,
+
+    /// workingProduct
+    required Product? Function() getWorkingProduct,
+    required void Function({required Product? value}) setWorkingProduct,
+
+    /// Others
     required this.createDummyProduct,
     required super.child,
     super.key,
   })  : _getIsCreatingNewProduct = getIsCreatingNewProduct,
         _setCreatingNewProduct = setIsCreatingNewProduct,
         _getWorkingRecipe = getWorkingRecipe,
-        _setWorkingRecipe = setWorkingRecipe;
+        _setWorkingRecipe = setWorkingRecipe,
+        _getWorkingProduct = getWorkingProduct,
+        _setWorkingProduct = setWorkingProduct;
 
   /// A function that creates a dummy product with the given tags.
   final void Function(List<Tag>) createDummyProduct;
@@ -38,6 +47,12 @@ class RouteState extends InheritedWidget {
 
   final void Function({required Recipe? value}) _setWorkingRecipe;
   set workingRecipe(Recipe? value) => _setWorkingRecipe(value: value);
+
+  final Product? Function() _getWorkingProduct;
+  Product? get workingProduct => _getWorkingProduct();
+
+  final void Function({required Product? value}) _setWorkingProduct;
+  set workingProduct(Product? value) => _setWorkingProduct(value: value);
 
   static RouteState? maybeOf(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<RouteState>();

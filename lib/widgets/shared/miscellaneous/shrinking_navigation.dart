@@ -205,14 +205,18 @@ class _NavigationBarBodyState extends State<_NavigationBarBody> with TickerProvi
               child: AnimatedBuilder(
                 animation: retractionController,
                 builder: (context, child) {
-                  var expanded = widget.expandedKey.renderBox?.offset;
-                  var retracted = widget.retractedKey.renderBox?.offset;
+                  try {
+                    var expanded = widget.expandedKey.renderBox?.offset;
+                    var retracted = widget.retractedKey.renderBox?.offset;
 
-                  if (expanded != null && retracted != null) {
-                    child = Transform.translate(
-                      offset: Offset.lerp(Offset.zero, retracted - expanded, retractionController.value)!,
-                      child: child,
-                    );
+                    if (expanded != null && retracted != null) {
+                      child = Transform.translate(
+                        offset: Offset.lerp(Offset.zero, retracted - expanded, retractionController.value)!,
+                        child: child,
+                      );
+                    }
+                  } on Object {
+                    /// Do nothing.
                   }
 
                   return child!;

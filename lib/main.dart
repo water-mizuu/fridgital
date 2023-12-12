@@ -2,11 +2,9 @@ import "dart:async";
 import "dart:io";
 
 import "package:flutter/foundation.dart";
-import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
-import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/globals.dart";
-import "package:fridgital/widgets/route.dart";
+import "package:fridgital/widgets/main.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "package:window_manager/window_manager.dart";
 
@@ -41,50 +39,5 @@ Future<void> main() async {
     // });
   }
 
-  runApp(const MyApp());
-}
-
-/// MAIN WIDGETS
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  static final ThemeData themeData = ThemeData(
-    fontFamily: "Nunito",
-    colorScheme: ColorScheme.fromSeed(seedColor: FigmaColors.pinkAccent),
-    textTheme: const TextTheme(
-      titleLarge: TextStyle(
-        fontSize: 45.0,
-        fontWeight: FontWeight.w900,
-        color: FigmaColors.textDark,
-      ),
-      titleMedium: TextStyle(
-        fontSize: 28.0,
-        fontWeight: FontWeight.w800,
-        color: FigmaColors.textDark,
-      ),
-      displayLarge: TextStyle(
-        fontSize: 16.0,
-        fontWeight: FontWeight.normal,
-        color: FigmaColors.textDark,
-      ),
-    ),
-    pageTransitionsTheme: const PageTransitionsTheme(
-      builders: {
-        TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-      },
-    ),
-    useMaterial3: true,
-  );
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      scrollBehavior: const MaterialScrollBehavior().copyWith(dragDevices: {...PointerDeviceKind.values}),
-      theme: themeData,
-      home: const RouteHandler(),
-    );
-  }
+  runApp(const Main());
 }

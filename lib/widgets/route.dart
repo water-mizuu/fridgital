@@ -13,6 +13,8 @@ import "package:fridgital/widgets/screens/item_info/item_info.dart";
 import "package:fridgital/widgets/screens/main_screen/main_screen.dart";
 import "package:fridgital/widgets/screens/new_product_screen/new_product_screen.dart";
 import "package:fridgital/widgets/screens/recipe_info/recipe_info.dart";
+import "package:lorem_ipsum/lorem_ipsum.dart";
+// import "package:lorem_ipsum/lorem_ipsum.dart";
 import "package:provider/provider.dart";
 
 class RouteHandler extends StatefulWidget {
@@ -23,19 +25,37 @@ class RouteHandler extends StatefulWidget {
 }
 
 class _RouteHandlerState extends State<RouteHandler> with ProductDataMixin {
-  late final ValueNotifier<bool> popNotifier = ValueNotifier<bool>(false);
+  late final ValueNotifier<bool> popNotifier;
 
-  /// This is the product that is currently being worked on. If there is.
+  /// This is the recipe that is currently being worked on. If there is.
   Recipe? workingRecipe;
 
+  /// This is the product that is currently being worked on. If there is.
+  // Product? workingProduct;
+  late Product? workingProduct = Product(
+    id: 0,
+    name: "Product #${Random().nextInt(1111111)}",
+    addedDate: DateTime.now(),
+    storageUnits: "kg", // The superior unit of measurement.
+    storageLocation: workingLocation,
+    expiryDate: DateTime.now().add(30.days),
+    quantity: Random().nextInt(20),
+    tags: [],
+    image: null,
+    description: loremIpsum(words: 20),
+    notes: loremIpsum(words: 10),
+  );
+
   late StorageLocation workingLocation;
-  bool isCreatingNewProduct = false;
+  late bool isCreatingNewProduct;
 
   @override
   void initState() {
     super.initState();
 
+    popNotifier = ValueNotifier(false);
     workingLocation = StorageLocation.values[sharedPreferences.getInt(SharedPreferencesKeys.inventoryLocation) ?? 0];
+    isCreatingNewProduct = false;
   }
 
   @override
@@ -60,6 +80,12 @@ class _RouteHandlerState extends State<RouteHandler> with ProductDataMixin {
           workingRecipe = value;
         });
       },
+      getWorkingProduct: () => workingProduct,
+      setWorkingProduct: ({required Product? value}) {
+        setState(() {
+          workingProduct = value;
+        });
+      },
       createDummyProduct: (tags) async {
         var productData = await this.productDataFuture;
 
@@ -73,6 +99,7 @@ class _RouteHandlerState extends State<RouteHandler> with ProductDataMixin {
           notes: "",
           tags: tags,
           image: null,
+          description: loremIpsum(words: 20),
         );
       },
       popNotifier: popNotifier,
@@ -100,7 +127,8 @@ class _RouteHandlerState extends State<RouteHandler> with ProductDataMixin {
                 if (isCreatingNewProduct) const MaterialPage(child: NewProductScreen()),
                 if (workingRecipe case var workingRecipe?) //
                   MaterialPage(child: RecipeInfo(recipe: workingRecipe)),
-                const MaterialPage(child: ItemInfo()),
+                if (workingProduct case var workingProduct?) //
+                  MaterialPage(child: ItemInfo(product: workingProduct)),
               ],
               onPopPage: (route, result) {
                 popNotifier.value ^= true;
@@ -113,6 +141,10 @@ class _RouteHandlerState extends State<RouteHandler> with ProductDataMixin {
                 } else if (workingRecipe case _?) {
                   setState(() {
                     workingRecipe = null;
+                  });
+                } else if (workingProduct case _?) {
+                  setState(() {
+                    workingProduct = null;
                   });
                 }
 

@@ -36,6 +36,7 @@ dependencies:
   flutter_hooks: ^0.20.3
   http: ^1.1.2
   image_picker: ^1.0.4
+  lorem_ipsum: ^0.0.3
   mouse_scroll:
     git:
       url: https://github.com/water-mizuu/mouse_scroll.git

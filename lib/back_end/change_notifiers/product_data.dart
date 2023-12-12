@@ -30,6 +30,7 @@ class ProductData extends ChangeNotifier {
     required String notes,
     required int quantity,
     required Uint8List? image,
+    required String? description,
     required DateTime? expiryDate,
   }) async {
     var product = await ProductTable.instance.addProduct(
@@ -42,6 +43,7 @@ class ProductData extends ChangeNotifier {
       quantity: quantity,
       expiryDate: expiryDate,
       image: image,
+      description: description,
     );
 
     _products.add(product);
@@ -76,7 +78,7 @@ class ProductData extends ChangeNotifier {
       notes: product.notes,
       quantity: product.quantity + 1,
       expiryDate: product.expiryDate,
-      image: product.imageUrl,
+      image: product.imageBytes,
     );
 
     product.quantity++;
@@ -100,7 +102,7 @@ class ProductData extends ChangeNotifier {
       notes: product.notes,
       quantity: product.quantity - 1,
       expiryDate: product.expiryDate,
-      image: product.imageUrl,
+      image: product.imageBytes,
     );
 
     product.quantity--;
@@ -117,12 +119,14 @@ class Product extends ChangeNotifier {
     required StorageLocation storageLocation,
     required String storageUnits,
     required int quantity,
-    Uint8List? image,
-    DateTime? expiryDate,
-    String notes = "",
+    required Uint8List? image,
+    required String? description,
+    required DateTime? expiryDate,
+    required String notes,
   })  : _name = name,
         _addedDate = addedDate,
         _image = image,
+        _description = description,
         _tags = tags,
         _storageLocation = storageLocation,
         _storageUnits = storageUnits,
@@ -142,10 +146,19 @@ class Product extends ChangeNotifier {
   }
 
   Uint8List? _image;
-  Uint8List? get imageUrl => _image;
-  set imageUrl(Uint8List? imageUrl) {
+  Uint8List? get imageBytes => _image;
+  set imageBytes(Uint8List? imageUrl) {
     if (_image != imageUrl) {
       _image = imageUrl;
+      notifyListeners();
+    }
+  }
+
+  String? _description;
+  String? get description => _description;
+  set description(String? description) {
+    if (_description != description) {
+      _description = description;
       notifyListeners();
     }
   }
