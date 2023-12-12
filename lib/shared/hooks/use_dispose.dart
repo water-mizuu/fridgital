@@ -1,8 +1,9 @@
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 
-void useDispose(void Function() callback, [List<Object?>? keys]) {
-  return use(_DisposeHook(onDispose: callback, keys: keys));
+/// Runs the given [callback] once, when the widget is disposed.
+void useDispose(void Function() callback) {
+  return use(_DisposeHook(onDispose: callback));
 }
 
 class _DisposeHook extends Hook<void> {

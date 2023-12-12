@@ -1,10 +1,11 @@
 import "package:flutter_hooks/flutter_hooks.dart";
 
-void useInit(void Function() callback, [List<Object?>? keys]) {
+/// Runs the given [callback] once, when the widget is first built.
+void useInit(void Function() callback) {
   useEffect(
     () {
       callback();
     },
-    keys ?? const [],
+    const [],
   );
 }

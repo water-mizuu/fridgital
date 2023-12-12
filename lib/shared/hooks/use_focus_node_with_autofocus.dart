@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:fridgital/shared/hooks/use_post_render.dart";
 
+/// Returns a [FocusNode] that requests focus when the widget is first built.
 FocusNode useFocusNodeWithAutoFocus({
   String? debugLabel,
   FocusOnKeyCallback? onKey,
