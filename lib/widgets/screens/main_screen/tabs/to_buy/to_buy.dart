@@ -1,12 +1,9 @@
-import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:fridgital/shared/constants.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/checkbox_tile.dart";
-import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
 import "package:fridgital/widgets/shared/miscellaneous/shrinking_navigation.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tag_data_provider.dart";
-import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
 
 class ToBuy extends StatefulWidget {
@@ -27,8 +24,6 @@ class _ToBuyState extends State<ToBuy> with AutomaticKeepAliveClientMixin {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const ToBuyTitle(),
-            const SizedBox(height: 16.0),
-            const ToBuyTags(),
             const SizedBox(height: 16.0),
             Expanded(child: ToBuyBody(onChanged: (v) {})),
 
@@ -66,28 +61,23 @@ class ToBuyTitle extends StatelessWidget {
   }
 }
 
-class ToBuyTags extends StatelessWidget {
-  const ToBuyTags({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 32.0),
-      child: TagsView(),
-    );
-  }
-}
-
 class ToBuyBody extends StatelessWidget {
   const ToBuyBody({
     required this.onChanged,
     super.key,
   });
 
-  static List<String> toBuyList = [
-    "hi",
-    "bye",
-    "good hello",
+  static List<(Color, String)> toBuyList = [
+    (TagColors.selectable[2], "Tomato Sauce"),
+    (TagColors.selectable[0], "Onions"),
+    (TagColors.selectable[0], "Potatoes"),
+    (TagColors.selectable[0], "Carrots"),
+    (TagColors.selectable[0], "Garlic"),
+    (TagColors.selectable[0], "Garlic chips"),
+    (TagColors.selectable[0], "Garlic powder"),
+    (TagColors.selectable[0], "Cooking Oil"),
+    (TagColors.selectable[9], "Ketchup"),
+    (TagColors.selectable[9], "Soy Sauce"),
   ];
   // ignore: avoid_positional_boolean_parameters
   final void Function(bool)? onChanged;
@@ -114,36 +104,10 @@ class ToBuyBody extends StatelessWidget {
                               color: FigmaColors.lightGreyAccent,
                               thickness: 1.0,
                             ),
-                          ToBuyTile(toBuyList: toBuyList, index: index, onChanged: onChanged),
+                          ToBuyTile(entry: toBuyList[index], onChanged: onChanged),
                         ],
                       ],
                     ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0, right: 8.0, bottom: 15.0, top: 8.0),
-                child: ClickableWidget(
-                  onTap: () {
-                    if (kDebugMode) {
-                      print("Deez nuts. Gotteem");
-                    }
-                  },
-                  child: const Row(
-                    children: [
-                      Icon(
-                        Icons.add,
-                        color: FigmaColors.lightGreyAccent,
-                      ),
-                      Text(
-                        "Add Item...",
-                        style: TextStyle(
-                          color: FigmaColors.lightGreyAccent,
-                          fontStyle: FontStyle.italic,
-                          fontSize: 20.0,
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ),
@@ -157,14 +121,12 @@ class ToBuyBody extends StatelessWidget {
 
 class ToBuyTile extends StatefulWidget {
   const ToBuyTile({
-    required this.toBuyList,
-    required this.index,
+    required this.entry,
     required this.onChanged,
     super.key,
   });
 
-  final List<String> toBuyList;
-  final int index;
+  final (Color, String) entry;
 
   // ignore: avoid_positional_boolean_parameters
   final void Function(bool p1)? onChanged;
@@ -178,8 +140,11 @@ class _ToBuyTileState extends State<ToBuyTile> {
 
   @override
   Widget build(BuildContext context) {
+    var (color, itemName) = widget.entry;
+
     return CheckBox(
-      itemNameToBuy: widget.toBuyList[widget.index],
+      color: color,
+      itemNameToBuy: itemName,
       itemObtainStatus: isActive,
       onChanged: (bool val) {
         setState(() {

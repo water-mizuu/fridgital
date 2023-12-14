@@ -12,8 +12,6 @@ class Inventory extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    useAutomaticKeepAlive();
-
     return BasicScreenWidget(
       child: TagDataProvider(
         builder: (context, tagData) {

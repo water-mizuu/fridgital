@@ -29,7 +29,10 @@ final class ProductBuiltInTagsTable extends DatabaseTable {
   Future<void> register({required int productId, required int tagId}) async {
     await ensureInitialized();
 
-    await database.insert(tableName, {"productId": productId, "tagId": tagId});
+    /// Check if the tag is already registered.
+    if (await database.query(tableName, where: "productId = ? AND tagId = ?", whereArgs: [productId, tagId]) case []) {
+      await database.insert(tableName, {"productId": productId, "tagId": tagId});
+    }
   }
 
   Future<List<BuiltInTag>> fetchBuiltInTags({required int productId}) async {
@@ -57,6 +60,10 @@ final class ProductBuiltInTagsTable extends DatabaseTable {
 
   Future<void> removeTagFromProduct({required int productId, required int tagId}) async {
     await ensureInitialized();
-    await database.delete(tableName, where: "productId = ? AND tagId = ?", whereArgs: [productId, tagId]);
+
+    int rows = await database.delete(tableName, where: "productId = ? AND tagId = ?", whereArgs: [productId, tagId]);
+    if (kDebugMode) {
+      print("Removed $rows from $tableName, by removing tag with id $tagId from product $productId!");
+    }
   }
 }

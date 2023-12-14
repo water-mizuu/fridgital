@@ -6,7 +6,6 @@ import "package:fridgital/widgets/inherited_widgets/route_state.dart";
 import "package:fridgital/widgets/shared/miscellaneous/basic_screen.dart";
 import "package:fridgital/widgets/shared/miscellaneous/clickable_widget.dart";
 import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tag_data_provider.dart";
-import "package:fridgital/widgets/shared/miscellaneous/tags_view/widgets/tags_view.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
 
 class RecipeInfo extends StatefulHookWidget {
@@ -81,8 +80,6 @@ class _RecipeInfoState extends State<RecipeInfo> {
                     ],
                   ),
                   const SizedBox(height: 16.0),
-                  const Align(alignment: Alignment.centerLeft, child: TagsView()),
-                  const SizedBox(height: 16.0),
                   Expanded(
                     child: MouseSingleChildScrollView(
                       padding: const EdgeInsets.symmetric(horizontal: 2.0),
@@ -95,8 +92,13 @@ class _RecipeInfoState extends State<RecipeInfo> {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              if (widget.recipe.imageUrl case var imageUrl?)
+                              if (widget.recipe.imageUrl case var imageUrl?) ...[
                                 ImageDisplay(width: width, imageUrl: imageUrl),
+                                const ColoredBox(
+                                  color: FigmaColors.whiteAccent,
+                                  child: SizedBox(height: 16.0),
+                                ),
+                              ],
                               Container(
                                 padding: const EdgeInsets.only(bottom: 8.0),
                                 color: FigmaColors.whiteAccent,

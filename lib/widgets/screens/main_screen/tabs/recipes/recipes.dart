@@ -7,6 +7,7 @@ import "package:mouse_scroll/mouse_scroll.dart";
 
 class Recipes extends StatelessWidget {
   const Recipes({super.key});
+
   static final List<Recipe> recipes = [
     Recipe(
       name: "One-pot Pesto",

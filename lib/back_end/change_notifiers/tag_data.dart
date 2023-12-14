@@ -9,14 +9,18 @@ import "package:fridgital/shared/constants.dart";
 import "package:fridgital/shared/mixins/record_equatable.dart";
 
 class TagData extends ChangeNotifier {
-  TagData(this._addableTags, this._activeTags);
-  TagData.empty()
+  TagData(this._addableTags, this._activeTags, {this.onAdd, this.onRemove});
+  TagData.empty({this.onAdd, this.onRemove})
       : _addableTags = [],
         _activeTags = [];
 
-  static Future<TagData> emptyFromDatabase() async {
+  static Future<TagData> loadFromDatabase({
+    List<Tag>? initialActiveTags,
+    void Function(Tag)? onAdd,
+    void Function(Tag)? onRemove,
+  }) async {
     var addableTags = <Tag>[];
-    var activeTags = <Tag>[];
+    var activeTags = initialActiveTags ?? [];
 
     var [loadedBuiltInTags, loadedCustomTags] = await Future.wait([
       BuiltInTagsTable.instance.fetchAddableBuiltInTags() as Future<List<Tag>>,
@@ -24,7 +28,7 @@ class TagData extends ChangeNotifier {
     ]);
     addableTags.addAll([...loadedBuiltInTags, ...loadedCustomTags]);
 
-    return TagData(addableTags, activeTags);
+    return TagData(addableTags, activeTags, onAdd: onAdd, onRemove: onRemove);
   }
 
   /// These are the tags that can be added.
@@ -37,15 +41,20 @@ class TagData extends ChangeNotifier {
 
   ImmutableList<Tag> get activeTags => ImmutableList.copyFrom(_activeTags);
 
+  final void Function(Tag)? onAdd;
+  final void Function(Tag)? onRemove;
+
   void addTag(Tag tag) {
     if (!_activeTags.contains(tag)) {
       _activeTags.add(tag);
+      onAdd?.call(tag);
       notifyListeners();
     }
   }
 
   void removeTag(Tag tag) {
     if (_activeTags.remove(tag)) {
+      onRemove?.call(tag);
       notifyListeners();
     }
   }
@@ -97,7 +106,7 @@ class BuiltInTag with RecordEquatable implements Tag {
   static const BuiltInTag essential = BuiltInTag("essentials", TagColors.essential);
 
   @override
-  int get id => throw UnsupportedError("[BuiltInTag]s should not have its id accessed. This is likely a logic error.");
+  Never get id => throw UnsupportedError("[BuiltInTag]s should not have its id accessed. This is likely a logic error.");
 
   @override
   final String name;

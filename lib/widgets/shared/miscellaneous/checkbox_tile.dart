@@ -3,12 +3,19 @@ import "package:fridgital/shared/constants.dart";
 import "package:fridgital/widgets/shared/miscellaneous/round_check_box.dart";
 
 class CheckBox extends StatelessWidget {
-  const CheckBox({required this.itemNameToBuy, required this.itemObtainStatus, required this.onChanged, super.key});
+  const CheckBox({
+    required this.itemNameToBuy,
+    required this.itemObtainStatus,
+    required this.onChanged,
+    required this.color,
+    super.key,
+  });
 
   final String itemNameToBuy;
   final bool itemObtainStatus;
   // ignore: avoid_positional_boolean_parameters
   final void Function(bool)? onChanged;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +27,7 @@ class CheckBox extends StatelessWidget {
             width: 20,
             height: 20,
             child: RoundCheckBox(
-              color: TagColors.selectable[2],
+              color: color,
               value: itemObtainStatus,
               onChanged: onChanged,
             ),

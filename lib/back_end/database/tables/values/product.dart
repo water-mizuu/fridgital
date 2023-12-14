@@ -114,6 +114,7 @@ final class ProductTable extends DatabaseTable {
         "quantity": quantity,
         "expiryDate": expiryDate?.toIso8601String(),
         "image": await Isolate.run(() => image == null ? null : base64Encode(image)),
+        "description": description,
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
@@ -178,6 +179,7 @@ final class ProductTable extends DatabaseTable {
     required String storageUnits,
     required int quantity,
     required Uint8List? image,
+    required String? description,
     required DateTime? expiryDate,
     required String notes,
   }) async {
@@ -193,6 +195,7 @@ final class ProductTable extends DatabaseTable {
           "quantity": quantity,
           "expiryDate": expiryDate?.toIso8601String(),
           "image": await Isolate.run(() => image == null ? null : base64Encode(image)),
+          "description": description,
         },
         where: "id = ?",
         whereArgs: [id],
@@ -247,6 +250,30 @@ final class ProductTable extends DatabaseTable {
 
     if (kDebugMode) {
       print("Removed product with id $id");
+    }
+  }
+
+  Future<void> addTag({required int id, required Tag tag}) async {
+    switch (tag) {
+      case CustomTag():
+        await ProductCustomTagsTable.instance.register(productId: id, tagId: tag.id);
+      case BuiltInTag():
+        var tagId = await BuiltInTagsTable.instance.fetchIdOfTag(tag);
+        assert(tagId != null, "Since the tag is a built-in tag, it should exist in the database.");
+
+        await ProductBuiltInTagsTable.instance.register(productId: id, tagId: tagId!);
+    }
+  }
+
+  Future<void> removeTag({required int id, required Tag tag}) async {
+    switch (tag) {
+      case CustomTag():
+        await ProductCustomTagsTable.instance.removeTagFromProduct(productId: id, tagId: tag.id);
+      case BuiltInTag():
+        var tagId = await BuiltInTagsTable.instance.fetchIdOfTag(tag);
+        assert(tagId != null, "Since the tag is a built-in tag, it should exist in the database.");
+
+        await ProductBuiltInTagsTable.instance.removeTagFromProduct(productId: id, tagId: tagId!);
     }
   }
 }

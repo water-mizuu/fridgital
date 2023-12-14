@@ -31,7 +31,7 @@ class _OverlayHolderState extends State<OverlayHolder> with TickerProviderStateM
     await animationController.forward(from: 0.0);
   }
 
-  Future<void> handleNotification(OverlayNotification notification) async {
+  Future<void> handleNotification(TagOverlayNotification notification) async {
     var tagData = context.read<TagData>();
 
     switch (notification) {
@@ -96,61 +96,65 @@ class _OverlayHolderState extends State<OverlayHolder> with TickerProviderStateM
   Widget build(BuildContext context) {
     var tagData = context.read<TagData>();
 
-    return NotificationListener<OverlayNotification>(
+    return NotificationListener<TagOverlayNotification>(
       onNotification: (notification) {
         unawaited(handleNotification(notification));
 
-        return true;
+        return false;
       },
-      child: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () async {
-          await animationController.reverse(from: 1.0);
+      child: Builder(
+        builder: (context) {
+          return GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () async {
+              await animationController.reverse(from: 1.0);
 
-          if (context.mounted) {
-            const CloseOverlayNotification().dispatch(context);
-          }
-        },
-        child: ChangeNotifierProvider.value(
-          value: tagData,
-          child: Scaffold(
-            resizeToAvoidBottomInset: false,
-            backgroundColor: const Color(0x7fCCAEBB),
-            body: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
-              child: ListenableBuilder(
-                listenable: overlayMode,
-                builder: (context, child) => Center(
-                  child: ValueListenableBuilder(
-                    valueListenable: animationController,
-                    builder: (context, animation, child) => Opacity(
-                      opacity: animation,
-                      child: Transform.scale(
-                        scale: (0.8 + 0.4 * animation).clamp(0.0, 1.0),
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.95),
-                          child: child,
+              if (context.mounted) {
+                const CloseOverlayNotification().dispatch(context);
+              }
+            },
+            child: ChangeNotifierProvider.value(
+              value: tagData,
+              child: Scaffold(
+                resizeToAvoidBottomInset: false,
+                backgroundColor: const Color(0x7fCCAEBB),
+                body: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
+                  child: ListenableBuilder(
+                    listenable: overlayMode,
+                    builder: (context, child) => Center(
+                      child: ValueListenableBuilder(
+                        valueListenable: animationController,
+                        builder: (context, animation, child) => Opacity(
+                          opacity: animation,
+                          child: Transform.scale(
+                            scale: (0.8 + 0.4 * animation).clamp(0.0, 1.0),
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.95),
+                              child: child,
+                            ),
+                          ),
+                        ),
+                        child: ValueListenableBuilder(
+                          valueListenable: workingTag,
+                          builder: (context, tag, child) => switch (overlayMode.value) {
+                            OverlayMode.select => const SelectTagOverlay(),
+                            OverlayMode.add => const CreateTagOverlay(),
+
+                            ///
+                            OverlayMode.edit => EditTagOverlay(tag: tag!),
+                            OverlayMode.selectEdit => const SelectEditOverlay(),
+                            OverlayMode.selectDelete => const SelectDeleteOverlay(),
+                          },
                         ),
                       ),
-                    ),
-                    child: ValueListenableBuilder(
-                      valueListenable: workingTag,
-                      builder: (context, tag, child) => switch (overlayMode.value) {
-                        OverlayMode.select => const SelectTagOverlay(),
-                        OverlayMode.add => const CreateTagOverlay(),
-
-                        ///
-                        OverlayMode.edit => EditTagOverlay(tag: tag!),
-                        OverlayMode.selectEdit => const SelectEditOverlay(),
-                        OverlayMode.selectDelete => const SelectDeleteOverlay(),
-                      },
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

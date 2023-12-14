@@ -9,7 +9,6 @@ void useDispose(void Function() callback) {
 class _DisposeHook extends Hook<void> {
   const _DisposeHook({
     required this.onDispose,
-    super.keys,
   });
 
   final void Function() onDispose;

@@ -30,7 +30,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
   late final Reference<DateTime?> expiryDate;
   late final Reference<String> notes;
   late final Reference<Uint8List?> image;
-  late final Reference<String?> description;
+  late final Reference<String?> description = Reference(null);
 
   T unwrap<T>(Reference<T> reference, String name, {bool isEmptyAllowed = false}) {
     var value = reference.value;
@@ -137,7 +137,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                         ),
                       ),
                       const SizedBox(width: 8.0),
-                      Text("Inventory".toUpperCase(), style: theme.textTheme.titleLarge),
+                      Text("New Product".toUpperCase(), style: theme.textTheme.titleLarge?.copyWith(fontSize: 32.0)),
                     ],
                   ),
                 ),

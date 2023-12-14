@@ -32,19 +32,7 @@ class _RouteHandlerState extends State<RouteHandler> with ProductDataMixin {
 
   /// This is the product that is currently being worked on. If there is.
   // Product? workingProduct;
-  late Product? workingProduct = Product(
-    id: 0,
-    name: "Product #${Random().nextInt(1111111)}",
-    addedDate: DateTime.now(),
-    storageUnits: "kg", // The superior unit of measurement.
-    storageLocation: workingLocation,
-    expiryDate: DateTime.now().add(30.days),
-    quantity: Random().nextInt(20),
-    tags: [],
-    image: null,
-    description: loremIpsum(words: 20),
-    notes: loremIpsum(words: 10),
-  );
+  Product? workingProduct;
 
   late StorageLocation workingLocation;
   late bool isCreatingNewProduct;

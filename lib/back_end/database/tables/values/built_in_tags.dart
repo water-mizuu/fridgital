@@ -40,13 +40,37 @@ final class BuiltInTagsTable extends DatabaseTable {
     assert(rows.length == 1, "Ids should be unique!");
 
     var row = rows.first;
-    if (row case {"id": int _, "name": String name, "red": int red, "blue": int blue, "green": int green}) {
+    if (row case {"id": _, "name": String name, "red": int red, "blue": int blue, "green": int green}) {
       return BuiltInTag(name, Color.fromARGB(255, red, green, blue));
     } else if (kDebugMode) {
       print("Row was not matched! The data was: $row");
     }
 
     throw Exception("There was no tag with the id $id!");
+  }
+
+  Future<int?> fetchIdOfTag(BuiltInTag tag) async {
+    await ensureInitialized();
+
+    /// Query for both [tag.name] and [tag.color].
+    var rows = await database.query(
+      tableName,
+      where: "name = ? AND red = ? AND green = ? AND blue = ?",
+      whereArgs: [tag.name, tag.color.red, tag.color.green, tag.color.blue],
+    );
+    if (rows.isEmpty) {
+      return null;
+    }
+    assert(rows.length == 1, "Names should be unique!");
+
+    var row = rows.first;
+    if (row case {"id": int id, "name": String _, "red": int _, "blue": int _, "green": int _}) {
+      return id;
+    } else if (kDebugMode) {
+      print("Row was not matched! The data was: $row");
+    }
+
+    return null;
   }
 
   Future<List<BuiltInTag>> fetchAddableBuiltInTags() async {

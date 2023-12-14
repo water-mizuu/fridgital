@@ -28,7 +28,9 @@ final class ProductCustomTagsTable extends DatabaseTable {
 
   Future<void> register({required int productId, required int tagId}) async {
     await ensureInitialized();
-    await database.insert(tableName, {"productId": productId, "tagId": tagId});
+    if (await database.query(tableName, where: "productId = ? AND tagId = ?", whereArgs: [productId, tagId]) case []) {
+      await database.insert(tableName, {"productId": productId, "tagId": tagId});
+    }
   }
 
   Future<List<CustomTag>> fetchCustomTags({required int productId}) async {

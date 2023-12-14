@@ -16,7 +16,7 @@ mixin EmptyTagDataMixin<T extends StatefulWidget> on State<T> {
   void initState() {
     super.initState();
 
-    unawaited(tagDataFuture = TagData.emptyFromDatabase());
+    unawaited(tagDataFuture = TagData.loadFromDatabase());
   }
 
   @override
