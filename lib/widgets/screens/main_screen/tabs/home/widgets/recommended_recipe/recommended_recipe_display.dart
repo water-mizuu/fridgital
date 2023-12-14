@@ -51,6 +51,7 @@ class RecommendedRecipeDisplay extends HookWidget {
             ),
           ),
         ),
+        const SizedBox(height: 8.0),
         Padding(
           padding: const EdgeInsets.all(2.0),
           child: NotificationListener<Notification>(

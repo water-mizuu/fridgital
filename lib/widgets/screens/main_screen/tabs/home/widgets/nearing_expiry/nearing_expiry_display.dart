@@ -48,6 +48,7 @@ class NearingExpiryDisplay extends HookWidget {
             ),
           ),
         ),
+        const SizedBox(height: 8.0),
         Padding(
           padding: const EdgeInsets.all(2.0),
           child: NotificationListener<Notification>(
@@ -72,27 +73,41 @@ class NearingExpiryDisplay extends HookWidget {
 
               return false;
             },
-            child: SizedBox(
-              height: 150,
-              child: MouseScroll(
-                controller: pageController,
-                builder: (context, controller, physics) => PageView(
-                  controller: controller,
-                  physics: physics,
-                  children: [
-                    for (var (index, product) in products.indexed)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: NearingExpiryTile(
-                          index: index,
-                          product: product,
-                          activePage: activePage,
+            child: products.isEmpty
+                ? SizedBox(
+                    height: 150,
+                    child: PageView(
+                      controller: pageController,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: const [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: EmptyExpiringTile(),
                         ),
+                      ],
+                    ),
+                  )
+                : SizedBox(
+                    height: 150,
+                    child: MouseScroll(
+                      controller: pageController,
+                      builder: (context, controller, physics) => PageView(
+                        controller: controller,
+                        physics: physics,
+                        children: [
+                          for (var (index, product) in products.indexed)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: NearingExpiryTile(
+                                index: index,
+                                product: product,
+                                activePage: activePage,
+                              ),
+                            ),
+                        ],
                       ),
-                  ],
-                ),
-              ),
-            ),
+                    ),
+                  ),
           ),
         ),
       ],

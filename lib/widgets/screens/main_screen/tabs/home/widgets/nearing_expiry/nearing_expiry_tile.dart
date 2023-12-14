@@ -133,3 +133,31 @@ class NearingExpiryTile extends StatelessWidget {
     );
   }
 }
+
+class EmptyExpiringTile extends StatelessWidget {
+  const EmptyExpiringTile({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border.all(width: 2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.list_alt_outlined, size: 48.0),
+          Text("NO ITEMS YET!", style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16.0)),
+          Text(
+            "Go to your inventory to add more items!",
+            maxLines: 2,
+            style: TextStyle(fontStyle: FontStyle.italic),
+          ),
+        ],
+      ),
+    );
+  }
+}

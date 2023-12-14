@@ -19,6 +19,7 @@ class Home extends StatelessWidget {
           children: [
             HomeTitle(),
             NearingExpiryDisplay(),
+            SizedBox(height: 12.0),
             RecommendedRecipeDisplay(),
             shrinkingNavigationOffset,
           ],
