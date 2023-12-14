@@ -108,6 +108,7 @@ class _RouteHandlerState extends State<RouteHandler> with ProductDataMixin {
           builder: (context, child) => MultiProvider(
             providers: [
               ChangeNotifierProvider.value(value: context.watch<ProductData>()),
+              Provider.value(value: workingLocation),
             ],
             child: Navigator(
               pages: [
