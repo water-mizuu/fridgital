@@ -16,7 +16,7 @@ class RecipeTile extends HookWidget {
     var Recipe(:name, :ingredients, :imageUrl) = useListenable(recipe);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+      padding: const EdgeInsets.symmetric(horizontal: 32.0) + const EdgeInsets.only(bottom: 16.0),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(10)),
         child: ClickableWidget(

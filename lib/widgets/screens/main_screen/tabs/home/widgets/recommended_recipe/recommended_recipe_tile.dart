@@ -46,6 +46,7 @@ class RecommendedRecipeTile extends StatelessWidget {
             color: FigmaColors.recipeWidgetBackground,
             child: Stack(
               children: [
+                if (recipe.imageUrl case var imageUrl?)
                 Positioned.fill(
                   child: Align(
                     alignment: Alignment.centerRight,
@@ -62,7 +63,7 @@ class RecommendedRecipeTile extends StatelessWidget {
                         child: AspectRatio(
                           aspectRatio: 1.0,
                           child: Image.asset(
-                            "assets/images/pesto.jpg",
+                            imageUrl,
                             width: 200,
                             fit: BoxFit.cover,
                           ),
@@ -83,7 +84,8 @@ class RecommendedRecipeTile extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  recipe.name,
+                                  recipe.name.toUpperCase(),
+                                  maxLines: 2,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w800,
