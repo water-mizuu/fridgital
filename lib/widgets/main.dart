@@ -44,6 +44,7 @@ class Main extends StatelessWidget {
     return MaterialApp(
       scrollBehavior: const MaterialScrollBehavior().copyWith(dragDevices: PointerDeviceKind.values.toSet()),
       theme: themeData,
+      debugShowCheckedModeBanner: false,
       home: const RouteHandler(),
     );
   }

@@ -131,9 +131,9 @@ class InventoryTabs extends HookWidget {
                             },
                           ),
                           TextButton(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text("Add a product to ${location.name}"),
+                            child: const Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Icon(Icons.add, size: 32.0),
                             ),
                             onPressed: () {
                               RouteState.of(context).isCreatingNewProduct = true;

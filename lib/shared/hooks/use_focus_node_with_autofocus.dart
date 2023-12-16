@@ -5,6 +5,7 @@ import "package:fridgital/shared/hooks/use_post_render.dart";
 /// Returns a [FocusNode] that requests focus when the widget is first built.
 FocusNode useFocusNodeWithAutoFocus({
   String? debugLabel,
+  // ignore: deprecated_member_use
   FocusOnKeyCallback? onKey,
   FocusOnKeyEventCallback? onKeyEvent,
   bool skipTraversal = false,
